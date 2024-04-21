@@ -3,8 +3,8 @@ import button
 
 pygame.init()
 
-SCREEN_WIDTH = 1920
-SCREEN_HIGHT = 1080
+SCREEN_WIDTH = 1300
+SCREEN_HIGHT = 800
 
 # Set up display
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HIGHT))  # Set display resolution to 1920x1080
