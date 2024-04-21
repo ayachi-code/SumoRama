@@ -1,15 +1,21 @@
 import pygame
 import button
 
+pygame.init()
+
 SCREEN_WIDTH = 1920
 SCREEN_HIGHT = 1080
 
 # Set up display
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HIGHT))  # Set display resolution to 1920x1080
+pygame.display.set_caption('Main menu')
+
+
 clock = pygame.time.Clock()
 pygame.font.init()
 
-pygame.init()
+
+
 
 run = True
 gameScreen = pygame.font.SysFont('Comic Sans MS', 200)
