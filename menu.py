@@ -39,9 +39,14 @@ while run:
                 print("Starting 1v1 mode")
             elif morePlayerMode.isOver(pos):
                 print("Starting 8 player mode")
+            elif quitTheGame.isOver(pos):
+                print("Player quit the game")
+                run = False
 
 
     button.Button((100,100,100),300,300,100,100,"heyy")
 
     pygame.display.update()
     clock.tick(60)  # Limit to 60 FPS
+
+pygame.quit()
