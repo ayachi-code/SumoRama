@@ -1,13 +1,14 @@
 import pygame
 
 class Button: # Source: https://www.youtube.com/watch?v=4_9twnEduFA
-    def __init__(self, color, x, y, width, height, text=''):
+    def __init__(self, color, x, y, width, height, textSize, text=''):
         self.color = color
         self.x = x
         self.y = y
         self.width = width
         self.height = height
         self.text = text
+        self.textSize = textSize
 
     def draw(self, win, outline=None):
         # Call this method to draw the button on the screen
@@ -17,7 +18,7 @@ class Button: # Source: https://www.youtube.com/watch?v=4_9twnEduFA
         pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.height), 0)
         
         if self.text != '':
-            font = pygame.font.SysFont('comicsans', 60)
+            font = pygame.font.SysFont('Sans serif', self.textSize)
             text = font.render(self.text, 1, (0, 0, 0))
             win.blit(text, (self.x + (self.width/2 - text.get_width()/2), self.y + (self.height/2 - text.get_height()/2)))
 
