@@ -10,7 +10,7 @@ clock = pygame.time.Clock()
 # Define constants
 circle_radius = 40  # Initial radius of all circles
 player_circle = {"center": [960, 540], "velocity": [0, 0], "radius": circle_radius}  # Player-controlled circle (initially at sumo ring center)
-circles = [
+circles = [ # Debug circles
     {"center": [800, 300], "velocity": [0, 0], "radius": circle_radius},   # Circle 1
     {"center": [700, 800], "velocity": [0, 0], "radius": circle_radius},   # Circle 2
     {"center": [1100, 800], "velocity": [0, 0], "radius": circle_radius},  # Circle 3
@@ -23,7 +23,7 @@ sumo_ring_radius = 540  # Larger radius for the sumo ring
 sumo_ring_center = [960, 540]  # Center of the screen (1920x1080 resolution)
 
 # Define rush variables
-rush_duration = 2.0  # Rush duration in seconds
+rush_duration = 0.5  # Rush duration in seconds
 rush_speed = 300  # Rush speed in pixels per second
 rushing = False
 rush_start_time = 0
