@@ -18,7 +18,7 @@ sumoImg = pygame.image.load("assets/sumoMenu.png").convert_alpha() # Load image 
 sumoImg = pygame.transform.scale(sumoImg, (200,200)) # Rescales imaeg
 
 run = True
-gameScreen = pygame.font.SysFont('Comic Sans MS', 200)
+gameScreen = pygame.font.SysFont('Comic Sans MS', 150)
 
 # Press  (164,146,163). Hover (218,211,218).
 
@@ -32,9 +32,10 @@ gameButtonHeight = 150
 textSizeButton = 140
 
 while run:
-    morePlayerMode = button.Button(buttonColor8,SCREEN_WIDTH/3.65,SCREEN_HIGHT/4,gameButtonWidth,gameButtonHeight,textSizeButton,'8 player')
-    singleMode = button.Button(buttonColorVersus,SCREEN_WIDTH/3.65,SCREEN_HIGHT/2.4,gameButtonWidth,gameButtonHeight,textSizeButton,'1v1')
-    quitTheGame = button.Button(buttonColorQiut,SCREEN_WIDTH/3.65,SCREEN_HIGHT/1.7,gameButtonWidth,gameButtonHeight,textSizeButton,'Quit')
+    w,h = pygame.display.get_surface().get_size()
+    morePlayerMode = button.Button(buttonColor8,SCREEN_WIDTH/6.5,SCREEN_HIGHT/3.5,gameButtonWidth,gameButtonHeight,textSizeButton,'8 player')
+    singleMode = button.Button(buttonColorVersus,SCREEN_WIDTH/6.5,SCREEN_HIGHT/2,gameButtonWidth,gameButtonHeight,textSizeButton,'1v1')
+    quitTheGame = button.Button(buttonColorQiut,SCREEN_WIDTH/6.5,SCREEN_HIGHT/1.4,gameButtonWidth,gameButtonHeight,textSizeButton,'Quit')
 
     screen.fill((153,0,17))
     # Sumo rama welcome
@@ -73,8 +74,8 @@ while run:
                 run = False
 
             
-    screen.blit(sumoImg, (SCREEN_WIDTH/4.8, 20))
-    screen.blit(sumoImg, (SCREEN_WIDTH/1.35, 20))
+    screen.blit(sumoImg, (w/10, 20))
+    screen.blit(sumoImg, (w/1.24, 20))
 
     pygame.display.update()
     clock.tick(60)  # Limit to 60 FPS
