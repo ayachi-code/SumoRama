@@ -51,15 +51,17 @@ class VersusMenu:
             pos = pygame.mouse.get_pos()
             if singleMode.isOver(pos):
                 self.buttonColorVersus = (183,179,183) 
-            elif morePlayerMode.isOver(pos):
-                self.buttonColor8 = (183,179,183)
-            elif quitTheGame.isOver(pos):
-                self.buttonColorQuit = (183,179,183)
-            else:
-                self.buttonColorVersus = (226,221,220)
                 self.buttonColor8 = (226,221,220)
                 self.buttonColorQuit = (226,221,220)
-
+            elif morePlayerMode.isOver(pos):
+                self.buttonColor8 = (183,179,183)
+                self.buttonColorVersus = (226,221,220)
+                self.buttonColorQuit = (226,221,220)
+            elif quitTheGame.isOver(pos):
+                self.buttonColorQuit = (183,179,183)
+                self.buttonColorVersus = (226,221,220)
+                self.buttonColor8 = (226,221,220)
+       
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.gameStateRun = False

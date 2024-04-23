@@ -18,9 +18,7 @@ class JoinMenu:
         self.clock = pygame.time.Clock()
 
         self.screen = screen
-        # pygame.display.set_caption('1v1 menu')
-        
-        self.buttonColor8 = (226,221,220) 
+                
         self.buttonColorVersus = (226,221,220) 
         self.buttonColorQuit = (226,221,220) 
 
@@ -68,13 +66,11 @@ class JoinMenu:
             pos = pygame.mouse.get_pos()
             if Join.isOver(pos):
                 self.buttonColorVersus = (183,179,183) 
+                self.buttonColorQuit = (226,221,220)
             elif quitTheGame.isOver(pos):
                 self.buttonColorQuit = (183,179,183)
-            else:
                 self.buttonColorVersus = (226,221,220)
-                self.buttonColor8 = (226,221,220)
-                self.buttonColorQuit = (226,221,220)
-
+  
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.gameStateRun = False
