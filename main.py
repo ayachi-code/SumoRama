@@ -59,7 +59,6 @@ while run:
         buttonColor8 = (226,221,220)
         buttonColorQiut = (226,221,220)
 
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
