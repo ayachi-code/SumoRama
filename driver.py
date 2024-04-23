@@ -5,7 +5,7 @@ import versusMenu
 import joinMenu
 
 SCREEN_WIDTH = 1300
-SCREEN_HIGHT = 800
+SCREEN_HEIGHT = 800
 
 FPS = 60
 
@@ -15,7 +15,7 @@ class Game:
         pygame.font.init()
 
         self.clock = pygame.time.Clock()
-        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HIGHT))  # Set display resolution
+        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  # Set display resolution
     
         self.gameStateManager = gameState.GameState('start')
         pygame.display.set_caption('Sumo Rama')
