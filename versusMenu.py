@@ -65,6 +65,8 @@ class VersusMenu:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.gameStateRun = False
+                    pygame.quit()
+                    exit(0)
                 if event.type == pygame.MOUSEBUTTONUP:
                     pos = pygame.mouse.get_pos()
                     if singleMode.isOver(pos):
