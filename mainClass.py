@@ -1,5 +1,6 @@
 import pygame
 import button
+import versusMenu
 
 SCREEN_WIDTH = 1300
 SCREEN_HIGHT = 800

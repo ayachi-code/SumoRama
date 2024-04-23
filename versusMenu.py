@@ -1,80 +1,74 @@
 import pygame
 import button
 
-pygame.init()
-
 SCREEN_WIDTH = 1300
 SCREEN_HIGHT = 800
 
-# Set up display
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HIGHT))  # Set display resolution to 1920x1080
-pygame.display.set_caption('1v1 menu')
+FPS = 60
 
+BUTTONWIDTH = 1000
+BUTTONHEIGHT = 150
+BUTTONSIZETEXT = 140
 
-clock = pygame.time.Clock()
-pygame.font.init()
+class VersusMenu:
+    def __init__(self):
+        pygame.init()
+        pygame.font.init()
+        self.clock = pygame.time.Clock()
 
-sumoImg = pygame.image.load("assets/sumoMenu.png").convert_alpha() # Load image transparent
-sumoImg = pygame.transform.scale(sumoImg, (200,200)) # Rescales imaeg
+        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HIGHT))  # Set display resolution
+        pygame.display.set_caption('1v1 menu')
+        
+        self.buttonColor8 = (226,221,220) 
+        self.buttonColorVersus = (226,221,220) 
+        self.buttonColorQuit = (226,221,220) 
 
-run = True
-gameScreen = pygame.font.SysFont('Comic Sans MS', 150)
+        self.gameStateRun = True
 
-# Press  (164,146,163). Hover (218,211,218).
+        self.gameScreen = pygame.font.SysFont('Comic Sans MS', 150)
 
-buttonColor8 = (226,221,220) 
-buttonColorVersus = (226,221,220) 
-buttonColorQiut = (226,221,220) 
+    
+    def run(self):
+        while self.gameStateRun:
+            w,h = pygame.display.get_surface().get_size()
+            morePlayerMode = button.Button(self.buttonColor8,SCREEN_WIDTH/7.5,SCREEN_HIGHT/3.5,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Host')
+            singleMode = button.Button(self.buttonColorVersus,SCREEN_WIDTH/7.5,SCREEN_HIGHT/2,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Join')
+            quitTheGame = button.Button(self.buttonColorQuit,SCREEN_WIDTH/7.5,SCREEN_HIGHT/1.4,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Back')
 
-gameButtonWidth = 1000
-gameButtonHeight = 150
+            self.screen.fill((153,0,17))
+            # Sumo rama welcome
+            gameScreen_surface = self.gameScreen.render('Sumo Rama 1v1', True, (255, 255, 255))
+            gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH/1.9, 140))
+            self.screen.blit(gameScreen_surface, gameScreen_rect)
 
-textSizeButton = 140
+            singleMode.draw(self.screen, (0,0,0))
+            morePlayerMode.draw(self.screen, (0,0,0))
+            quitTheGame.draw(self.screen, (0,0,0))
 
-while run:
-    w,h = pygame.display.get_surface().get_size()
-    morePlayerMode = button.Button(buttonColor8,SCREEN_WIDTH/7.5,SCREEN_HIGHT/3.5,gameButtonWidth,gameButtonHeight,textSizeButton,'Host')
-    singleMode = button.Button(buttonColorVersus,SCREEN_WIDTH/7.5,SCREEN_HIGHT/2,gameButtonWidth,gameButtonHeight,textSizeButton,'Join')
-    quitTheGame = button.Button(buttonColorQiut,SCREEN_WIDTH/7.5,SCREEN_HIGHT/1.4,gameButtonWidth,gameButtonHeight,textSizeButton,'Back')
-
-    screen.fill((153,0,17))
-    # Sumo rama welcome
-    gameScreen_surface = gameScreen.render('Sumo Rama 1v1', True, (255, 255, 255))
-    gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH/1.9, 140))
-    screen.blit(gameScreen_surface, gameScreen_rect)
-
-    singleMode.draw(screen, (0,0,0))
-    morePlayerMode.draw(screen, (0,0,0))
-    quitTheGame.draw(screen, (0,0,0))
-
-    pos = pygame.mouse.get_pos()
-    if singleMode.isOver(pos):
-        buttonColorVersus = (183,179,183) 
-    elif morePlayerMode.isOver(pos):
-        buttonColor8 = (183,179,183)
-    elif quitTheGame.isOver(pos):
-        buttonColorQiut = (183,179,183)
-    else:
-        buttonColorVersus = (226,221,220)
-        buttonColor8 = (226,221,220)
-        buttonColorQiut = (226,221,220)
-
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-        if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
             if singleMode.isOver(pos):
-                print("Host")
+                self.buttonColorVersus = (183,179,183) 
             elif morePlayerMode.isOver(pos):
-                print("Join")
+                self.buttonColor8 = (183,179,183)
             elif quitTheGame.isOver(pos):
-                print("Player quit the game")
-                run = False
+                self.buttonColorQuit = (183,179,183)
+            else:
+                self.buttonColorVersus = (226,221,220)
+                self.buttonColor8 = (226,221,220)
+                self.buttonColorQuit = (226,221,220)
 
-            
-    pygame.display.update()
-    clock.tick(60)  # Limit to 60 FPS
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.gameStateRun = False
+                if event.type == pygame.MOUSEBUTTONUP:
+                    pos = pygame.mouse.get_pos()
+                    if singleMode.isOver(pos):
+                        print("Host")
+                    elif morePlayerMode.isOver(pos):
+                        print("Join")
+                    elif quitTheGame.isOver(pos):
+                        print("Player quit the game")
+                        self.gameStateRun = False
 
-pygame.quit()
+            pygame.display.update()
+            self.clock.tick(60)  # Limit to 60 FPS
