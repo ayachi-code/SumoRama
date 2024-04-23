@@ -33,9 +33,9 @@ textSizeButton = 140
 
 while run:
     w,h = pygame.display.get_surface().get_size()
-    morePlayerMode = button.Button(buttonColor8,SCREEN_WIDTH/6.5,SCREEN_HIGHT/3.5,gameButtonWidth,gameButtonHeight,textSizeButton,'8 player')
-    singleMode = button.Button(buttonColorVersus,SCREEN_WIDTH/6.5,SCREEN_HIGHT/2,gameButtonWidth,gameButtonHeight,textSizeButton,'1v1')
-    quitTheGame = button.Button(buttonColorQiut,SCREEN_WIDTH/6.5,SCREEN_HIGHT/1.4,gameButtonWidth,gameButtonHeight,textSizeButton,'Quit')
+    morePlayerMode = button.Button(buttonColor8,SCREEN_WIDTH/7.5,SCREEN_HIGHT/3.5,gameButtonWidth,gameButtonHeight,textSizeButton,'8 player')
+    singleMode = button.Button(buttonColorVersus,SCREEN_WIDTH/7.5,SCREEN_HIGHT/2,gameButtonWidth,gameButtonHeight,textSizeButton,'1v1')
+    quitTheGame = button.Button(buttonColorQiut,SCREEN_WIDTH/7.5,SCREEN_HIGHT/1.4,gameButtonWidth,gameButtonHeight,textSizeButton,'Quit')
 
     screen.fill((153,0,17))
     # Sumo rama welcome
@@ -75,7 +75,7 @@ while run:
 
             
     screen.blit(sumoImg, (w/10, 20))
-    screen.blit(sumoImg, (w/1.24, 20))
+    screen.blit(sumoImg, (w/1.3, 20))
 
     pygame.display.update()
     clock.tick(60)  # Limit to 60 FPS

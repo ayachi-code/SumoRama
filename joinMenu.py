@@ -1,5 +1,6 @@
 import pygame
 import button
+import input
 
 pygame.init()
 
@@ -20,6 +21,10 @@ sumoImg = pygame.transform.scale(sumoImg, (200,200)) # Rescales imaeg
 run = True
 gameScreen = pygame.font.SysFont('Comic Sans MS', 150)
 
+portIpFont = pygame.font.SysFont('Comic Sans MS', 75)
+portIpPortFont = pygame.font.SysFont('Comic Sans MS', 75)
+
+
 # Press  (164,146,163). Hover (218,211,218).
 
 buttonColor8 = (226,221,220) 
@@ -31,27 +36,42 @@ gameButtonHeight = 150
 
 textSizeButton = 140
 
+
+ip_input = input.InputBox(SCREEN_WIDTH/7.5,SCREEN_HIGHT/2.335, 700, 32)
+ip_port = input.InputBox(SCREEN_WIDTH/1.45,SCREEN_HIGHT/2.335, 140, 32)
+input_boxes = [ip_input, ip_port]
+
 while run:
+
     w,h = pygame.display.get_surface().get_size()
-    morePlayerMode = button.Button(buttonColor8,SCREEN_WIDTH/7.5,SCREEN_HIGHT/3.5,gameButtonWidth,gameButtonHeight,textSizeButton,'Host')
-    singleMode = button.Button(buttonColorVersus,SCREEN_WIDTH/7.5,SCREEN_HIGHT/2,gameButtonWidth,gameButtonHeight,textSizeButton,'Join')
+    Join = button.Button(buttonColorVersus,SCREEN_WIDTH/7.5,SCREEN_HIGHT/2,gameButtonWidth,gameButtonHeight,textSizeButton,'Join')
     quitTheGame = button.Button(buttonColorQiut,SCREEN_WIDTH/7.5,SCREEN_HIGHT/1.4,gameButtonWidth,gameButtonHeight,textSizeButton,'Back')
 
     screen.fill((153,0,17))
+
+    for box in input_boxes:
+        box.draw(screen)
     # Sumo rama welcome
-    gameScreen_surface = gameScreen.render('Sumo Rama 1v1', True, (255, 255, 255))
+    gameScreen_surface = gameScreen.render('Join game', True, (255, 255, 255))
     gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH/1.9, 140))
     screen.blit(gameScreen_surface, gameScreen_rect)
 
-    singleMode.draw(screen, (0,0,0))
-    morePlayerMode.draw(screen, (0,0,0))
+    gameScreen_surfaceIP = portIpFont.render('IP address', True, (255, 255, 255))
+    gameScreen_rectIP = gameScreen_surfaceIP.get_rect(center=(SCREEN_WIDTH/4, 320))
+    screen.blit(gameScreen_surfaceIP, gameScreen_rectIP)
+
+    gameScreen_surfaceIP_Port = portIpPortFont.render('Port', True, (255, 255, 255))
+    gameScreen_rectIP_Port = gameScreen_surfaceIP_Port.get_rect(center=(SCREEN_WIDTH/1.35, 320))
+    screen.blit(gameScreen_surfaceIP_Port, gameScreen_rectIP_Port)
+
+
+
+    Join.draw(screen, (0,0,0))
     quitTheGame.draw(screen, (0,0,0))
 
     pos = pygame.mouse.get_pos()
-    if singleMode.isOver(pos):
+    if Join.isOver(pos):
         buttonColorVersus = (183,179,183) 
-    elif morePlayerMode.isOver(pos):
-        buttonColor8 = (183,179,183)
     elif quitTheGame.isOver(pos):
         buttonColorQiut = (183,179,183)
     else:
@@ -65,13 +85,13 @@ while run:
             run = False
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
-            if singleMode.isOver(pos):
-                print("Host")
-            elif morePlayerMode.isOver(pos):
-                print("Join")
+            if Join.isOver(pos):
+                print("Joining game")
             elif quitTheGame.isOver(pos):
                 print("Player quit the game")
                 run = False
+        for box in input_boxes:
+            box.handle_event(event)
 
             
     pygame.display.update()
