@@ -1,6 +1,5 @@
 import pygame
 import button
-import versusMenu
 
 SCREEN_WIDTH = 1300
 SCREEN_HIGHT = 800
@@ -11,15 +10,14 @@ BUTTONWIDTH = 1000
 BUTTONHEIGHT = 150
 BUTTONSIZETEXT = 140
 
-
-class Game:
-    def __init__(self):
+class MainMenu:
+    def __init__(self, screen, gameState):
         pygame.init()
         pygame.font.init()
         self.clock = pygame.time.Clock()
 
-        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HIGHT))  # Set display resolution
-        pygame.display.set_caption('Main menu')
+        self.screen = screen  # Set display resolution
+        # pygame.display.set_caption('Main menu')
 
         self.sumoImg = pygame.image.load("assets/sumoMenu.png").convert_alpha() # Load image transparent
         self.sumoImg = pygame.transform.scale(self.sumoImg, (200,200)) # Rescales imaeg
@@ -34,7 +32,12 @@ class Game:
 
         self.gameStateRun = True
 
+        self.gameState = gameState
+
         self.gameScreen = pygame.font.SysFont('Comic Sans MS', 150)
+
+        self.exit = False
+
     def run(self):
         while self.gameStateRun:
             w,h = pygame.display.get_surface().get_size()
@@ -71,13 +74,15 @@ class Game:
                     pos = pygame.mouse.get_pos()
                     if singleMode.isOver(pos):
                         print("Starting 1v1 mode")
+                        self.gameState.setCurrentState('1v1Menu')
+                        self.gameStateRun = False
                     elif morePlayerMode.isOver(pos):
                         print("Starting 8 player mode")
                     elif quitTheGame.isOver(pos):
                         print("Player quit the game")
-                        self.gameStateRun = False
+                        pygame.quit()
+                        exit(0)
 
-                    
             self.screen.blit(self.sumoImg, (w/10, 20))
             self.screen.blit(self.sumoImg, (w/1.3, 20))
 
@@ -85,7 +90,3 @@ class Game:
             self.clock.tick(FPS)  # Limit to 60 FPS
 
 
-if __name__ == "__main__":
-     game = Game()
-     game.run()
-     pygame.quit()

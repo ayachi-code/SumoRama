@@ -11,13 +11,13 @@ BUTTONHEIGHT = 150
 BUTTONSIZETEXT = 140
 
 class VersusMenu:
-    def __init__(self):
+    def __init__(self, screen, gameState):
         pygame.init()
         pygame.font.init()
         self.clock = pygame.time.Clock()
 
-        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HIGHT))  # Set display resolution
-        pygame.display.set_caption('1v1 menu')
+        self.screen = screen
+        # pygame.display.set_caption('1v1 menu')
         
         self.buttonColor8 = (226,221,220) 
         self.buttonColorVersus = (226,221,220) 
@@ -26,6 +26,8 @@ class VersusMenu:
         self.gameStateRun = True
 
         self.gameScreen = pygame.font.SysFont('Comic Sans MS', 150)
+
+        self.gameState = gameState
 
     
     def run(self):
