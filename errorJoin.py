@@ -22,7 +22,7 @@ class ErrorJoin:
 
         self.gameStateRun = True
 
-        self.gameScreen = pygame.font.SysFont('Comic Sans MS', 150)
+        self.gameScreen = pygame.font.SysFont('Comic Sans MS', 100)
 
     def run(self):
         self.gameStateRun = True
@@ -55,6 +55,6 @@ class ErrorJoin:
             pygame.display.update()
             self.clock.tick(FPS)  # Limit to 60 FPS
 
-#if __name__ == "__main__":
- #   test = ErrorJoin()
-  #  test.run()
+if __name__ == "__main__":
+    test = ErrorJoin()
+    test.run()
