@@ -1,6 +1,7 @@
 import pygame
 import button
 import input
+import socket
 
 SCREEN_WIDTH = 1300
 SCREEN_HIGHT = 800
@@ -76,9 +77,13 @@ class JoinMenu:
                     exit(0)
                 if event.type == pygame.MOUSEBUTTONUP:
                     pos = pygame.mouse.get_pos()
-                    if Join.isOver(pos):
+                    if Join.isOver(pos): # Connect to client
                         print("Joining game")
                         print(self.ip_input.getText())
+                        # TODO: Connect to given ip and port,
+                            # If ip and port not exist show pop up with cannot connect to client, with back button to joinMenu
+                            # If ip and port are good, bring client to a lobby screen, where both players are present, lobby has a ready up button. If both clients ready up than the both clients get to see the game scene
+                            # Game scene has logic of shrink.py but 2 players, also lockstepping added.
                     elif back.isOver(pos):
                         print("Player quit the menu")
                         self.gameState.setCurrentState('1v1Menu')
