@@ -78,6 +78,7 @@ class JoinMenu:
                     pos = pygame.mouse.get_pos()
                     if Join.isOver(pos):
                         print("Joining game")
+                        print(self.ip_input.getText())
                     elif back.isOver(pos):
                         print("Player quit the menu")
                         self.gameState.setCurrentState('1v1Menu')

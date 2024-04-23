@@ -8,13 +8,15 @@ FONT = pg.font.Font(None, 32)
 
 
 class InputBox:
-
     def __init__(self, x, y, w, h, text=''):
         self.rect = pg.Rect(x, y, w, h)
         self.color = COLOR_INACTIVE
         self.text = text
         self.txt_surface = FONT.render(text, True, self.color)
         self.active = False
+
+    def getText(self):
+        return self.text
 
     def handle_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN:
@@ -30,7 +32,7 @@ class InputBox:
             if self.active:
                 if event.key == pg.K_RETURN:
                     print(self.text)
-                    self.text = ''
+                    #self.text = ''
                 elif event.key == pg.K_BACKSPACE:
                     self.text = self.text[:-1]
                 else:
