@@ -39,6 +39,7 @@ class MainMenu:
         self.exit = False
 
     def run(self):
+        self.gameStateRun = True
         while self.gameStateRun:
             w,h = pygame.display.get_surface().get_size()
             morePlayerMode = button.Button(self.buttonColor8,SCREEN_WIDTH/7.5,SCREEN_HIGHT/3.5,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'8 player')

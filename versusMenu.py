@@ -31,6 +31,7 @@ class VersusMenu:
 
     
     def run(self):
+        self.gameStateRun = True
         while self.gameStateRun:
             w,h = pygame.display.get_surface().get_size()
             morePlayerMode = button.Button(self.buttonColor8,SCREEN_WIDTH/7.5,SCREEN_HIGHT/3.5,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Host')
@@ -70,6 +71,7 @@ class VersusMenu:
                         print("Join")
                     elif quitTheGame.isOver(pos):
                         print("Player quit the game")
+                        self.gameState.setCurrentState('start')
                         self.gameStateRun = False
 
             pygame.display.update()
