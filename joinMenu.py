@@ -57,11 +57,11 @@ while run:
     screen.blit(gameScreen_surface, gameScreen_rect)
 
     gameScreen_surfaceIP = portIpFont.render('IP address', True, (255, 255, 255))
-    gameScreen_rectIP = gameScreen_surfaceIP.get_rect(center=(SCREEN_WIDTH/4, 320))
+    gameScreen_rectIP = gameScreen_surfaceIP.get_rect(center=(SCREEN_WIDTH/4, 300))
     screen.blit(gameScreen_surfaceIP, gameScreen_rectIP)
 
     gameScreen_surfaceIP_Port = portIpPortFont.render('Port', True, (255, 255, 255))
-    gameScreen_rectIP_Port = gameScreen_surfaceIP_Port.get_rect(center=(SCREEN_WIDTH/1.35, 320))
+    gameScreen_rectIP_Port = gameScreen_surfaceIP_Port.get_rect(center=(SCREEN_WIDTH/1.35, 300))
     screen.blit(gameScreen_surfaceIP_Port, gameScreen_rectIP_Port)
 
 
