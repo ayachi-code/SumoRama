@@ -19,9 +19,9 @@ class VersusMenu:
         self.screen = screen
         # pygame.display.set_caption('1v1 menu')
         
-        self.buttonColor8 = (226,221,220) 
-        self.buttonColorVersus = (226,221,220) 
-        self.buttonColorQuit = (226,221,220) 
+        self.buttonColorHost = (226,221,220) 
+        self.buttonColorJoin = (226,221,220) 
+        self.buttonColorBack = (226,221,220) 
 
         self.gameStateRun = True
 
@@ -34,9 +34,9 @@ class VersusMenu:
         self.gameStateRun = True
         while self.gameStateRun:
             w,h = pygame.display.get_surface().get_size()
-            morePlayerMode = button.Button(self.buttonColor8,SCREEN_WIDTH/7.5,SCREEN_HIGHT/3.5,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Host')
-            singleMode = button.Button(self.buttonColorVersus,SCREEN_WIDTH/7.5,SCREEN_HIGHT/2,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Join')
-            quitTheGame = button.Button(self.buttonColorQuit,SCREEN_WIDTH/7.5,SCREEN_HIGHT/1.4,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Back')
+            host = button.Button(self.buttonColorHost,SCREEN_WIDTH/7.5,SCREEN_HIGHT/3.5,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Host')
+            join = button.Button(self.buttonColorJoin,SCREEN_WIDTH/7.5,SCREEN_HIGHT/2,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Join')
+            back = button.Button(self.buttonColorBack,SCREEN_WIDTH/7.5,SCREEN_HIGHT/1.4,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Back')
 
             self.screen.fill((153,0,17))
             # Sumo rama welcome
@@ -44,23 +44,23 @@ class VersusMenu:
             gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH/1.9, 140))
             self.screen.blit(gameScreen_surface, gameScreen_rect)
 
-            singleMode.draw(self.screen, (0,0,0))
-            morePlayerMode.draw(self.screen, (0,0,0))
-            quitTheGame.draw(self.screen, (0,0,0))
+            host.draw(self.screen, (0,0,0))
+            join.draw(self.screen, (0,0,0))
+            back.draw(self.screen, (0,0,0))
 
             pos = pygame.mouse.get_pos()
-            if singleMode.isOver(pos):
-                self.buttonColorVersus = (183,179,183) 
-                self.buttonColor8 = (226,221,220)
-                self.buttonColorQuit = (226,221,220)
-            elif morePlayerMode.isOver(pos):
-                self.buttonColor8 = (183,179,183)
-                self.buttonColorVersus = (226,221,220)
-                self.buttonColorQuit = (226,221,220)
-            elif quitTheGame.isOver(pos):
-                self.buttonColorQuit = (183,179,183)
-                self.buttonColorVersus = (226,221,220)
-                self.buttonColor8 = (226,221,220)
+            if host.isOver(pos):
+                self.buttonColorHost = (183,179,183) 
+                self.buttonColorJoin = (226,221,220)
+                self.buttonColorBack = (226,221,220)
+            elif join.isOver(pos):
+                self.buttonColorJoin = (183,179,183)
+                self.buttonColorHost = (226,221,220)
+                self.buttonColorBack = (226,221,220)
+            elif back.isOver(pos):
+                self.buttonColorBack = (183,179,183)
+                self.buttonColorHost = (226,221,220)
+                self.buttonColorJoin = (226,221,220)
        
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -69,13 +69,13 @@ class VersusMenu:
                     exit(0)
                 if event.type == pygame.MOUSEBUTTONUP:
                     pos = pygame.mouse.get_pos()
-                    if singleMode.isOver(pos):
+                    if join.isOver(pos):
                         print("Join")
                         self.gameState.setCurrentState('joinMenu')
                         self.gameStateRun = False
-                    elif morePlayerMode.isOver(pos):
+                    elif host.isOver(pos):
                         print("Host")
-                    elif quitTheGame.isOver(pos):
+                    elif back.isOver(pos):
                         print("Player quit the game")
                         self.gameState.setCurrentState('start')
                         self.gameStateRun = False
