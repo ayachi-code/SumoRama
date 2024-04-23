@@ -66,9 +66,11 @@ class VersusMenu:
                 if event.type == pygame.MOUSEBUTTONUP:
                     pos = pygame.mouse.get_pos()
                     if singleMode.isOver(pos):
-                        print("Host")
-                    elif morePlayerMode.isOver(pos):
                         print("Join")
+                        self.gameState.setCurrentState('joinMenu')
+                        self.gameStateRun = False
+                    elif morePlayerMode.isOver(pos):
+                        print("Host")
                     elif quitTheGame.isOver(pos):
                         print("Player quit the game")
                         self.gameState.setCurrentState('start')

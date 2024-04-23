@@ -2,6 +2,7 @@ import pygame
 import gameState
 import mainMenu
 import versusMenu
+import joinMenu
 
 SCREEN_WIDTH = 1300
 SCREEN_HIGHT = 800
@@ -21,10 +22,10 @@ class Game:
 
 
         self.start = mainMenu.MainMenu(self.screen, self.gameStateManager)
-
         self.versusMenu = versusMenu.VersusMenu(self.screen, self.gameStateManager)
+        self.joinMenu = joinMenu.JoinMenu(self.screen, self.gameStateManager)
 
-        self.states = {'start': self.start, '1v1Menu': self.versusMenu}
+        self.states = {'start': self.start, '1v1Menu': self.versusMenu, 'joinMenu': self.joinMenu}
 
         self.gameStateRun = True
     def run(self):

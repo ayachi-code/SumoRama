@@ -2,99 +2,93 @@ import pygame
 import button
 import input
 
-pygame.init()
-
 SCREEN_WIDTH = 1300
 SCREEN_HIGHT = 800
 
-# Set up display
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HIGHT))  # Set display resolution to 1920x1080
-pygame.display.set_caption('1v1 menu')
+FPS = 60
 
+BUTTONWIDTH = 1000
+BUTTONHEIGHT = 150
+BUTTONSIZETEXT = 140
 
-clock = pygame.time.Clock()
-pygame.font.init()
+class JoinMenu:
+    def __init__(self, screen, gameState):
+        pygame.init()
+        pygame.font.init()
+        self.clock = pygame.time.Clock()
 
-sumoImg = pygame.image.load("assets/sumoMenu.png").convert_alpha() # Load image transparent
-sumoImg = pygame.transform.scale(sumoImg, (200,200)) # Rescales imaeg
+        self.screen = screen
+        # pygame.display.set_caption('1v1 menu')
+        
+        self.buttonColor8 = (226,221,220) 
+        self.buttonColorVersus = (226,221,220) 
+        self.buttonColorQuit = (226,221,220) 
 
-run = True
-gameScreen = pygame.font.SysFont('Comic Sans MS', 150)
+        self.gameStateRun = True
 
-portIpFont = pygame.font.SysFont('Comic Sans MS', 75)
-portIpPortFont = pygame.font.SysFont('Comic Sans MS', 75)
+        self.gameScreen = pygame.font.SysFont('Comic Sans MS', 150)
+        self.portIpFont = pygame.font.SysFont('Comic Sans MS', 75)
+        self.portIpPortFont = pygame.font.SysFont('Comic Sans MS', 75)
 
+        self.gameState = gameState
 
-# Press  (164,146,163). Hover (218,211,218).
+        self.ip_input = input.InputBox(SCREEN_WIDTH/7.5,SCREEN_HIGHT/2.335, 700, 32)
+        self.ip_port = input.InputBox(SCREEN_WIDTH/1.45,SCREEN_HIGHT/2.335, 140, 32)
+        self.input_boxes = [self.ip_input, self.ip_port]
+    
+    def run(self):
+        self.gameStateRun = True
+        while self.gameStateRun:
+            w,h = pygame.display.get_surface().get_size()
+            Join = button.Button(self.buttonColorVersus,SCREEN_WIDTH/7.5,SCREEN_HIGHT/2,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Join')
+            quitTheGame = button.Button(self.buttonColorQuit,SCREEN_WIDTH/7.5,SCREEN_HIGHT/1.4,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Back')
 
-buttonColor8 = (226,221,220) 
-buttonColorVersus = (226,221,220) 
-buttonColorQiut = (226,221,220) 
+            self.screen.fill((153,0,17))
 
-gameButtonWidth = 1000
-gameButtonHeight = 150
+            for box in self.input_boxes:
+                box.draw(self.screen)
+            # Sumo rama welcome
+            gameScreen_surface = self.gameScreen.render('Join game', True, (255, 255, 255))
+            gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH/1.9, 140))
+            self.screen.blit(gameScreen_surface, gameScreen_rect)
 
-textSizeButton = 140
+            gameScreen_surfaceIP = self.portIpFont.render('IP address', True, (255, 255, 255))
+            gameScreen_rectIP = gameScreen_surfaceIP.get_rect(center=(SCREEN_WIDTH/4, 300))
+            self.screen.blit(gameScreen_surfaceIP, gameScreen_rectIP)
 
-
-ip_input = input.InputBox(SCREEN_WIDTH/7.5,SCREEN_HIGHT/2.335, 700, 32)
-ip_port = input.InputBox(SCREEN_WIDTH/1.45,SCREEN_HIGHT/2.335, 140, 32)
-input_boxes = [ip_input, ip_port]
-
-while run:
-
-    w,h = pygame.display.get_surface().get_size()
-    Join = button.Button(buttonColorVersus,SCREEN_WIDTH/7.5,SCREEN_HIGHT/2,gameButtonWidth,gameButtonHeight,textSizeButton,'Join')
-    quitTheGame = button.Button(buttonColorQiut,SCREEN_WIDTH/7.5,SCREEN_HIGHT/1.4,gameButtonWidth,gameButtonHeight,textSizeButton,'Back')
-
-    screen.fill((153,0,17))
-
-    for box in input_boxes:
-        box.draw(screen)
-    # Sumo rama welcome
-    gameScreen_surface = gameScreen.render('Join game', True, (255, 255, 255))
-    gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH/1.9, 140))
-    screen.blit(gameScreen_surface, gameScreen_rect)
-
-    gameScreen_surfaceIP = portIpFont.render('IP address', True, (255, 255, 255))
-    gameScreen_rectIP = gameScreen_surfaceIP.get_rect(center=(SCREEN_WIDTH/4, 300))
-    screen.blit(gameScreen_surfaceIP, gameScreen_rectIP)
-
-    gameScreen_surfaceIP_Port = portIpPortFont.render('Port', True, (255, 255, 255))
-    gameScreen_rectIP_Port = gameScreen_surfaceIP_Port.get_rect(center=(SCREEN_WIDTH/1.35, 300))
-    screen.blit(gameScreen_surfaceIP_Port, gameScreen_rectIP_Port)
+            gameScreen_surfaceIP_Port = self.portIpPortFont.render('Port', True, (255, 255, 255))
+            gameScreen_rectIP_Port = gameScreen_surfaceIP_Port.get_rect(center=(SCREEN_WIDTH/1.35, 300))
+            self.screen.blit(gameScreen_surfaceIP_Port, gameScreen_rectIP_Port)
 
 
 
-    Join.draw(screen, (0,0,0))
-    quitTheGame.draw(screen, (0,0,0))
+            Join.draw(self.screen, (0,0,0))
+            quitTheGame.draw(self.screen, (0,0,0))
 
-    pos = pygame.mouse.get_pos()
-    if Join.isOver(pos):
-        buttonColorVersus = (183,179,183) 
-    elif quitTheGame.isOver(pos):
-        buttonColorQiut = (183,179,183)
-    else:
-        buttonColorVersus = (226,221,220)
-        buttonColor8 = (226,221,220)
-        buttonColorQiut = (226,221,220)
-
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-        if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
             if Join.isOver(pos):
-                print("Joining game")
+                self.buttonColorVersus = (183,179,183) 
             elif quitTheGame.isOver(pos):
-                print("Player quit the game")
-                run = False
-        for box in input_boxes:
-            box.handle_event(event)
+                self.buttonColorQuit = (183,179,183)
+            else:
+                self.buttonColorVersus = (226,221,220)
+                self.buttonColor8 = (226,221,220)
+                self.buttonColorQuit = (226,221,220)
 
-            
-    pygame.display.update()
-    clock.tick(60)  # Limit to 60 FPS
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.gameStateRun = False
+                if event.type == pygame.MOUSEBUTTONUP:
+                    pos = pygame.mouse.get_pos()
+                    if Join.isOver(pos):
+                        print("Joining game")
+                    elif quitTheGame.isOver(pos):
+                        print("Player quit the menu")
+                        self.gameState.setCurrentState('1v1Menu')
+                        self.gameStateRun = False
+                for box in self.input_boxes:
+                    box.handle_event(event)
 
-pygame.quit()
+                    
+            pygame.display.update()
+            self.clock.tick(FPS)  # Limit to 60 FPS
