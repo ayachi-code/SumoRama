@@ -19,8 +19,8 @@ class JoinMenu:
 
         self.screen = screen
                 
-        self.buttonColorVersus = (226,221,220) 
-        self.buttonColorQuit = (226,221,220) 
+        self.buttonColorJoin = (226,221,220) 
+        self.buttonColorBack = (226,221,220) 
 
         self.gameStateRun = True
 
@@ -38,8 +38,8 @@ class JoinMenu:
         self.gameStateRun = True
         while self.gameStateRun:
             w,h = pygame.display.get_surface().get_size()
-            Join = button.Button(self.buttonColorVersus,SCREEN_WIDTH/7.5,SCREEN_HIGHT/2,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Join')
-            quitTheGame = button.Button(self.buttonColorQuit,SCREEN_WIDTH/7.5,SCREEN_HIGHT/1.4,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Back')
+            Join = button.Button(self.buttonColorJoin,SCREEN_WIDTH/7.5,SCREEN_HIGHT/2,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Join')
+            back = button.Button(self.buttonColorBack,SCREEN_WIDTH/7.5,SCREEN_HIGHT/1.4,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Back')
 
             self.screen.fill((153,0,17))
 
@@ -58,18 +58,16 @@ class JoinMenu:
             gameScreen_rectIP_Port = gameScreen_surfaceIP_Port.get_rect(center=(SCREEN_WIDTH/1.35, 300))
             self.screen.blit(gameScreen_surfaceIP_Port, gameScreen_rectIP_Port)
 
-
-
             Join.draw(self.screen, (0,0,0))
-            quitTheGame.draw(self.screen, (0,0,0))
+            back.draw(self.screen, (0,0,0))
 
             pos = pygame.mouse.get_pos()
             if Join.isOver(pos):
-                self.buttonColorVersus = (183,179,183) 
-                self.buttonColorQuit = (226,221,220)
-            elif quitTheGame.isOver(pos):
-                self.buttonColorQuit = (183,179,183)
-                self.buttonColorVersus = (226,221,220)
+                self.buttonColorJoin = (183,179,183) 
+                self.buttonColorBack = (226,221,220)
+            elif back.isOver(pos):
+                self.buttonColorBack = (183,179,183)
+                self.buttonColorJoin = (226,221,220)
   
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -80,7 +78,7 @@ class JoinMenu:
                     pos = pygame.mouse.get_pos()
                     if Join.isOver(pos):
                         print("Joining game")
-                    elif quitTheGame.isOver(pos):
+                    elif back.isOver(pos):
                         print("Player quit the menu")
                         self.gameState.setCurrentState('1v1Menu')
                         self.gameStateRun = False

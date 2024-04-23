@@ -21,10 +21,6 @@ class MainMenu:
 
         self.sumoImg = pygame.image.load("assets/sumoMenu.png").convert_alpha() # Load image transparent
         self.sumoImg = pygame.transform.scale(self.sumoImg, (200,200)) # Rescales imaeg
-
-        self.sumoImg = pygame.image.load("assets/sumoMenu.png").convert_alpha() # Load image transparent
-        self.sumoImg = pygame.transform.scale(self.sumoImg, (200,200)) # Rescales imaeg
-
         
         self.buttonColor8 = (226,221,220) 
         self.buttonColorVersus = (226,221,220) 
