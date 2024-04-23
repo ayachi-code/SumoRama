@@ -6,10 +6,9 @@ SCREEN_HIGHT = 800
 
 FPS = 60
 
-gameButtonWidth = 1000
-gameButtonHeight = 150
-
-textSizeButton = 140
+BUTTONWIDTH = 1000
+BUTTONHEIGHT = 150
+BUTTONSIZETEXT = 140
 
 
 class Game:
@@ -38,9 +37,9 @@ class Game:
     def run(self):
         while self.gameStateRun:
             w,h = pygame.display.get_surface().get_size()
-            morePlayerMode = button.Button(self.buttonColor8,SCREEN_WIDTH/7.5,SCREEN_HIGHT/3.5,gameButtonWidth,gameButtonHeight,textSizeButton,'8 player')
-            singleMode = button.Button(self.buttonColorVersus,SCREEN_WIDTH/7.5,SCREEN_HIGHT/2,gameButtonWidth,gameButtonHeight,textSizeButton,'1v1')
-            quitTheGame = button.Button(self.buttonColorQuit,SCREEN_WIDTH/7.5,SCREEN_HIGHT/1.4,gameButtonWidth,gameButtonHeight,textSizeButton,'Quit')
+            morePlayerMode = button.Button(self.buttonColor8,SCREEN_WIDTH/7.5,SCREEN_HIGHT/3.5,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'8 player')
+            singleMode = button.Button(self.buttonColorVersus,SCREEN_WIDTH/7.5,SCREEN_HIGHT/2,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'1v1')
+            quitTheGame = button.Button(self.buttonColorQuit,SCREEN_WIDTH/7.5,SCREEN_HIGHT/1.4,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Quit')
 
             self.screen.fill((153,0,17))
             # Sumo rama welcome
