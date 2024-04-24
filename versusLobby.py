@@ -13,14 +13,20 @@ class VersusLobby:
         pygame.font.init()
         self.clock = pygame.time.Clock()
         self.screen = screen
-        # pygame.display.set_caption('1v1 menu')
-        
+
         self.gameStateRun = True
 
         self.gameState = gameState
+
+        self.fontOfTitle = pygame.font.SysFont('Comic Sans MS', 75)
     def run(self):
         while self.gameStateRun:
             self.screen.fill((153,0,17))
+            pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT/10),  2)
+
+            gameScreen_surfaceLobbyTitle = self.fontOfTitle.render('Lobby', True, (255, 255, 255))
+            gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/17))
+            self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
