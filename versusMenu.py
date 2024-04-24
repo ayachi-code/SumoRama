@@ -78,11 +78,12 @@ class VersusMenu:
                         self.gameStateRun = False
                     elif host.isOver(pos):
                         print("Host")
-                        host = '127.0.0.1'
-                        port = 8000
-                        peer1 = peer.Peer(host, port)
-                        peer1.start()
-                        
+                        hostAddress = '127.0.0.1' # localy :)
+                        port = 8000 # Temp port for debugging :)
+                        peerHost = peer.Peer(hostAddress, port)
+                        peerHost.start() # Starts thread client server
+                        self.gameState.setCurrentState('lobby1v1')
+                        self.gameStateRun = False
                     elif back.isOver(pos):
                         print("Player quit the game")
                         self.gameState.setCurrentState('start')
