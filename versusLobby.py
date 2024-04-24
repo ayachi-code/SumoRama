@@ -1,9 +1,12 @@
 import pygame
+import button
 
 FPS = 60
 
 SCREEN_WIDTH = 1300
 SCREEN_HEIGHT = 800
+
+BUTTONSIZETEXT = 100
 
 #TODO make lobby
 
@@ -36,6 +39,13 @@ class VersusLobby:
 
             pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(0, SCREEN_HEIGHT - (SCREEN_HEIGHT*0.2), SCREEN_WIDTH/2, SCREEN_HEIGHT/5),  2) #  box for Ready up Host
             pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(SCREEN_WIDTH/2, SCREEN_HEIGHT - (SCREEN_HEIGHT*0.2), SCREEN_WIDTH/2, SCREEN_HEIGHT/5),  2) #  box for Ready up Host
+
+            readyUpHost = button.Button((255,255,255),0, SCREEN_HEIGHT - (SCREEN_HEIGHT*0.2),SCREEN_WIDTH/2,SCREEN_HEIGHT/5,BUTTONSIZETEXT,'Ready')
+            
+            readyUpPlayer = button.Button((255,255,255),SCREEN_WIDTH/2, SCREEN_HEIGHT - (SCREEN_HEIGHT*0.2),SCREEN_WIDTH/2,SCREEN_HEIGHT/5,BUTTONSIZETEXT,'Ready')
+
+            readyUpHost.draw(self.screen, (0,0,0))
+            readyUpPlayer.draw(self.screen, (0,0,0))
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
