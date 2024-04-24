@@ -1,7 +1,7 @@
 import pygame
 import button
 import input
-import socket
+import peer
 
 SCREEN_WIDTH = 1300
 SCREEN_HIGHT = 800
@@ -84,6 +84,13 @@ class JoinMenu:
                             # If ip and port not exist show pop up with cannot connect to client, with back button to joinMenu
                             # If ip and port are good, bring client to a lobby screen, where both players are present, lobby has a ready up button. If both clients ready up than the both clients get to see the game scene
                             # Game scene has logic of shrink.py but 2 players, also lockstepping added.
+                        joiner = peer.Peer(None, None) # Dont want to host only connect to peer
+                        try:
+                            joiner.connect_to_peer(self.ip_input.getText(), self.ip_port.getText()) # Establish a connection
+                        except: # Show error screen                    
+                            print("Error cannot connect")
+                            self.gameStateRun = False
+                            self.gameState.setCurrentState('errorJoin')
                     elif back.isOver(pos):
                         print("Player quit the menu")
                         self.gameState.setCurrentState('1v1Menu')

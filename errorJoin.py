@@ -11,18 +11,20 @@ BUTTONHEIGHT = 150
 BUTTONSIZETEXT = 140
 
 class ErrorJoin:
-    def __init__(self):
+    def __init__(self, screen, gameState):
         pygame.init()
         pygame.font.init()
         self.clock = pygame.time.Clock()
 
-        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  # Set display resolution
+        self.screen = screen # Set display resolution
                 
         self.buttonColorBack = (226,221,220) 
 
         self.gameStateRun = True
 
         self.gameScreen = pygame.font.SysFont('Comic Sans MS', 100)
+
+        self.gameState = gameState
 
     def run(self):
         self.gameStateRun = True
@@ -51,6 +53,11 @@ class ErrorJoin:
                     self.gameStateRun = False
                     pygame.quit()
                     exit(0)
+                if event.type == pygame.MOUSEBUTTONUP:
+                    pos = pygame.mouse.get_pos()
+                    if back.isOver(pos): # Backout to join/host menu
+                        self.gameState.setCurrentState('joinMenu')
+                        self.gameStateRun = False
              
             pygame.display.update()
             self.clock.tick(FPS)  # Limit to 60 FPS

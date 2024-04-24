@@ -4,6 +4,7 @@ import mainMenu
 import versusMenu
 import joinMenu
 import versusLobby
+import errorJoin
 
 SCREEN_WIDTH = 1300
 SCREEN_HEIGHT = 800
@@ -26,8 +27,9 @@ class Game:
         self.versusMenu = versusMenu.VersusMenu(self.screen, self.gameStateManager)
         self.joinMenu = joinMenu.JoinMenu(self.screen, self.gameStateManager)
         self.lobbyVersus = versusLobby.VersusLobby(self.screen, self.gameStateManager)
+        self.errorJoin = errorJoin.ErrorJoin(self.screen, self.gameStateManager)
 
-        self.states = {'start': self.start, '1v1Menu': self.versusMenu, 'joinMenu': self.joinMenu, 'lobby1v1': self.lobbyVersus}
+        self.states = {'start': self.start, '1v1Menu': self.versusMenu, 'joinMenu': self.joinMenu, 'lobby1v1': self.lobbyVersus, 'errorJoin': self.errorJoin}
 
         self.gameStateRun = True
     def run(self):
