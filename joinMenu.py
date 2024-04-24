@@ -2,6 +2,7 @@ import pygame
 import button
 import input
 import peer
+import versusLobby
 
 SCREEN_WIDTH = 1300
 SCREEN_HIGHT = 800
@@ -86,7 +87,11 @@ class JoinMenu:
                             # Game scene has logic of shrink.py but 2 players, also lockstepping added.
                         joiner = peer.Peer(None, None) # Dont want to host only connect to peer
                         try:
-                            joiner.connect_to_peer(self.ip_input.getText(), self.ip_port.getText()) # Establish a connection
+                            # print(self.ip_input.getText() + self.ip_port.getText())
+                            joiner.connect_to_peer(self.ip_input.getText(), int(self.ip_port.getText())) # Establish a connection to host
+                            self.gameState.setCurrentState('lobby1v1')
+                            self.gameState.setPlayerType('client')
+                            self.gameStateRun = False
                         except: # Show error screen                    
                             print("Error cannot connect")
                             self.gameStateRun = False

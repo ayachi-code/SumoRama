@@ -3,6 +3,7 @@ import button
 import socket
 import threading
 import peer
+import random
 
 SCREEN_WIDTH = 1300
 SCREEN_HIGHT = 800
@@ -79,10 +80,13 @@ class VersusMenu:
                     elif host.isOver(pos):
                         print("Host")
                         hostAddress = '127.0.0.1' # localy :)
-                        port = 8000 # Temp port for debugging :)
+                        port = random.randint(3000, 8000)
                         peerHost = peer.Peer(hostAddress, port)
                         peerHost.start() # Starts thread client server
+                        
+                        self.gameState.setPlayerType('server')
                         self.gameState.setCurrentState('lobby1v1')
+
                         self.gameStateRun = False
                     elif back.isOver(pos):
                         print("Player quit the game")

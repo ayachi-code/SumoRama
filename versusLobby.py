@@ -24,6 +24,7 @@ class VersusLobby:
         self.fontOfTitle = pygame.font.SysFont('Comic Sans MS', 75)
     def run(self):
         while self.gameStateRun:
+            print(self.gameState.getPlayerType())
             self.screen.fill((153,0,17))
             pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT/10),  2)
 
@@ -55,11 +56,3 @@ class VersusLobby:
 
             pygame.display.update()
             self.clock.tick(FPS)  # Limits FPS
-
-
-if __name__ == "__main__":
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  # Set display resolution
-
-    test = VersusLobby(screen, 1)
-    test.run()
-

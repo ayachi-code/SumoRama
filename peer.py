@@ -60,3 +60,9 @@ class Peer:
                 connection.send(message.encode('utf-8'))
             except ConnectionResetError:
                 print(f"Connection to {connection.getpeername()} reset unexpectedly")
+
+    def getHost(self):
+        return self.host
+    
+    def getPort(self):
+        return self.port
