@@ -1,5 +1,8 @@
 import pygame
 import button
+import socket
+import threading
+import peer
 
 SCREEN_WIDTH = 1300
 SCREEN_HIGHT = 800
@@ -75,6 +78,11 @@ class VersusMenu:
                         self.gameStateRun = False
                     elif host.isOver(pos):
                         print("Host")
+                        host = '127.0.0.1'
+                        port = 8000
+                        peer1 = peer.Peer(host, port)
+                        peer1.start()
+                        
                     elif back.isOver(pos):
                         print("Player quit the game")
                         self.gameState.setCurrentState('start')
