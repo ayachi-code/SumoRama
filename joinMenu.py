@@ -3,6 +3,8 @@ import button
 import input
 import peer
 import versusLobby
+import socket
+import random
 
 SCREEN_WIDTH = 1300
 SCREEN_HIGHT = 800
@@ -85,13 +87,19 @@ class JoinMenu:
                             # If ip and port not exist show pop up with cannot connect to client, with back button to joinMenu
                             # If ip and port are good, bring client to a lobby screen, where both players are present, lobby has a ready up button. If both clients ready up than the both clients get to see the game scene
                             # Game scene has logic of shrink.py but 2 players, also lockstepping added.
-                        joiner = peer.Peer(None, None) # Dont want to host only connect to peer
                         try:
                             # print(self.ip_input.getText() + self.ip_port.getText())
-                            joiner.connect_to_peer(self.ip_input.getText(), int(self.ip_port.getText())) # Establish a connection to host
+                            #joiner = peer.Peer(self.ip_input.getText(), int(self.ip_port.getText())) # Dont want to host only connect to peer
+                            #joiner.connect_to_peer(self.ip_input.getText(), int(self.ip_port.getText())) # Establish a connection to host
+                            Joiner = peer.Peer('127.0.0.1',random.randint(3000, 8000)) # peer node
+                            Joiner.start()
+                            handshakeMessage = "HELLO-FROM Bob"
+                            Joiner.getSocket().sendto(handshakeMessage.encode("utf-8"), (self.ip_input.getText(), int(self.ip_port.getText())))
+                            #socketCon = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                            #socketCon.sendto(handshakeMessage.encode("utf-8"), (self.ip_input.getText(), int(self.ip_port.getText())))
+                        
                             self.gameState.setCurrentState('lobby1v1')
                             self.gameState.setPlayerType('client')
-                            self.gameState.setSocket(joiner)
                             self.gameStateRun = False
                         except: # Show error screen                    
                             print("Error cannot connect")
@@ -104,6 +112,6 @@ class JoinMenu:
                 for box in self.input_boxes:
                     box.handle_event(event)
 
-                    
+                
             pygame.display.update()
-            self.clock.tick(FPS)  # Limit to 60 FPS
+            self.clock.tick(FPS)  # Limit to 60 FPSFR
