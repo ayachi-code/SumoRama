@@ -91,6 +91,7 @@ class JoinMenu:
                             joiner.connect_to_peer(self.ip_input.getText(), int(self.ip_port.getText())) # Establish a connection to host
                             self.gameState.setCurrentState('lobby1v1')
                             self.gameState.setPlayerType('client')
+                            self.gameState.setSocket(joiner)
                             self.gameStateRun = False
                         except: # Show error screen                    
                             print("Error cannot connect")

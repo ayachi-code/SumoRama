@@ -83,7 +83,8 @@ class VersusMenu:
                         port = random.randint(3000, 8000)
                         peerHost = peer.Peer(hostAddress, port)
                         peerHost.start() # Starts thread client server
-                        
+
+                        self.gameState.setSocket(peerHost)
                         self.gameState.setPlayerType('server')
                         self.gameState.setCurrentState('lobby1v1')
 

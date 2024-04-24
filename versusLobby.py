@@ -24,7 +24,6 @@ class VersusLobby:
         self.fontOfTitle = pygame.font.SysFont('Comic Sans MS', 75)
     def run(self):
         while self.gameStateRun:
-            print(self.gameState.getPlayerType())
             self.screen.fill((153,0,17))
             pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT/10),  2)
 
@@ -53,6 +52,11 @@ class VersusLobby:
                     self.gameStateRun = False
                     pygame.quit()
                     exit(0)
+
+            if self.gameState.getPlayerType() == 'server': # If player is host, show his ip
+                gameScreen_surfaceLobbyTitle = self.fontOfTitle.render(self.gameState.getSocket().getHost() + ":" + str(self.gameState.getSocket().getPort()), True, (255, 255, 255))
+                gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_WIDTH/4, SCREEN_HEIGHT/17))
+                self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
 
             pygame.display.update()
             self.clock.tick(FPS)  # Limits FPS
