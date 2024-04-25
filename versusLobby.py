@@ -66,6 +66,9 @@ class VersusLobby:
             self.peer.getSocket().sendto("Connect".encode(), (self.peerIP, self.port)) # Joiner wants to introduce them self to host
    
         while self.gameStateRun:
+            if self.readyUp == 2:
+                print("Starting game")
+            
             self.screen.fill((153,0,17))
             pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT/10),  2)
 
@@ -83,18 +86,27 @@ class VersusLobby:
             pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(SCREEN_WIDTH/2, SCREEN_HEIGHT - (SCREEN_HEIGHT*0.2), SCREEN_WIDTH/2, SCREEN_HEIGHT/5),  2) #  box for Ready up Host
 
             readyUpHost = button.Button((255,255,255),0, SCREEN_HEIGHT - (SCREEN_HEIGHT*0.2),SCREEN_WIDTH/2,SCREEN_HEIGHT/5,BUTTONSIZETEXT,'Ready')
+
+            gameScreen_surfaceLobbyTitle = self.fontOfTitle.render('Not ready', True, (255, 255, 255))
+            gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_HEIGHT,SCREEN_WIDTH/1.8))
+            self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
             
-            readyUpPlayer = button.Button((255,255,255),SCREEN_WIDTH/2, SCREEN_HEIGHT - (SCREEN_HEIGHT*0.2),SCREEN_WIDTH/2,SCREEN_HEIGHT/5,BUTTONSIZETEXT,'Ready')
+           # readyUpPlayer = button.Button((255,255,255),SCREEN_WIDTH/2, SCREEN_HEIGHT - (SCREEN_HEIGHT*0.2),SCREEN_WIDTH/2,SCREEN_HEIGHT/5,BUTTONSIZETEXT,'Ready')
 
             readyUpHost.draw(self.screen, (0,0,0))
-            readyUpPlayer.draw(self.screen, (0,0,0))
+            #readyUpPlayer.draw(self.screen, (0,0,0))
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.gameStateRun = False
                     pygame.quit()
                     exit(0)
-        
+                if event.type == pygame.MOUSEBUTTONUP:
+                    pos = pygame.mouse.get_pos()
+                    if readyUpHost.isOver(pos): 
+                        print("Ready up")
+                        pass
+                        # Connect to client
            # if self.gameState.getPlayerType() == 'server': # If player is host, show his ip
             #    gameScreen_surfaceLobbyTitle = self.fontOfTitle.render(self.gameState.getSocket().getHost() + ":" + str(self.gameState.getSocket().getPort()), True, (255, 255, 255))
              #   gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_WIDTH/4, SCREEN_HEIGHT/17))
