@@ -1,1 +1,1 @@
-# Add class for player, e.g name, color
+# Add class for player, e.g name, color, host/joiner, mode; use pickle to send object over socket
