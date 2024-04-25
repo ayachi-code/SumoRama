@@ -59,8 +59,9 @@ class JoinMenu:
 
     def listenToHost(self):
         while True:
-            addr, data = self.socketCon.recvfrom(1024)
-            if "Hi" in data:
+            data, addr = self.socketCon.recvfrom(1024)
+            if "Hi" in data.decode():
+                print("Host does excist")
                 self.hostAck = True
                 break
     
@@ -126,6 +127,8 @@ class JoinMenu:
                             # Check does Host exist ??????
                             send_thread = threading.Thread(target=self.sendHostRequest)
                             send_thread.start()
+                            recv_thread = threading.Thread(target=self.listenToHost)
+                            recv_thread.start()
                             while True:
                                 if self.hostAck:
                                     break

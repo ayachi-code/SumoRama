@@ -1,5 +1,9 @@
 import pygame
 import button
+import socket
+import random
+import peer
+import threading
 
 FPS = 60
 
@@ -25,14 +29,42 @@ class VersusLobby:
 
         self.peerIP = peerIP
         self.port = None
+        self.peer = None
+
+        self.readyUp = [] # If size is 2 than start
 
     def setPeerIP(self, ip):
         self.peerIP = ip
     def setPeerPort(self, port):
         self.port = port
+
+    def listenForConnections(self):
+        while True:
+            data, addr = self.peer.getSocket().recvfrom(1024)
+            #print(data)
+            if "HELLO" in data.decode(): # Send handshake back :)
+                self.peer.getSocket().sendto("Hi".encode(), addr)
+            elif "Connect" in data.decode():
+                self.peer.addCoonection(addr)
+            elif "SEND" in data.decode():
+                pass
+
+
     def run(self):
-        print("IP " + self.peerIP)
-        print("Port " + str(self.port))
+        #print("IP " + self.peerIP)
+        #print("Port " + str(self.port))
+        self.peer = peer.Peer('127.0.0.1',  random.randint(6000, 8080)) # Creates peer object
+        self.peer.start()
+
+        print(self.peer.getPort())
+
+        receive_thread = threading.Thread(target=self.listenForConnections)
+        receive_thread.start()
+
+        if self.peerIP != None:
+            self.peer.addCoonection((self.peerIP, self.port)) # Joiner knows host
+            self.peer.getSocket().sendto("Connect".encode(), (self.peerIP, self.port)) # Joiner wants to introduce them self to host
+   
         while self.gameStateRun:
             self.screen.fill((153,0,17))
             pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT/10),  2)
@@ -62,16 +94,15 @@ class VersusLobby:
                     self.gameStateRun = False
                     pygame.quit()
                     exit(0)
-
         
-            if self.gameState.getPlayerType() == 'server': # If player is host, show his ip
-                gameScreen_surfaceLobbyTitle = self.fontOfTitle.render(self.gameState.getSocket().getHost() + ":" + str(self.gameState.getSocket().getPort()), True, (255, 255, 255))
-                gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_WIDTH/4, SCREEN_HEIGHT/17))
-                self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
+           # if self.gameState.getPlayerType() == 'server': # If player is host, show his ip
+            #    gameScreen_surfaceLobbyTitle = self.fontOfTitle.render(self.gameState.getSocket().getHost() + ":" + str(self.gameState.getSocket().getPort()), True, (255, 255, 255))
+             #   gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_WIDTH/4, SCREEN_HEIGHT/17))
+              #  self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
 
-                gameScreen_surfaceLobbyTitle = self.fontOfTitle.render('Bob', True, (255, 255, 255))
-                gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_WIDTH/4, SCREEN_HEIGHT/6))
-                self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
+               # gameScreen_surfaceLobbyTitle = self.fontOfTitle.render('Bob', True, (255, 255, 255))
+                #gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_WIDTH/4, SCREEN_HEIGHT/6))
+                #self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
 
             pygame.display.update()
             self.clock.tick(FPS)  # Limits FPS
