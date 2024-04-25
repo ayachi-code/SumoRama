@@ -1,0 +1,1 @@
+# Add class for player, e.g name, color
