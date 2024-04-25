@@ -11,7 +11,7 @@ BUTTONSIZETEXT = 100
 #TODO make lobby
 
 class VersusLobby:
-    def __init__(self, screen, gameState):
+    def __init__(self, screen, gameState, peerIP):
         pygame.init()
         pygame.font.init()
         self.clock = pygame.time.Clock()
@@ -23,8 +23,16 @@ class VersusLobby:
 
         self.fontOfTitle = pygame.font.SysFont('Comic Sans MS', 75)
 
+        self.peerIP = peerIP
+        self.port = None
+
+    def setPeerIP(self, ip):
+        self.peerIP = ip
+    def setPeerPort(self, port):
+        self.port = port
     def run(self):
-        
+        print("IP " + self.peerIP)
+        print("Port " + str(self.port))
         while self.gameStateRun:
             self.screen.fill((153,0,17))
             pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT/10),  2)

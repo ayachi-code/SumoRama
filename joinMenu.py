@@ -4,7 +4,8 @@ import input
 import peer
 import versusLobby
 import socket
-import random
+import threading
+import time
 
 SCREEN_WIDTH = 1300
 SCREEN_HIGHT = 800
@@ -16,7 +17,7 @@ BUTTONHEIGHT = 150
 BUTTONSIZETEXT = 140
 
 class JoinMenu:
-    def __init__(self, screen, gameState):
+    def __init__(self, screen, gameState, lobbyVersus):
         pygame.init()
         pygame.font.init()
         self.clock = pygame.time.Clock()
@@ -33,10 +34,35 @@ class JoinMenu:
         self.portIpPortFont = pygame.font.SysFont('Comic Sans MS', 75)
 
         self.gameState = gameState
+        self.lobbyVersus = lobbyVersus
 
         self.ip_input = input.InputBox(SCREEN_WIDTH/7.5,SCREEN_HIGHT/2.335, 700, 32)
         self.ip_port = input.InputBox(SCREEN_WIDTH/1.45,SCREEN_HIGHT/2.335, 140, 32)
         self.input_boxes = [self.ip_input, self.ip_port]
+
+        self.hostAck = None
+        self.socketCon = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    def sendHostRequest(self):
+        handshakeMessage = "HELLO Host"
+        maxRequestSend = 3
+        while True:
+            if self.hostAck == True:
+                break
+            if maxRequestSend <= 0:
+                self.hostAck = False
+                break
+            self.socketCon.sendto(handshakeMessage.encode(), (self.ip_input.getText(), int(self.ip_port.getText())))
+            print("Sending request to host")
+            time.sleep(0.3)
+            maxRequestSend -= 1
+
+    def listenToHost(self):
+        while True:
+            addr, data = self.socketCon.recvfrom(1024)
+            if "Hi" in data:
+                self.hostAck = True
+                break
     
     def run(self):
         self.gameStateRun = True
@@ -91,18 +117,29 @@ class JoinMenu:
                             # print(self.ip_input.getText() + self.ip_port.getText())
                             #joiner = peer.Peer(self.ip_input.getText(), int(self.ip_port.getText())) # Dont want to host only connect to peer
                             #joiner.connect_to_peer(self.ip_input.getText(), int(self.ip_port.getText())) # Establish a connection to host
-                            Joiner = peer.Peer('127.0.0.1',random.randint(3000, 8000)) # peer node
-                            Joiner.start()
-                            handshakeMessage = "HELLO-FROM Bob"
-                            Joiner.getSocket().sendto(handshakeMessage.encode("utf-8"), (self.ip_input.getText(), int(self.ip_port.getText())))
+                            #Joiner = peer.Peer('127.0.0.1',random.randint(3000, 8000)) # peer node
+                            #Joiner.start()
+                            #handshakeMessage = "HELLO-FROM Bob"
+                            #Joiner.getSocket().sendto(handshakeMessage.encode("utf-8"), (self.ip_input.getText(), int(self.ip_port.getText())))
                             #socketCon = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                             #socketCon.sendto(handshakeMessage.encode("utf-8"), (self.ip_input.getText(), int(self.ip_port.getText())))
-                        
+                            # Check does Host exist ??????
+                            send_thread = threading.Thread(target=self.sendHostRequest)
+                            send_thread.start()
+                            while True:
+                                if self.hostAck:
+                                    break
+                                elif self.hostAck == False:
+                                    raise Exception
+                  
+                            self.lobbyVersus.setPeerIP(self.ip_input.getText())
+                            self.lobbyVersus.setPeerPort(int(self.ip_port.getText()))
+
                             self.gameState.setCurrentState('lobby1v1')
                             self.gameState.setPlayerType('client')
                             self.gameStateRun = False
-                        except: # Show error screen                    
-                            print("Error cannot connect")
+                        except Exception as e: # Show error screen                    
+                            print(e)
                             self.gameStateRun = False
                             self.gameState.setCurrentState('errorJoin')
                     elif back.isOver(pos):

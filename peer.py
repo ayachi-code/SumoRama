@@ -7,6 +7,7 @@ class Peer:
         self.port = port
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.connections = set()  # Set to keep track of connected peers (no duplicates)
+        self.sequenceNumber = 0
 
     def start(self):
         # Bind the UDP socket to the host and port
