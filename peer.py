@@ -17,6 +17,9 @@ class Peer:
     def addCoonection(self, peer):
         self.connections.add(peer) # Adds tuple with connection information
 
+    def getConnections(self):
+        return self.connections
+
     def getSocket(self):
         return self.socket
 

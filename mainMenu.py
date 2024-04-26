@@ -11,7 +11,7 @@ BUTTONHEIGHT = 150
 BUTTONSIZETEXT = 140
 
 class MainMenu:
-    def __init__(self, screen, gameState):
+    def __init__(self, screen, gameState, player):
         pygame.init()
         pygame.font.init()
         self.clock = pygame.time.Clock()

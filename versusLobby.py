@@ -4,6 +4,8 @@ import socket
 import random
 import peer
 import threading
+import pickle
+import base64
 
 FPS = 60
 
@@ -15,7 +17,7 @@ BUTTONSIZETEXT = 100
 #TODO make lobby
 
 class VersusLobby:
-    def __init__(self, screen, gameState, peerIP):
+    def __init__(self, screen, gameState, peerIP, player):
         pygame.init()
         pygame.font.init()
         self.clock = pygame.time.Clock()
@@ -31,6 +33,10 @@ class VersusLobby:
         self.port = None
         self.peer = None
 
+        self.peerName = ""
+
+        self.player = player
+
         self.readyUp = [] # If size is 2 than start
 
     def setPeerIP(self, ip):
@@ -41,12 +47,16 @@ class VersusLobby:
     def listenForConnections(self):
         while True:
             data, addr = self.peer.getSocket().recvfrom(1024)
-            #print(data)
-            if "HELLO" in data.decode(): # Send handshake back :)
+            data = data.decode()
+            print(data)
+            if "HELLO" in data: # Send handshake back :)
                 self.peer.getSocket().sendto("Hi".encode(), addr)
-            elif "Connect" in data.decode():
+            elif "CONNECT" in data and addr not in self.peer.getConnections():
                 self.peer.addCoonection(addr)
-            elif "SEND" in data.decode():
+                self.peerName = data.split(" ")[1] # Peername
+                payload = "CONNECT " + self.player.getName() + " " + self.player.getColor() 
+                self.peer.getSocket().sendto(payload.encode(), addr)
+            elif "SEND":
                 pass
 
 
@@ -61,9 +71,12 @@ class VersusLobby:
         receive_thread = threading.Thread(target=self.listenForConnections)
         receive_thread.start()
 
-        if self.peerIP != None:
-            self.peer.addCoonection((self.peerIP, self.port)) # Joiner knows host
-            self.peer.getSocket().sendto("Connect".encode(), (self.peerIP, self.port)) # Joiner wants to introduce them self to host
+        if self.peerIP != None: # Joiner
+            # self.peer.addCoonection((self.peerIP, self.port)) # Joiner knows host
+            #print(self.player.getColor())
+            payload = "CONNECT " + self.player.getName() + " " + self.player.getColor()
+            #payload = pickle.dumps("CONNECT") + playerAsString # playerAsString
+            self.peer.getSocket().sendto(payload.encode(), (self.peerIP, self.port)) # Joiner wants to introduce them self to host
    
         while self.gameStateRun:
             if self.readyUp == 2:
@@ -89,6 +102,16 @@ class VersusLobby:
 
             gameScreen_surfaceLobbyTitle = self.fontOfTitle.render('Not ready', True, (255, 255, 255))
             gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_HEIGHT,SCREEN_WIDTH/1.8))
+            self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
+
+            # Other player perspective of lobby
+            gameScreen_surfaceLobbyTitle = self.fontOfTitle.render(self.peerName, True, (255, 255, 255))
+            gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_WIDTH/1.5, SCREEN_HEIGHT/6))
+            self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
+
+            # Current player
+            gameScreen_surfaceLobbyTitle = self.fontOfTitle.render(self.player.getName(), True, (255, 255, 255))
+            gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_WIDTH/4, SCREEN_HEIGHT/6))
             self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
             
            # readyUpPlayer = button.Button((255,255,255),SCREEN_WIDTH/2, SCREEN_HEIGHT - (SCREEN_HEIGHT*0.2),SCREEN_WIDTH/2,SCREEN_HEIGHT/5,BUTTONSIZETEXT,'Ready')

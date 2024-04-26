@@ -6,6 +6,8 @@ import versusLobby
 import socket
 import threading
 import time
+import pickle
+
 
 SCREEN_WIDTH = 1300
 SCREEN_HIGHT = 800
@@ -17,7 +19,7 @@ BUTTONHEIGHT = 150
 BUTTONSIZETEXT = 140
 
 class JoinMenu:
-    def __init__(self, screen, gameState, lobbyVersus):
+    def __init__(self, screen, gameState, lobbyVersus, player):
         pygame.init()
         pygame.font.init()
         self.clock = pygame.time.Clock()
@@ -36,9 +38,9 @@ class JoinMenu:
         self.gameState = gameState
         self.lobbyVersus = lobbyVersus
 
-        self.ip_input = input.InputBox(SCREEN_WIDTH/7.5,SCREEN_HIGHT/2.335, 700, 32)
+        self.ip_input = '127.0.0.1' # input.InputBox(SCREEN_WIDTH/7.5,SCREEN_HIGHT/2.335, 700, 32)
         self.ip_port = input.InputBox(SCREEN_WIDTH/1.45,SCREEN_HIGHT/2.335, 140, 32)
-        self.input_boxes = [self.ip_input, self.ip_port]
+        self.input_boxes = [self.ip_port] # [self.ip_input, self.ip_port]
 
         self.hostAck = None
         self.socketCon = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -53,7 +55,8 @@ class JoinMenu:
                 if maxRequestSend <= 0:
                     self.hostAck = False
                     break
-                self.socketCon.sendto(handshakeMessage.encode(), (self.ip_input.getText(), int(self.ip_port.getText())))
+                self.socketCon.sendto(handshakeMessage.encode(), ('127.0.0.1', int(self.ip_port.getText())))
+                #self.socketCon.sendto(handshakeMessage.encode(), (self.ip_input.getText(), int(self.ip_port.getText())))
                 print("Sending request to host")
                 time.sleep(0.3)
                 maxRequestSend -= 1
@@ -115,7 +118,7 @@ class JoinMenu:
                     pos = pygame.mouse.get_pos()
                     if Join.isOver(pos): # Connect to client
                         print("Joining game")
-                        print(self.ip_input.getText())
+                        #print(self.ip_input.getText())
                         # TODO: Connect to given ip and port,
                             # If ip and port not exist show pop up with cannot connect to client, with back button to joinMenu
                             # If ip and port are good, bring client to a lobby screen, where both players are present, lobby has a ready up button. If both clients ready up than the both clients get to see the game scene
@@ -142,7 +145,8 @@ class JoinMenu:
                                 elif self.hostAck == False:
                                     raise Exception
                   
-                            self.lobbyVersus.setPeerIP(self.ip_input.getText())
+                            self.lobbyVersus.setPeerIP('127.0.0.1')
+                            #self.lobbyVersus.setPeerIP(self.ip_input.getText())
                             self.lobbyVersus.setPeerPort(int(self.ip_port.getText()))
 
                             self.gameState.setCurrentState('lobby1v1')

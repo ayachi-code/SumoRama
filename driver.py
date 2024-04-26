@@ -5,6 +5,8 @@ import versusMenu
 import joinMenu
 import versusLobby
 import errorJoin
+import player
+import random
 
 SCREEN_WIDTH = 1300
 SCREEN_HEIGHT = 800
@@ -23,10 +25,15 @@ class Game:
         pygame.display.set_caption('Sumo Rama')
 
 
-        self.start = mainMenu.MainMenu(self.screen, self.gameStateManager)
-        self.versusMenu = versusMenu.VersusMenu(self.screen, self.gameStateManager)
-        self.lobbyVersus = versusLobby.VersusLobby(self.screen, self.gameStateManager, None)
-        self.joinMenu = joinMenu.JoinMenu(self.screen, self.gameStateManager, self.lobbyVersus)
+        randomNumber = random.randint(0, 420)
+        userName = "Player" + str(randomNumber)
+
+        self.player = player.Player(userName, "red") # Creates player
+
+        self.start = mainMenu.MainMenu(self.screen, self.gameStateManager, self.player)
+        self.versusMenu = versusMenu.VersusMenu(self.screen, self.gameStateManager, self.player)
+        self.lobbyVersus = versusLobby.VersusLobby(self.screen, self.gameStateManager, None, self.player)
+        self.joinMenu = joinMenu.JoinMenu(self.screen, self.gameStateManager, self.lobbyVersus, self.player)
         self.errorJoin = errorJoin.ErrorJoin(self.screen, self.gameStateManager)
 
         self.states = {'start': self.start, '1v1Menu': self.versusMenu, 'joinMenu': self.joinMenu, 'lobby1v1': self.lobbyVersus, 'errorJoin': self.errorJoin}
