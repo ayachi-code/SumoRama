@@ -46,16 +46,22 @@ class JoinMenu:
     def sendHostRequest(self):
         handshakeMessage = "HELLO Host"
         maxRequestSend = 3
-        while True:
-            if self.hostAck == True:
-                break
-            if maxRequestSend <= 0:
-                self.hostAck = False
-                break
-            self.socketCon.sendto(handshakeMessage.encode(), (self.ip_input.getText(), int(self.ip_port.getText())))
-            print("Sending request to host")
-            time.sleep(0.3)
-            maxRequestSend -= 1
+        try:
+            while True:
+                if self.hostAck == True:
+                    break
+                if maxRequestSend <= 0:
+                    self.hostAck = False
+                    break
+                self.socketCon.sendto(handshakeMessage.encode(), (self.ip_input.getText(), int(self.ip_port.getText())))
+                print("Sending request to host")
+                time.sleep(0.3)
+                maxRequestSend -= 1
+        except Exception as e:
+            print(e)
+            self.gameStateRun = False
+            self.gameState.setCurrentState('errorJoin')
+
 
     def listenToHost(self):
         while True:
@@ -129,6 +135,7 @@ class JoinMenu:
                             send_thread.start()
                             recv_thread = threading.Thread(target=self.listenToHost)
                             recv_thread.start()
+
                             while True:
                                 if self.hostAck:
                                     break
