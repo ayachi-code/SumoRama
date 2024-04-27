@@ -6,6 +6,7 @@ import peer
 import threading
 import pickle
 import base64
+import time
 
 FPS = 60
 
@@ -37,6 +38,8 @@ class VersusLobby:
 
         self.player = player
 
+        self.readyUpAcknowledged = None
+
         self.readyUp = [] # If size is 2 than start
 
     def setPeerIP(self, ip):
@@ -56,8 +59,31 @@ class VersusLobby:
                 self.peerName = data.split(" ")[1] # Peername
                 payload = "CONNECT " + self.player.getName() + " " + self.player.getColor() 
                 self.peer.getSocket().sendto(payload.encode(), addr)
+            elif data == "READY":
+                self.peer.getSocket().sendto("READY-YES".encode(), addr)
+                if addr not in self.readyUp:
+                    print("My friend readys up okay, first time add to list")
+                    self.readyUp.append(addr)
+
+            elif data == "READY-YES":
+                self.readyUpAcknowledged = True
             elif "SEND":
                 pass
+
+    def sendReadyUpToPeer(self, destination):
+        maxSendToPeer = 20
+        while True:
+            if maxSendToPeer <= 0:
+                self.readyUpAcknowledged = False
+                break
+
+            if self.readyUpAcknowledged == True:
+                break
+
+            self.peer.getSocket().sendto("READY",destination)
+            time.sleep(0.5)
+            maxSendToPeer -= 1
+
 
 
     def run(self):
@@ -79,7 +105,7 @@ class VersusLobby:
             self.peer.getSocket().sendto(payload.encode(), (self.peerIP, self.port)) # Joiner wants to introduce them self to host
    
         while self.gameStateRun:
-            if self.readyUp == 2:
+            if len(self.readyUp) == 2:
                 print("Starting game")
             
             self.screen.fill((153,0,17))
@@ -127,6 +153,10 @@ class VersusLobby:
                 if event.type == pygame.MOUSEBUTTONUP:
                     pos = pygame.mouse.get_pos()
                     if readyUpHost.isOver(pos): 
+                        addressOfPeer = list(self.peer.getConnections())[0]
+                        if addressOfPeer != None:
+                            self.readyUp.append(self.peer.getPort()) # Appends players unique port to ready up
+                            self.peer.getSocket().sendto("READY".encode(), addressOfPeer) # Sends ready to peer, MUST BE ACKNOWLEDGED
                         print("Ready up")
                         pass
                         # Connect to client
