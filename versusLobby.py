@@ -31,10 +31,12 @@ class VersusLobby:
         self.fontOfTitle = pygame.font.SysFont('Comic Sans MS', 75)
 
         self.peerIP = peerIP
+
         self.port = None
         self.peer = None
 
         self.peerName = ""
+        self.peerColor = (255,255,255)
 
         self.player = player
 
@@ -54,9 +56,10 @@ class VersusLobby:
             print(data)
             if "HELLO" in data: # Send handshake back :)
                 self.peer.getSocket().sendto("Hi".encode(), addr)
-            elif "CONNECT" in data and addr not in self.peer.getConnections():
+            elif "CONNECT" in data and addr not in self.peer.getConnections(): 
                 self.peer.addCoonection(addr)
                 self.peerName = data.split(" ")[1] # Peername
+                self.peerColor = data.split(" ")[2] # Peer color
                 payload = "CONNECT " + self.player.getName() + " " + self.player.getColor() 
                 self.peer.getSocket().sendto(payload.encode(), addr)
             elif data == "READY":
@@ -84,7 +87,17 @@ class VersusLobby:
             time.sleep(0.5)
             maxSendToPeer -= 1
 
-
+    def convertStringToColor(self, color): #Helper function that converts string color to rgb tuple
+        if color == "RED": 
+            return (255,0,0)
+        elif color == "BLACK":
+            return (255,255,255)
+        elif color == "GREEN":
+            return (0,255,0)
+        elif color == "BLUE":
+            return (0,0,255)
+        else:
+            return (0,0,0) # Default white character
 
     def run(self):
         #print("IP " + self.peerIP)
@@ -110,7 +123,7 @@ class VersusLobby:
             
             self.screen.fill((153,0,17))
             pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT/10),  2)
-
+  
             gameScreen_surfaceLobbyTitle = self.fontOfTitle.render('Lobby', True, (255, 255, 255))
             gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/17))
             self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
@@ -129,6 +142,13 @@ class VersusLobby:
             gameScreen_surfaceLobbyTitle = self.fontOfTitle.render('Not ready', True, (255, 255, 255))
             gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_HEIGHT,SCREEN_WIDTH/1.8))
             self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
+
+            # Player color
+            pygame.draw.circle(self.screen, self.player.getColor(), (SCREEN_WIDTH/4, SCREEN_HEIGHT/2),100)
+            
+
+            if self.peerName != "": # Show player circle if connected
+                pygame.draw.circle(self.screen, self.peerColor, (SCREEN_WIDTH - SCREEN_WIDTH/4, SCREEN_HEIGHT/2),100)
 
             # Other player perspective of lobby
             gameScreen_surfaceLobbyTitle = self.fontOfTitle.render(self.peerName, True, (255, 255, 255))

@@ -24,7 +24,6 @@ class Game:
         self.gameStateManager = gameState.GameState('start')
         pygame.display.set_caption('Sumo Rama')
 
-
         randomNumber = random.randint(0, 420)
         userName = "Player" + str(randomNumber)
 
