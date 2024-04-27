@@ -140,12 +140,11 @@ class VersusLobby:
             # Player color
             pygame.draw.circle(self.screen, self.player.getColor(), (SCREEN_WIDTH/4, SCREEN_HEIGHT/2),100)
             
-
             if self.peerName != "": # Show player circle if connected
                 pygame.draw.circle(self.screen, self.peerColor, (SCREEN_WIDTH - SCREEN_WIDTH/4, SCREEN_HEIGHT/2),100)
 
                 gameScreen_surfaceLobbyTitle = self.fontOfTitle.render('Not ready', True, (255, 255, 255))
-                gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_HEIGHT,SCREEN_WIDTH/1.8))
+                gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_WIDTH - SCREEN_WIDTH/4,SCREEN_WIDTH/1.8))
                 self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
 
                 readyUpHost = button.Button((255,255,255),0, SCREEN_HEIGHT - (SCREEN_HEIGHT*0.2),SCREEN_WIDTH/2,SCREEN_HEIGHT/5,BUTTONSIZETEXT,'Ready') # Ready up button is shown gray if there is no player joined
