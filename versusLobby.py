@@ -144,7 +144,6 @@ class VersusLobby:
             if self.peerName != "": # Show player circle if connected
                 pygame.draw.circle(self.screen, self.peerColor, (SCREEN_WIDTH - SCREEN_WIDTH/4, SCREEN_HEIGHT/2),100)
 
-
                 if self.peerPressedReadyUp:
                     gameScreen_surfaceLobbyTitle = self.fontOfTitle.render('Ready', True, (255, 255, 255))
                 else:

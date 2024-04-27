@@ -1,0 +1,26 @@
+import pygame
+
+
+# 1v1 arena code
+
+class VersusArena:
+    def __init__(self, screen, gameState):
+        pygame.init()
+        pygame.font.init()
+        self.clock = pygame.time.Clock()
+
+        self.screen = screen  # Set display resolution
+        # pygame.display.set_caption('Main menu')
+        self.gameState = gameState
+
+        self.gameStateRun = True
+
+    def run(self):
+        while self.gameStateRun:
+            self.screen.fill((255,255,255)) # White screen
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.gameStateRun = False
+                    pygame.quit()
+                    exit(0)
