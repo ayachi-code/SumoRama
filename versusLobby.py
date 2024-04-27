@@ -136,7 +136,6 @@ class VersusLobby:
             pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(0, SCREEN_HEIGHT - (SCREEN_HEIGHT*0.2), SCREEN_WIDTH/2, SCREEN_HEIGHT/5),  2) #  box for Ready up Host
             pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(SCREEN_WIDTH/2, SCREEN_HEIGHT - (SCREEN_HEIGHT*0.2), SCREEN_WIDTH/2, SCREEN_HEIGHT/5),  2) #  box for Ready up Host
 
-            readyUpHost = button.Button((255,255,255),0, SCREEN_HEIGHT - (SCREEN_HEIGHT*0.2),SCREEN_WIDTH/2,SCREEN_HEIGHT/5,BUTTONSIZETEXT,'Ready')
 
             # Player color
             pygame.draw.circle(self.screen, self.player.getColor(), (SCREEN_WIDTH/4, SCREEN_HEIGHT/2),100)
@@ -148,6 +147,10 @@ class VersusLobby:
                 gameScreen_surfaceLobbyTitle = self.fontOfTitle.render('Not ready', True, (255, 255, 255))
                 gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_HEIGHT,SCREEN_WIDTH/1.8))
                 self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
+
+                readyUpHost = button.Button((255,255,255),0, SCREEN_HEIGHT - (SCREEN_HEIGHT*0.2),SCREEN_WIDTH/2,SCREEN_HEIGHT/5,BUTTONSIZETEXT,'Ready') # Ready up button is shown gray if there is no player joined
+            else:
+                readyUpHost = button.Button((128,128,128),0, SCREEN_HEIGHT - (SCREEN_HEIGHT*0.2),SCREEN_WIDTH/2,SCREEN_HEIGHT/5,BUTTONSIZETEXT,'Ready') # Ready up button is shown gray if there is no player joined
 
             # Other player perspective of lobby
             gameScreen_surfaceLobbyTitle = self.fontOfTitle.render(self.peerName, True, (255, 255, 255))
@@ -171,7 +174,7 @@ class VersusLobby:
                     exit(0)
                 if event.type == pygame.MOUSEBUTTONUP:
                     pos = pygame.mouse.get_pos()
-                    if readyUpHost.isOver(pos): 
+                    if readyUpHost.isOver(pos) and self.peerName != "": # If ready up button is clicked AND there is a user joined 
                         addressOfPeer = list(self.peer.getConnections())[0]
                         if addressOfPeer != None:
                             self.readyUp.append(self.peer.getPort()) # Appends players unique port to ready up
