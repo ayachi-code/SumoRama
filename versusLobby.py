@@ -141,6 +141,7 @@ class VersusLobby:
                     gameScreen_surfaceLobbyTitle = self.fontOfTitle.render('Ready', True, (255, 255, 255))
                 else:
                     gameScreen_surfaceLobbyTitle = self.fontOfTitle.render('Not ready', True, (255, 255, 255))
+
                 gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_WIDTH - SCREEN_WIDTH/4,SCREEN_WIDTH/1.8))
                 self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
 
