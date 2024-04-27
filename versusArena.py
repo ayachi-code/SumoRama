@@ -1,5 +1,6 @@
 import pygame
 
+FPS = 60
 
 # 1v1 arena code
 
@@ -24,3 +25,6 @@ class VersusArena:
                     self.gameStateRun = False
                     pygame.quit()
                     exit(0)
+
+            pygame.display.update()
+            self.clock.tick(FPS)  # Limits FPS

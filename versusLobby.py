@@ -110,15 +110,15 @@ class VersusLobby:
         receive_thread.start()
 
         if self.peerIP != None: # Joiner
-            # self.peer.addCoonection((self.peerIP, self.port)) # Joiner knows host
-            #print(self.player.getColor())
             payload = "CONNECT " + self.player.getName() + " " + self.player.getColor()
-            #payload = pickle.dumps("CONNECT") + playerAsString # playerAsString
             self.peer.getSocket().sendto(payload.encode(), (self.peerIP, self.port)) # Joiner wants to introduce them self to host
    
         while self.gameStateRun:
-            if len(self.readyUp) == 2:
-                print("Starting game")
+            if len(self.readyUp) == 2: # 2 players ready-up we can start the game
+                self.gameState.setCurrentState('versusArena')
+                self.gameStateRun = False    
+                print("start versus arena")            
+                #print("Starting game")
             
             self.screen.fill((153,0,17))
             pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT/10),  2)
