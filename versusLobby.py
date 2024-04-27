@@ -15,8 +15,6 @@ SCREEN_HEIGHT = 800
 
 BUTTONSIZETEXT = 100
 
-#TODO make lobby
-
 class VersusLobby:
     def __init__(self, screen, gameState, peerIP, player):
         pygame.init()
@@ -27,7 +25,7 @@ class VersusLobby:
         self.fontOfTitle = pygame.font.SysFont('Comic Sans MS', 75)
 
         self.gameStateRun = True
-        self.gameState = gameState
+        self.gameState = gameState 
         self.peerIP = peerIP
         self.player = player
 
@@ -52,7 +50,7 @@ class VersusLobby:
         while True:
             data, addr = self.peer.getSocket().recvfrom(1024)
             data = data.decode()
-            print(data)
+            #print(data)
             if "HELLO" in data: # Send handshake back :)
                 self.peer.getSocket().sendto("Hi".encode(), addr)
             elif "CONNECT" in data and addr not in self.peer.getConnections(): 
@@ -65,13 +63,11 @@ class VersusLobby:
                 self.peerPressedReadyUp = True
                 self.peer.getSocket().sendto("READY-YES".encode(), addr)
                 if addr not in self.readyUp:
-                    print("My friend readys up okay, first time add to list")
+                    #print("My friend readys up okay, first time add to list")
                     self.readyUp.append(addr)
             elif data == "READY-YES":
                 self.readyUpAcknowledged = True
-            elif "SEND":
-                pass
-
+      
     def sendReadyUpToPeer(self, destination):
         maxSendToPeer = 20
         while True:
@@ -118,7 +114,6 @@ class VersusLobby:
                 self.gameState.setCurrentState('versusArena')
                 self.gameStateRun = False    
                 print("start versus arena")            
-                #print("Starting game")
             
             self.screen.fill((153,0,17))
             pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT/10),  2)
@@ -136,11 +131,9 @@ class VersusLobby:
             pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(0, SCREEN_HEIGHT - (SCREEN_HEIGHT*0.2), SCREEN_WIDTH/2, SCREEN_HEIGHT/5),  2) #  box for Ready up Host
             pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(SCREEN_WIDTH/2, SCREEN_HEIGHT - (SCREEN_HEIGHT*0.2), SCREEN_WIDTH/2, SCREEN_HEIGHT/5),  2) #  box for Ready up Host
 
-
             # Player color
             pygame.draw.circle(self.screen, self.player.getColor(), (SCREEN_WIDTH/4, SCREEN_HEIGHT/2),100)
             
-
             if self.peerName != "": # Show player circle if connected
                 pygame.draw.circle(self.screen, self.peerColor, (SCREEN_WIDTH - SCREEN_WIDTH/4, SCREEN_HEIGHT/2),100)
 
@@ -168,10 +161,7 @@ class VersusLobby:
             gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_WIDTH/4, SCREEN_HEIGHT/6))
             self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
             
-           # readyUpPlayer = button.Button((255,255,255),SCREEN_WIDTH/2, SCREEN_HEIGHT - (SCREEN_HEIGHT*0.2),SCREEN_WIDTH/2,SCREEN_HEIGHT/5,BUTTONSIZETEXT,'Ready')
-
             readyUpHost.draw(self.screen, (0,0,0))
-            #readyUpPlayer.draw(self.screen, (0,0,0))
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -186,7 +176,7 @@ class VersusLobby:
                         if addressOfPeer != None:
                             self.readyUp.append(self.peer.getPort()) # Appends players unique port to ready up
                             self.peer.getSocket().sendto("READY".encode(), addressOfPeer) # Sends ready to peer, MUST BE ACKNOWLEDGED
-                        print("Ready up")
+                        #print("Ready up")
                         # Connect to client
 
             pygame.display.update()
