@@ -21,16 +21,15 @@ class VersusLobby:
     def __init__(self, screen, gameState, peerIP, player):
         pygame.init()
         pygame.font.init()
+
         self.clock = pygame.time.Clock()
         self.screen = screen
-
-        self.gameStateRun = True
-
-        self.gameState = gameState
-
         self.fontOfTitle = pygame.font.SysFont('Comic Sans MS', 75)
 
+        self.gameStateRun = True
+        self.gameState = gameState
         self.peerIP = peerIP
+        self.player = player
 
         self.port = None
         self.peer = None
@@ -38,11 +37,11 @@ class VersusLobby:
         self.peerName = ""
         self.peerColor = (255,255,255)
 
-        self.player = player
 
         self.readyUpAcknowledged = None
-
         self.readyUp = [] # If size is 2 than start
+        self.pressedReadyUpButton = False
+        self.peerPressedReadyUp = False
 
     def setPeerIP(self, ip):
         self.peerIP = ip
@@ -63,6 +62,7 @@ class VersusLobby:
                 payload = "CONNECT " + self.player.getName() + " " + self.player.getColor() 
                 self.peer.getSocket().sendto(payload.encode(), addr)
             elif data == "READY":
+                self.peerPressedReadyUp = True
                 self.peer.getSocket().sendto("READY-YES".encode(), addr)
                 if addr not in self.readyUp:
                     print("My friend readys up okay, first time add to list")
@@ -140,14 +140,22 @@ class VersusLobby:
             # Player color
             pygame.draw.circle(self.screen, self.player.getColor(), (SCREEN_WIDTH/4, SCREEN_HEIGHT/2),100)
             
+
             if self.peerName != "": # Show player circle if connected
                 pygame.draw.circle(self.screen, self.peerColor, (SCREEN_WIDTH - SCREEN_WIDTH/4, SCREEN_HEIGHT/2),100)
 
-                gameScreen_surfaceLobbyTitle = self.fontOfTitle.render('Not ready', True, (255, 255, 255))
+
+                if self.peerPressedReadyUp:
+                    gameScreen_surfaceLobbyTitle = self.fontOfTitle.render('Ready', True, (255, 255, 255))
+                else:
+                    gameScreen_surfaceLobbyTitle = self.fontOfTitle.render('Not ready', True, (255, 255, 255))
                 gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_WIDTH - SCREEN_WIDTH/4,SCREEN_WIDTH/1.8))
                 self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
 
-                readyUpHost = button.Button((255,255,255),0, SCREEN_HEIGHT - (SCREEN_HEIGHT*0.2),SCREEN_WIDTH/2,SCREEN_HEIGHT/5,BUTTONSIZETEXT,'Ready') # Ready up button is shown gray if there is no player joined
+                if self.pressedReadyUpButton == True:
+                    readyUpHost = button.Button((128,128,128),0, SCREEN_HEIGHT - (SCREEN_HEIGHT*0.2),SCREEN_WIDTH/2,SCREEN_HEIGHT/5,BUTTONSIZETEXT,'Ready') # Ready up button is shown gray if there is no player joined
+                else:
+                    readyUpHost = button.Button((255,255,255),0, SCREEN_HEIGHT - (SCREEN_HEIGHT*0.2),SCREEN_WIDTH/2,SCREEN_HEIGHT/5,BUTTONSIZETEXT,'Ready') # Ready up button is shown gray if there is no player joined
             else:
                 readyUpHost = button.Button((128,128,128),0, SCREEN_HEIGHT - (SCREEN_HEIGHT*0.2),SCREEN_WIDTH/2,SCREEN_HEIGHT/5,BUTTONSIZETEXT,'Ready') # Ready up button is shown gray if there is no player joined
 
@@ -173,22 +181,14 @@ class VersusLobby:
                     exit(0)
                 if event.type == pygame.MOUSEBUTTONUP:
                     pos = pygame.mouse.get_pos()
-                    if readyUpHost.isOver(pos) and self.peerName != "": # If ready up button is clicked AND there is a user joined 
+                    if readyUpHost.isOver(pos) and self.peerName != "" and self.pressedReadyUpButton == False: # If ready up button is clicked AND there is a user joined 
+                        self.pressedReadyUpButton = True
                         addressOfPeer = list(self.peer.getConnections())[0]
                         if addressOfPeer != None:
                             self.readyUp.append(self.peer.getPort()) # Appends players unique port to ready up
                             self.peer.getSocket().sendto("READY".encode(), addressOfPeer) # Sends ready to peer, MUST BE ACKNOWLEDGED
                         print("Ready up")
-                        pass
                         # Connect to client
-           # if self.gameState.getPlayerType() == 'server': # If player is host, show his ip
-            #    gameScreen_surfaceLobbyTitle = self.fontOfTitle.render(self.gameState.getSocket().getHost() + ":" + str(self.gameState.getSocket().getPort()), True, (255, 255, 255))
-             #   gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_WIDTH/4, SCREEN_HEIGHT/17))
-              #  self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
-
-               # gameScreen_surfaceLobbyTitle = self.fontOfTitle.render('Bob', True, (255, 255, 255))
-                #gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_WIDTH/4, SCREEN_HEIGHT/6))
-                #self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
 
             pygame.display.update()
             self.clock.tick(FPS)  # Limits FPS
