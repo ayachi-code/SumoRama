@@ -4,8 +4,6 @@ import socket
 import random
 import peer
 import threading
-import pickle
-import base64
 import time
 
 FPS = 60
@@ -40,6 +38,9 @@ class VersusLobby:
         self.readyUp = [] # If size is 2 than start
         self.pressedReadyUpButton = False
         self.peerPressedReadyUp = False
+        self.playerQuit = False
+
+        self.polAck = False
 
     def setPeerIP(self, ip):
         self.peerIP = ip
@@ -48,9 +49,13 @@ class VersusLobby:
 
     def listenForConnections(self):
         while True:
+
             data, addr = self.peer.getSocket().recvfrom(1024)
             data = data.decode()
             #print(data)
+            if self.playerQuit: # Stops thread when player quits
+                break
+
             if "HELLO" in data: # Send handshake back :)
                 self.peer.getSocket().sendto("Hi".encode(), addr)
             elif "CONNECT" in data and addr not in self.peer.getConnections(): 
@@ -59,12 +64,20 @@ class VersusLobby:
                 self.peerColor = data.split(" ")[2] # Peer color
                 payload = "CONNECT " + self.player.getName() + " " + self.player.getColor() 
                 self.peer.getSocket().sendto(payload.encode(), addr)
+                send_thread = threading.Thread(target=self.pollPeer, args=(addr,))
+                send_thread.start()
             elif data == "READY":
                 self.peerPressedReadyUp = True
                 self.peer.getSocket().sendto("READY-YES".encode(), addr)
                 if addr not in self.readyUp:
                     #print("My friend readys up okay, first time add to list")
                     self.readyUp.append(addr)
+            elif "SEQ" in data:
+                payload = "ACK " + data.split(" ")[1]
+                self.peer.getSocket().sendto(payload.encode(), addr)
+            elif "ACK" in data: # We got acknowledged
+                self.peer.increaseSequenceNumber()
+                self.polAck = True
             elif data == "READY-YES":
                 self.readyUpAcknowledged = True
       
@@ -93,6 +106,31 @@ class VersusLobby:
             return (0,0,255)
         else:
             return (0,0,0) # Default white character
+        
+    def pollPeer(self, peer): # Poll peer to check if they are in lobby
+        maxTimeOut = 2
+        while True:
+            if maxTimeOut <= 0:
+                print("Client is gone")
+                #reset 1v1 peer states
+                self.peerName = ""
+                self.peer.resetConnections()
+                self.readyUp = []
+                self.peerPressedReadyUp = False
+                break
+
+            if self.polAck:
+                #print("test")
+                maxTimeOut = 2
+                self.polAck = False
+
+            if len(self.readyUp) == 2 or self.playerQuit == True:
+                break
+
+            payload = "SEQ " + str(self.peer.getSequenceNumber())
+            self.peer.getSocket().sendto(payload.encode(), peer) # e.g SEQ 123
+            time.sleep(0.5)
+            maxTimeOut -= 1
 
     def run(self):
         #print("IP " + self.peerIP)
@@ -167,6 +205,9 @@ class VersusLobby:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.gameStateRun = False
+                    self.playerQuit = True
+                    self.peer.resetConnections()
+                    self.peer.getSocket().close() # Close socket
                     pygame.quit()
                     exit(0)
                 if event.type == pygame.MOUSEBUTTONUP:
