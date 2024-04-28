@@ -26,7 +26,7 @@ class GameOverVersus:
         self.gameStateRun = True
         self.buttonColor = (226,221,220)
         
-        self.gameFont = pygame.font.SysFont('Comic Sans MS', 150)
+        self.gameFont = pygame.font.SysFont('Comic Sans MS', 130)
 
 
     def run(self):
@@ -41,8 +41,18 @@ class GameOverVersus:
                     pygame.quit()
                     exit(0)
 
+
+            gameScreen_surface = self.gameFont.render('GAME OVER!!!!!', True, (255, 255, 255))
+            gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH/1.9, 140))
+            self.screen.blit(gameScreen_surface, gameScreen_rect)
+
+            gameScreen_surfaceTwo = self.gameFont.render('Player420 won the game', True, (255, 255, 255))
+            gameScreen_rectTwo = gameScreen_surfaceTwo.get_rect(center=(SCREEN_WIDTH/1.9, 300))
+            self.screen.blit(gameScreen_surfaceTwo, gameScreen_rectTwo)
+
+
             # Return button
-            goBackButton = button.Button(self.buttonColor,SCREEN_WIDTH/7.5,SCREEN_HEIGHT/2,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Return')
+            goBackButton = button.Button(self.buttonColor,SCREEN_WIDTH/7.5,SCREEN_HEIGHT/1.75,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Return')
             goBackButton.draw(self.screen, (0,0,0))
 
             # Hover effect for button
