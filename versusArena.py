@@ -105,7 +105,7 @@ class VersusArena:
         self.player_circle['position'] = [randomPointInRing[0],randomPointInRing[1]] # init positions
 
         self.peerPositions[self.peer.getPort()] = dataPeer # This adds the player it self to the players position data structure
-        payload = "INIT " + str(x) + " " + str(y) # Protocol: INIT playerStartPositon.x playerStartPosition.y 
+        payload = "INIT " + str(randomPointInRing[0]) + " " + str(randomPointInRing[1]) # Protocol: INIT playerStartPositon.x playerStartPosition.y 
 
         sendInit_thread = threading.Thread(target=self.sendInitPositions,args=(payload,), daemon=True)
         sendInit_thread.start()
