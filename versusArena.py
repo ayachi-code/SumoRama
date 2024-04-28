@@ -159,12 +159,28 @@ class VersusArena:
        
         return False # Not out of circle
     
+    def resetStates(self):
+        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": self.player.getName()} # Contains information about the sumo of the player. e.g position, speed, radius, name
+        self.enemy_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": None} # Contains information about the sumo enemy of the player. e.g position, speed, radius, name
+
+        self.gameStateRun = True
+        self.playerPositionInit = None
+        self.winnerOfTheGame = None # Stores the winner
+
+        self.sumo_ring_radius = 450  # resets sumo ring
+
     def run(self):
+        self.resetStates() # REset previous game states
+
+        # Reset previous states
+
+
         # start listinng thread
         recv_thread = threading.Thread(target=self.listenForData, daemon=True)
         recv_thread.start()
 
         print(self.peer.getConnections())
+        #print("Rerun???")
 
         self.initPositions() # Inits positions from all peers
 

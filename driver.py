@@ -53,7 +53,6 @@ class Game:
 
             self.states[self.gameStateManager.getCurrentState()].run()
  
-
 if __name__ == "__main__":
      game = Game()
      game.run()

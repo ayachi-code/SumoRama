@@ -107,12 +107,17 @@ class VersusLobby:
         else:
             return (0,0,0) # Default white character
         
-    def resetState(self):
+    def resetStates(self):
         self.peerName = ""
-        self.peer.resetConnections()
+        if self.peer != None:
+            self.peer.resetConnections()
+            
         self.readyUp = []
         self.peerPressedReadyUp = False    
         self.pressedReadyUpButton = False
+        self.readyUpAcknowledged = None
+        self.playerQuit = False
+        self.polAck = False
         
     def pollPeer(self, peer): # Poll peer to check if they are in lobby
         maxTimeOut = 2
@@ -125,11 +130,11 @@ class VersusLobby:
                     self.gameState.setCurrentState('errorJoin')
                     if self.peer.getSocket():
                         self.peer.getSocket().close()
-                        self.resetState()
+                        self.resetStates()
                 else:
                     print("Client(joiner) is gone")
                     #reset 1v1 peer states
-                    self.resetState()
+                    self.resetStates()
                 break
 
             if self.polAck:
@@ -145,8 +150,9 @@ class VersusLobby:
             maxTimeOut -= 1
 
     def run(self):
-        #print("IP " + self.peerIP)
-        #print("Port " + str(self.port))
+        #reset states from previous game
+        self.resetStates()
+
         self.gameStateRun = True
         self.peer = peer.Peer('127.0.0.1',  random.randint(6000, 8080)) # Creates peer object
         self.peer.start()
@@ -164,9 +170,9 @@ class VersusLobby:
             if len(self.readyUp) == 2: # 2 players ready-up we can start the game
                 self.arena.setPeer(self.peer)
                 self.gameState.setCurrentState('versusArena')
-                self.gameStateRun = False    
-                print("start versus arena")            
-            
+                self.gameStateRun = False
+                print("start versus arena")
+
             self.screen.fill((153,0,17))
             pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT/10),  2)
   
