@@ -24,6 +24,7 @@ class GameOverVersus:
         self.gameState = gameState
 
         self.gameStateRun = True
+        self.buttonColor = (226,221,220)
         
         self.gameFont = pygame.font.SysFont('Comic Sans MS', 150)
 
@@ -41,8 +42,15 @@ class GameOverVersus:
                     exit(0)
 
             # Return button
-            goBackButton = button.Button((255,255,255),SCREEN_WIDTH/7.5,SCREEN_HEIGHT/3.5,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Return')
+            goBackButton = button.Button(self.buttonColor,SCREEN_WIDTH/7.5,SCREEN_HEIGHT/3.5,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Return')
             goBackButton.draw(self.screen, (0,0,0))
+
+            # Hover effect for button
+            pos = pygame.mouse.get_pos()
+            if goBackButton.isOver(pos):
+                self.buttonColor = (183,179,183) 
+            else:
+                self.buttonColor = (226,221,220) 
         
             pygame.display.update()
             self.clock.tick(FPS)  # Limit to 60 FPS
