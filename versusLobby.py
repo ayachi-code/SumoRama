@@ -36,8 +36,8 @@ class VersusLobby:
 
         self.readyUpAcknowledged = None
         self.readyUp = [] # If size is 2 than start
-        self.pressedReadyUpButton = False
-        self.peerPressedReadyUp = False
+        self.pressedReadyUpButton = False # Used to disable ready up again
+        self.peerPressedReadyUp = False 
         self.playerQuit = False
 
         self.polAck = False
@@ -70,7 +70,6 @@ class VersusLobby:
                 self.peerPressedReadyUp = True
                 self.peer.getSocket().sendto("READY-YES".encode(), addr)
                 if addr not in self.readyUp:
-                    #print("My friend readys up okay, first time add to list")
                     self.readyUp.append(addr)
             elif "SEQ" in data:
                 payload = "ACK " + data.split(" ")[1]
@@ -92,7 +91,7 @@ class VersusLobby:
                 break
 
             self.peer.getSocket().sendto("READY",destination)
-            time.sleep(0.5)
+            time.sleep(0.1)
             maxSendToPeer -= 1
 
     def convertStringToColor(self, color): #Helper function that converts string color to rgb tuple
@@ -120,7 +119,6 @@ class VersusLobby:
                 break
 
             if self.polAck:
-                #print("test")
                 maxTimeOut = 2
                 self.polAck = False
 
@@ -129,7 +127,7 @@ class VersusLobby:
 
             payload = "SEQ " + str(self.peer.getSequenceNumber())
             self.peer.getSocket().sendto(payload.encode(), peer) # e.g SEQ 123
-            time.sleep(0.5)
+            time.sleep(0.1) # Polling speed
             maxTimeOut -= 1
 
     def run(self):
@@ -219,7 +217,6 @@ class VersusLobby:
                             self.readyUp.append(self.peer.getPort()) # Appends players unique port to ready up
                             self.peer.getSocket().sendto("READY".encode(), addressOfPeer) # Sends ready to peer, MUST BE ACKNOWLEDGED
                         #print("Ready up")
-                        # Connect to client
-
+                   
             pygame.display.update()
             self.clock.tick(FPS)  # Limits FPS
