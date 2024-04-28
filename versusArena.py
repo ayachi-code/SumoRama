@@ -11,7 +11,7 @@ FPS = 60
 SCREEN_WIDTH = 1300
 SCREEN_HEIGHT = 800
 
-# 1v1 arena code
+#TODO: Add lockstep simulation, test 1v1 throughly, Add IP for HOST
 
 class VersusArena:
     def __init__(self, screen, gameState, player, peer, gameOver):
