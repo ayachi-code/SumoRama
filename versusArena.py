@@ -54,6 +54,7 @@ class VersusArena:
     def setPeer(self, peer):
         self.peer = peer
 
+
     def listenForData(self): # Listens for data, other player
         while True:
             data, addr = self.peer.getSocket().recvfrom(65535) # Max udp size
@@ -99,13 +100,26 @@ class VersusArena:
                 "y": y  
         }
 
-        self.player_circle['position'] = [x,y] # init positions
+        randomPointInRing = self.randomPointInCircle(self.sumo_ring_radius-(0.3 * self.sumo_ring_radius), self.sumo_ring_center[0], self.sumo_ring_center[1]) # --> (x,y)
+
+        self.player_circle['position'] = [randomPointInRing[0],randomPointInRing[1]] # init positions
 
         self.peerPositions[self.peer.getPort()] = dataPeer # This adds the player it self to the players position data structure
         payload = "INIT " + str(x) + " " + str(y) # Protocol: INIT playerStartPositon.x playerStartPosition.y 
 
         sendInit_thread = threading.Thread(target=self.sendInitPositions,args=(payload,), daemon=True)
         sendInit_thread.start()
+
+
+    def randomPointInCircle(self, radius, centerX, centerY):
+        # random angle
+        alpha = 2 * math.pi * random.random()
+        # random radius
+        r = radius * math.sqrt(random.random())
+        # calculating coordinates
+        x = r * math.cos(alpha) + centerX
+        y = r * math.sin(alpha) + centerY
+        return (x,y)
 
     def rush_to_cursor(self):
         # Get current mouse position
@@ -169,6 +183,7 @@ class VersusArena:
             #circles_to_remove.append(circle)
 
         return False # Not out of circle
+    
     def run(self):
         # start listinng thread
         recv_thread = threading.Thread(target=self.listenForData, daemon=True)
