@@ -12,6 +12,7 @@ class Peer:
 
     def start(self):
         # Bind the UDP socket to the host and port
+        #print(self.port)
         self.socket.bind((self.host, self.port))
         print(f"Peer {self.host}:{self.port} is listening for incoming messages...")
 

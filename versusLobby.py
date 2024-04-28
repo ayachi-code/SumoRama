@@ -35,7 +35,6 @@ class VersusLobby:
         self.peerName = ""
         self.peerColor = (255,255,255)
 
-
         self.readyUpAcknowledged = None
         self.readyUp = [] # If size is 2 than start
         self.pressedReadyUpButton = False # Used to disable ready up again
@@ -51,7 +50,6 @@ class VersusLobby:
 
     def listenForConnections(self):
         while True:
-
             data, addr = self.peer.getSocket().recvfrom(1024)
             data = data.decode()
             #print(data)
@@ -108,16 +106,28 @@ class VersusLobby:
         else:
             return (0,0,0) # Default white character
         
+    def resetState(self):
+        self.peerName = ""
+        self.peer.resetConnections()
+        self.readyUp = []
+        self.peerPressedReadyUp = False    
+        
     def pollPeer(self, peer): # Poll peer to check if they are in lobby
         maxTimeOut = 2
         while True:
             if maxTimeOut <= 0:
-                print("Client is gone")
-                #reset 1v1 peer states
-                self.peerName = ""
-                self.peer.resetConnections()
-                self.readyUp = []
-                self.peerPressedReadyUp = False
+                print("Timeout")
+                if self.peerIP != None: # Joiner
+                    print("HOST LEFT OHHHHH")
+                    self.gameStateRun = False
+                    self.gameState.setCurrentState('errorJoin')
+                    if self.peer.getSocket():
+                        self.peer.getSocket().close()
+                        self.resetState()
+                else:
+                    print("Client(joiner) is gone")
+                    #reset 1v1 peer states
+                    self.resetState()
                 break
 
             if self.polAck:
@@ -135,12 +145,14 @@ class VersusLobby:
     def run(self):
         #print("IP " + self.peerIP)
         #print("Port " + str(self.port))
+        self.gameStateRun = True
+        print("tst")
         self.peer = peer.Peer('127.0.0.1',  random.randint(6000, 8080)) # Creates peer object
         self.peer.start()
 
         print(self.peer.getPort())
 
-        receive_thread = threading.Thread(target=self.listenForConnections)
+        receive_thread = threading.Thread(target=self.listenForConnections, daemon=True)
         receive_thread.start()
 
         if self.peerIP != None: # Joiner
