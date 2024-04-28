@@ -34,6 +34,8 @@ class VersusArena:
         self.sumo_ring_radius = 450  # Larger radius for the sumo ring
         self.sumo_ring_center = [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]  # Center of the screen (1920x1080 resolution) 
 
+        self.circle_radius = 40  # Initial radius of all circles
+
         # Define rush variables
         self.rush_duration = 0.5  # Rush duration in seconds
         self.rush_speed = 300  # Rush speed in pixels per second
@@ -122,7 +124,28 @@ class VersusArena:
                 self.player_circle["velocity"][0] = direction[0] * self.rush_speed
                 self.player_circle["velocity"][1] = direction[1] * self.rush_speed
 
-    
+    def handle_collision(self, circle1, circle2):
+        distance = math.sqrt((circle1["position"][0] - circle2["position"][0])**2 +
+                            (circle1["position"][1] - circle2["position"][1])**2)
+        if distance < 2 * self.circle_radius:  # Check collision with diameter (2 * radius)
+            # Calculate overlap and direction of collision
+            overlap = 2 * self.circle_radius - distance
+            collision_direction = [circle2["position"][0] - circle1["position"][0],
+                                circle2["position"][1] - circle1["position"][1]]
+            collision_length = math.sqrt(collision_direction[0]**2 + collision_direction[1]**2)
+
+            if collision_length > 0:
+                # Normalize collision direction
+                collision_direction = [collision_direction[0] / collision_length,
+                                    collision_direction[1] / collision_length]
+                
+                # Resolve collision by pushing the circles away
+                move_distance = overlap / 2
+                circle1["position"][0] -= move_distance * collision_direction[0]
+                circle1["position"][1] -= move_distance * collision_direction[1]
+                circle2["position"][0] += move_distance * collision_direction[0]
+                circle2["position"][1] += move_distance * collision_direction[1]
+
     def run(self):
         # start listinng thread
         recv_thread = threading.Thread(target=self.listenForData, daemon=True)
@@ -192,6 +215,10 @@ class VersusArena:
             # Send data to other client (every frame)
 
             #print(self.peerPositions)
+
+            if self.player_circle is not None:
+                self.handle_collision(self.player_circle, self.enemy_circle)
+
 
             if self.player_circle is not None:
                 self.player_circle["position"][0] += self.player_circle["velocity"][0] * self.clock.get_time() / 1000
