@@ -24,8 +24,6 @@ class VersusArena:
         self.peer = peer
         self.player = player
 
-        self.peerPositions = {} # Contains x,y positions of peers
-
         self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40} # Contains information about the sumo of the player. e.g position, speed, radius
 
         self.enemy_circle = {"position": [0,0], "velocity": [0,0], "radius": 40} # Contains information about the sumo enemy of the player. e.g position, speed, radius
@@ -70,17 +68,12 @@ class VersusArena:
                 
                 self.enemy_circle['position'] = [int(data.split(" ")[1]), int(data.split(" ")[2])]
                 
-                self.peerPositions[addr[1]] = dataPeer
-
-                print(self.peerPositions)
                 self.peer.getSocket().sendto("INIT-OK".encode(), addr)
             elif "UPDATE" in data:
                 #print(data.split(" ", 1)[1])
                 newData = json.loads(data.split(" ",1)[1]) # Format; UPDATE {NEWDATA}
                 self.enemy_circle = newData
                 #print("Got new data from peer")
-
-            #print(data)
 
     def sendInitPositions(self, data):
         while True:
@@ -92,19 +85,10 @@ class VersusArena:
 
 
     def initPositions(self):
-        x = random.randint(0,SCREEN_WIDTH)
-        y = random.randint(0,SCREEN_HEIGHT)
-
-        dataPeer = { 
-                "x": x,
-                "y": y  
-        }
-
         randomPointInRing = self.randomPointInCircle(self.sumo_ring_radius-(0.3 * self.sumo_ring_radius), self.sumo_ring_center[0], self.sumo_ring_center[1]) # --> (x,y)
 
         self.player_circle['position'] = [randomPointInRing[0],randomPointInRing[1]] # init positions
 
-        self.peerPositions[self.peer.getPort()] = dataPeer # This adds the player it self to the players position data structure
         payload = "INIT " + str(randomPointInRing[0]) + " " + str(randomPointInRing[1]) # Protocol: INIT playerStartPositon.x playerStartPosition.y 
 
         sendInit_thread = threading.Thread(target=self.sendInitPositions,args=(payload,), daemon=True)
