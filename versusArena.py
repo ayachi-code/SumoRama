@@ -146,6 +146,29 @@ class VersusArena:
                 circle2["position"][0] += move_distance * collision_direction[0]
                 circle2["position"][1] += move_distance * collision_direction[1]
 
+
+    def checkIfGameOver(self):
+        # Check and handle player circle
+        if self.player_circle is not None:
+            player_distance_to_center = math.sqrt((self.player_circle["position"][0] - self.sumo_ring_center[0])**2 +
+                                                (self.player_circle["position"][1] - self.sumo_ring_center[1])**2)
+            if player_distance_to_center + self.player_circle["radius"] > self.sumo_ring_radius:
+                # Remove the player circle if it has moved outside the sumo ring
+                return True # Game Over
+                #player_circle = None
+
+        # Check and handle other circles
+        #circles_to_remove = []
+        
+        # Checks if other 1v1 peer is out of circle
+        distance_to_center = math.sqrt((self.enemy_circle["position"][0] - self.sumo_ring_center[0])**2 +
+                                        (self.enemy_circle["position"][1] - self.sumo_ring_center[1])**2)
+        if distance_to_center + self.enemy_circle["radius"] > self.sumo_ring_radius:
+            return True
+            # Mark circle for removal if it has moved outside the sumo ring
+            #circles_to_remove.append(circle)
+
+        return False # Not out of circle
     def run(self):
         # start listinng thread
         recv_thread = threading.Thread(target=self.listenForData, daemon=True)
@@ -209,6 +232,13 @@ class VersusArena:
                 #print("S was pressed")
                 #self.peerPositions[str(self.peer.getPort())]['y'] += 3
                 self.player_circle['position'][1] += 3
+
+            if self.checkIfGameOver() == True:
+                print("Game is over")
+            else:
+                print("Game is not over")
+
+            #self.checkIfGameOver()
 
             #pygame.draw.circle(self.screen, self.player.getColor(), (x, y),50)
 
