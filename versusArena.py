@@ -14,7 +14,7 @@ SCREEN_HEIGHT = 800
 # 1v1 arena code
 
 class VersusArena:
-    def __init__(self, screen, gameState, player, peer):
+    def __init__(self, screen, gameState, player, peer, gameOver):
         pygame.init()
         pygame.font.init()
         self.clock = pygame.time.Clock()
@@ -23,10 +23,11 @@ class VersusArena:
         self.gameState = gameState
         self.peer = peer
         self.player = player
+        self.gameOver = gameOver
 
-        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40} # Contains information about the sumo of the player. e.g position, speed, radius
+        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": self.player.getName()} # Contains information about the sumo of the player. e.g position, speed, radius, name
 
-        self.enemy_circle = {"position": [0,0], "velocity": [0,0], "radius": 40} # Contains information about the sumo enemy of the player. e.g position, speed, radius
+        self.enemy_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": None} # Contains information about the sumo enemy of the player. e.g position, speed, radius, name
 
         # Define sumo ring properties
         self.sumo_ring_radius = 450  # Larger radius for the sumo ring
@@ -48,6 +49,7 @@ class VersusArena:
         #States
         self.gameStateRun = True
         self.playerPositionInit = None
+        self.winnerOfTheGame = None # Stores the winner
 
     def setPeer(self, peer):
         self.peer = peer
@@ -61,9 +63,9 @@ class VersusArena:
             if "INIT-OK" == data:
                 self.playerPositionInit = True
             elif "INIT" in data: # We get start positions from other peer
-                #print(data)
+                print(data)
                 self.enemy_circle['position'] = [int(data.split(" ")[1]), int(data.split(" ")[2])]
-                
+                self.enemy_circle['name'] = data.split(" ")[3]
                 self.peer.getSocket().sendto("INIT-OK".encode(), addr)
             elif "UPDATE" in data:
                 newData = json.loads(data.split(" ",1)[1]) # Format; UPDATE {NEWDATA}
@@ -81,9 +83,9 @@ class VersusArena:
     def initPositions(self):
         randomPointInRing = self.randomPointInCircle(self.sumo_ring_radius-(0.3 * self.sumo_ring_radius), self.sumo_ring_center[0], self.sumo_ring_center[1]) # --> (x,y)
 
-        self.player_circle['position'] = [math.ceil(randomPointInRing[0]),math.ceil(randomPointInRing[1])] # init positions
+        self.player_circle['position'] = [math.ceil(randomPointInRing[0]),math.ceil(randomPointInRing[1])] # init positions 
 
-        payload = "INIT " + str(math.ceil(randomPointInRing[0])) + " " + str(math.ceil(randomPointInRing[1])) # Protocol: INIT playerStartPositon.x playerStartPosition.y 
+        payload = "INIT " + str(math.ceil(randomPointInRing[0])) + " " + str(math.ceil(randomPointInRing[1])) + " " + self.player.getName() # Protocol: INIT playerStartPositon.x playerStartPosition.y NAME 
 
         sendInit_thread = threading.Thread(target=self.sendInitPositions,args=(payload,), daemon=True)
         sendInit_thread.start()
@@ -145,12 +147,14 @@ class VersusArena:
             player_distance_to_center = math.sqrt((self.player_circle["position"][0] - self.sumo_ring_center[0])**2 +
                                                 (self.player_circle["position"][1] - self.sumo_ring_center[1])**2)
             if player_distance_to_center + self.player_circle["radius"] > self.sumo_ring_radius:
+                self.winnerOfTheGame = self.enemy_circle['name']
                 return True # Game Over
 
         # Checks if other 1v1 peer is out of circle
         distance_to_center = math.sqrt((self.enemy_circle["position"][0] - self.sumo_ring_center[0])**2 +
                                         (self.enemy_circle["position"][1] - self.sumo_ring_center[1])**2)
         if distance_to_center + self.enemy_circle["radius"] > self.sumo_ring_radius:
+            self.winnerOfTheGame = self.player.getName()
             return True
        
         return False # Not out of circle
@@ -201,13 +205,10 @@ class VersusArena:
                 self.player_circle['position'][1] += 3
 
             if self.checkIfGameOver() == True and self.playerPositionInit == True: # self.playerPositionInit makes sure players are loaded in before checking if game over
-                #print("over")
                 self.gameStateRun = False
                 self.gameState.setCurrentState('1v1GameOver')
-            else:
-                #print("Game is not over")
-                pass
-
+                self.gameOver.setWinner(self.winnerOfTheGame)
+                
             if self.player_circle is not None:
                 self.handle_collision(self.player_circle, self.enemy_circle)
 
