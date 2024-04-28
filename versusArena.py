@@ -61,12 +61,13 @@ class VersusArena:
             if "INIT-OK" == data:
                 self.playerPositionInit = True
             elif "INIT" in data: # We get start positions from other peer
-         
+                print(data)
                 self.enemy_circle['position'] = [int(data.split(" ")[1]), int(data.split(" ")[2])]
                 
                 self.peer.getSocket().sendto("INIT-OK".encode(), addr)
             elif "UPDATE" in data:
                 newData = json.loads(data.split(" ",1)[1]) # Format; UPDATE {NEWDATA}
+                print(newData)
                 self.enemy_circle = newData
 
     def sendInitPositions(self, data):
@@ -80,9 +81,9 @@ class VersusArena:
     def initPositions(self):
         randomPointInRing = self.randomPointInCircle(self.sumo_ring_radius-(0.3 * self.sumo_ring_radius), self.sumo_ring_center[0], self.sumo_ring_center[1]) # --> (x,y)
 
-        self.player_circle['position'] = [randomPointInRing[0],randomPointInRing[1]] # init positions
+        self.player_circle['position'] = [math.ceil(randomPointInRing[0]),math.ceil(randomPointInRing[1])] # init positions
 
-        payload = "INIT " + str(randomPointInRing[0]) + " " + str(randomPointInRing[1]) # Protocol: INIT playerStartPositon.x playerStartPosition.y 
+        payload = "INIT " + str(math.ceil(randomPointInRing[0])) + " " + str(math.ceil(randomPointInRing[1])) # Protocol: INIT playerStartPositon.x playerStartPosition.y 
 
         sendInit_thread = threading.Thread(target=self.sendInitPositions,args=(payload,), daemon=True)
         sendInit_thread.start()
@@ -195,16 +196,17 @@ class VersusArena:
                 self.player_circle['position'][0] -= 3
             if keys[pygame.K_d]:
                 self.player_circle['position'][0] += 3
-
             if keys[pygame.K_w]:
                 self.player_circle['position'][1] -= 3
             if keys[pygame.K_s]:
                 self.player_circle['position'][1] += 3
 
             if self.checkIfGameOver() == True:
-                print("Game is over")
+                #print("Game is over")
+                pass
             else:
-                print("Game is not over")
+                #print("Game is not over")
+                pass
 
             if self.player_circle is not None:
                 self.handle_collision(self.player_circle, self.enemy_circle)
@@ -219,7 +221,7 @@ class VersusArena:
                 self.sumo_ring_radius *= self.shrink_scale  # Shrink the sumo ring
                 self.shrink_timer = 0  # Reset shrink timer
 
-            # Draw sumo ring boundary
+            # Draw sumo ring boundary   
             pygame.draw.circle(self.screen, (255, 0, 0), self.sumo_ring_center, int(self.sumo_ring_radius), 3)
 
             peerPositionJSON = json.dumps(self.player_circle)
