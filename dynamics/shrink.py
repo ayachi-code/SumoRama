@@ -10,6 +10,7 @@ clock = pygame.time.Clock()
 # Define constants
 circle_radius = 40  # Initial radius of all circles
 player_circle = {"center": [960, 540], "velocity": [0, 0], "radius": circle_radius}  # Player-controlled circle (initially at sumo ring center)
+
 circles = [ # Debug circles
     {"center": [800, 300], "velocity": [0, 0], "radius": circle_radius},   # Circle 1
     {"center": [700, 800], "velocity": [0, 0], "radius": circle_radius},   # Circle 2

@@ -25,6 +25,24 @@ class VersusArena:
 
         self.peerPositions = {} # Contains x,y positions of peers
 
+        self.player_circle = {"postion": None, "velocity": [0,0], "radius": 40} # Contains information about the sumo of the player. e.g position, speed, radius
+        self.enemy_circle = {"postion": None, "velocity": [0,0], "radius": 40} # Contains information about the sumo enemy of the player. e.g position, speed, radius
+
+        # Define sumo ring properties
+        self.sumo_ring_radius = 450  # Larger radius for the sumo ring
+        self.sumo_ring_center = [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]  # Center of the screen (1920x1080 resolution)
+
+        # Define rush variables
+        self.rush_duration = 0.5  # Rush duration in seconds
+        self.rush_speed = 300  # Rush speed in pixels per second
+        self.rushing = False
+        self.rush_start_time = 0
+
+        # Define shrink variables
+        self.shrink_timer = 0
+        self.shrink_interval = 5  # Time interval in seconds to shrink the sumo ring
+        self.shrink_scale = 0.9  # Scaling factor for shrinking the sumo ring
+
         #States
         self.gameStateRun = True
         self.playerPositionInit = None
@@ -36,7 +54,6 @@ class VersusArena:
         while True:
             data, addr = self.peer.getSocket().recvfrom(65535) # Max udp size
             data = data.decode()
-            #print(data)
 
             if "INIT-OK" == data:
                 self.playerPositionInit = True
@@ -119,22 +136,33 @@ class VersusArena:
              # Handle player input (move player circle)
             keys = pygame.key.get_pressed()
             if keys[pygame.K_a]:
-                print("A was pressed")
-                #self.peer.getSocket().sendto(payload.encode(), list(self.peer.getConnections())[0])
+                #print("A was pressed")
+                self.peerPositions[str(self.peer.getPort())]['x'] -= 3
             if keys[pygame.K_d]:
-                print("D was pressed")
+                #print("D was pressed")
+                self.peerPositions[str(self.peer.getPort())]['x'] += 3
             if keys[pygame.K_w]:
-                print("W was pressed")
-                self.peerPositions[str(self.peer.getPort())]['y'] += 1
+                #print("W was pressed")
+                self.peerPositions[str(self.peer.getPort())]['y'] -= 3
                 #print(self.peerPositions[str(self.peer.getPort())]['y'])
             if keys[pygame.K_s]:
-                print("S was pressed")
+                #print("S was pressed")
+                self.peerPositions[str(self.peer.getPort())]['y'] += 3
 
             #pygame.draw.circle(self.screen, self.player.getColor(), (x, y),50)
 
             # Send data to other client (every frame)
 
             #print(self.peerPositions)
+
+             # Shrink the sumo ring every 5 seconds
+            self.shrink_timer += self.clock.get_time() / 1000  # Convert milliseconds to seconds
+            if self.shrink_timer >= self.shrink_interval:
+                self.sumo_ring_radius *= self.shrink_scale  # Shrink the sumo ring
+                self.shrink_timer = 0  # Reset shrink timer
+
+            # Draw sumo ring boundary
+            pygame.draw.circle(self.screen, (255, 0, 0), self.sumo_ring_center, int(self.sumo_ring_radius), 3)
 
             peerPositionJSON = json.dumps(self.peerPositions)
 
