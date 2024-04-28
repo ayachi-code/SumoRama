@@ -34,7 +34,7 @@ class VersusArena:
 
     def listenForData(self): # Listens for data, other player
         while True:
-            data, addr = self.peer.getSocket().recvfrom(4096)
+            data, addr = self.peer.getSocket().recvfrom(65535) # Max udp size
             data = data.decode()
             #print(data)
 
@@ -48,6 +48,12 @@ class VersusArena:
                 self.peerPositions[addr[1]] = dataPeer
                 print(self.peerPositions)
                 self.peer.getSocket().sendto("INIT-OK".encode(), addr)
+            elif "UPDATE" in data:
+                #print(data.split(" ", 1)[1])
+                newData = json.loads(data.split(" ",1)[1]) # Format; UPDATE {NEWDATA}
+                self.peerPositions = newData
+                #print("Got new data from peer")
+
             #print(data)
 
     def sendInitPositions(self, data):
@@ -76,7 +82,6 @@ class VersusArena:
         sendInit_thread.start()
 
     
-
     def run(self):
         # start listinng thread
         recv_thread = threading.Thread(target=self.listenForData, daemon=True)
@@ -120,9 +125,22 @@ class VersusArena:
                 print("D was pressed")
             if keys[pygame.K_w]:
                 print("W was pressed")
+                self.peerPositions[str(self.peer.getPort())]['y'] += 1
+                #print(self.peerPositions[str(self.peer.getPort())]['y'])
             if keys[pygame.K_s]:
                 print("S was pressed")
 
             #pygame.draw.circle(self.screen, self.player.getColor(), (x, y),50)
+
+            # Send data to other client (every frame)
+
+            #print(self.peerPositions)
+
+            peerPositionJSON = json.dumps(self.peerPositions)
+
+            payload = "UPDATE " + peerPositionJSON            
+
+            self.peer.getSocket().sendto(payload.encode(), list(self.peer.getConnections())[0]) 
+
             pygame.display.update()
             self.clock.tick(FPS)  # Limits FPS
