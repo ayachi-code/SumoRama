@@ -61,13 +61,13 @@ class VersusArena:
             if "INIT-OK" == data:
                 self.playerPositionInit = True
             elif "INIT" in data: # We get start positions from other peer
-                print(data)
+                #print(data)
                 self.enemy_circle['position'] = [int(data.split(" ")[1]), int(data.split(" ")[2])]
                 
                 self.peer.getSocket().sendto("INIT-OK".encode(), addr)
             elif "UPDATE" in data:
                 newData = json.loads(data.split(" ",1)[1]) # Format; UPDATE {NEWDATA}
-                print(newData)
+                #print(newData)
                 self.enemy_circle = newData
 
     def sendInitPositions(self, data):
@@ -177,7 +177,6 @@ class VersusArena:
                         self.rushing = True
                         self.rush_start_time = pygame.time.get_ticks()
 
-        
             # Handle rush movement towards cursor
             if self.rushing and self.player_circle is not None:
                 current_time = pygame.time.get_ticks()
@@ -201,9 +200,10 @@ class VersusArena:
             if keys[pygame.K_s]:
                 self.player_circle['position'][1] += 3
 
-            if self.checkIfGameOver() == True:
-                #print("Game is over")
-                pass
+            if self.checkIfGameOver() == True and self.playerPositionInit == True: # self.playerPositionInit makes sure players are loaded in before checking if game over
+                #print("over")
+                self.gameStateRun = False
+                self.gameState.setCurrentState('1v1GameOver')
             else:
                 #print("Game is not over")
                 pass
@@ -231,4 +231,4 @@ class VersusArena:
             self.peer.getSocket().sendto(payload.encode(), list(self.peer.getConnections())[0]) 
 
             pygame.display.update()
-            self.clock.tick(FPS)  # Limits FPS
+            self.clock.tick(FPS)  # Limits FPS#

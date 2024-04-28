@@ -1,7 +1,6 @@
 import pygame
 import button
 
-
 FPS = 60
 
 SCREEN_WIDTH = 1300
@@ -10,8 +9,6 @@ SCREEN_HEIGHT = 800
 BUTTONWIDTH = 1000
 BUTTONHEIGHT = 150
 BUTTONSIZETEXT = 140
-
-
 
 class GameOverVersus:
     def __init__(self, screen, gameState):
@@ -44,13 +41,6 @@ class GameOverVersus:
         while self.gameStateRun:
             self.screen.fill((153,0,17)) # Red screen
 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.gameStateRun = False
-                    pygame.quit()
-                    exit(0)
-
-
             gameScreen_surface = self.gameFont.render('GAME OVER!!!!!', True, (255, 255, 255))
             gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH/1.9, 140))
             self.screen.blit(gameScreen_surface, gameScreen_rect)
@@ -69,7 +59,20 @@ class GameOverVersus:
                 self.buttonColor = (183,179,183) 
             else:
                 self.buttonColor = (226,221,220) 
-        
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.gameStateRun = False
+                    pygame.quit()
+                    exit(0)
+                if event.type == pygame.MOUSEBUTTONUP:
+                    pos = pygame.mouse.get_pos()
+                    if goBackButton.isOver(pos):
+                        print("Returning to mainMenu")
+                        self.gameState.setCurrentState('start')
+                        self.gameStateRun = False
+                        self.resetWinner()
+
             pygame.display.update()
             self.clock.tick(FPS)  # Limit to 60 FPS
 
