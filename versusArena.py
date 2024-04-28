@@ -172,20 +172,23 @@ class VersusArena:
     def run(self):
         self.resetStates() # REset previous game states
 
-        # Reset previous states
-
-
         # start listinng thread
         recv_thread = threading.Thread(target=self.listenForData, daemon=True)
         recv_thread.start()
 
         print(self.peer.getConnections())
-        #print("Rerun???")
 
         self.initPositions() # Inits positions from all peers
 
         while self.gameStateRun:
             self.screen.fill((255,255,255)) # White screen
+
+            if self.checkIfGameOver() == True and self.playerPositionInit == True: # self.playerPositionInit makes sure players are loaded in before checking if game over
+                print("Game over")
+                self.gameStateRun = False
+                self.gameState.setCurrentState('1v1GameOver')
+                self.gameOver.setWinner(self.winnerOfTheGame)
+                
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -220,11 +223,6 @@ class VersusArena:
             if keys[pygame.K_s]:
                 self.player_circle['position'][1] += 3
 
-            if self.checkIfGameOver() == True and self.playerPositionInit == True: # self.playerPositionInit makes sure players are loaded in before checking if game over
-                self.gameStateRun = False
-                self.gameState.setCurrentState('1v1GameOver')
-                self.gameOver.setWinner(self.winnerOfTheGame)
-                
             if self.player_circle is not None:
                 self.handle_collision(self.player_circle, self.enemy_circle)
 
