@@ -42,7 +42,7 @@ class GameOverVersus:
                     exit(0)
 
             # Return button
-            goBackButton = button.Button(self.buttonColor,SCREEN_WIDTH/7.5,SCREEN_HEIGHT/3.5,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Return')
+            goBackButton = button.Button(self.buttonColor,SCREEN_WIDTH/7.5,SCREEN_HEIGHT/2,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Return')
             goBackButton.draw(self.screen, (0,0,0))
 
             # Hover effect for button
