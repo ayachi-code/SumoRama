@@ -1,6 +1,14 @@
 import pygame
+import random
+import player
+import threading
+import time
+import json
 
 FPS = 60
+
+SCREEN_WIDTH = 1300
+SCREEN_HEIGHT = 800
 
 # 1v1 arena code
 
@@ -15,13 +23,81 @@ class VersusArena:
         self.peer = peer
         self.player = player
 
+        self.peerPositions = {} # Contains x,y positions of peers
+
+        #States
         self.gameStateRun = True
+        self.playerPositionInit = None
 
     def setPeer(self, peer):
         self.peer = peer
 
+    def listenForData(self): # Listens for data, other player
+        while True:
+            data, addr = self.peer.getSocket().recvfrom(4096)
+            data = data.decode()
+            #print(data)
+
+            if "INIT-OK" == data:
+                self.playerPositionInit = True
+            elif "INIT" in data: # We get start positions from other peer
+                dataPeer = {
+                    "x": int(data.split(" ")[1]),
+                    "y": int(data.split(" ")[2])  
+                }
+                self.peerPositions[addr[1]] = dataPeer
+                print(self.peerPositions)
+                self.peer.getSocket().sendto("INIT-OK".encode(), addr)
+            #print(data)
+
+    def sendInitPositions(self, data):
+        while True:
+            if self.playerPositionInit == True:
+                break
+            #print("Sending positions " + data)
+            self.peer.getSocket().sendto(data.encode(), list(self.peer.getConnections())[0])
+            time.sleep(0.1)
+
+
+    def initPositions(self):
+        x = random.randint(0,SCREEN_WIDTH)
+        y = random.randint(0,SCREEN_HEIGHT)
+
+        peerAddr = list(self.peer.getConnections())[0]
+
+        dataPeer = {
+                "x": x,
+                "y": y  
+            }
+        self.peerPositions[self.peer.getPort()] = dataPeer # This adds the player it self to the players position data structure
+        payload = "INIT " + str(x) + " " + str(y) # Protocol: INIT playerStartPositon.x playerStartPosition.y 
+
+        sendInit_thread = threading.Thread(target=self.sendInitPositions,args=(payload,), daemon=True)
+        sendInit_thread.start()
+
+    
+
     def run(self):
+        # start listinng thread
+        recv_thread = threading.Thread(target=self.listenForData, daemon=True)
+        recv_thread.start()
+
         print(self.peer.getConnections())
+
+        self.initPositions() # Inits positions from all peers
+
+        #x = random.randint(0,SCREEN_WIDTH)
+        #y = random.randint(0,SCREEN_HEIGHT)
+
+        #payload = "INIT " + str(x) + " " + str(y) # Protocol: INIT playerStartPositon.x playerStartPosition.y 
+        #print(list(self.peer.getConnections())[0])
+
+
+        #self.peer.getSocket().sendto(payload.encode(), list(self.peer.getConnections())[0])
+        #self.peer.getSocket().sendto(payload.encode(), list(self.peer.getConnections())[0])
+
+
+
         while self.gameStateRun:
             self.screen.fill((255,255,255)) # White screen
 
@@ -31,5 +107,22 @@ class VersusArena:
                     pygame.quit()
                     exit(0)
 
+            for key, value in self.peerPositions.items(): # Draw the players
+                #print(value)
+                pygame.draw.circle(self.screen, self.player.getColor(), (value['x'],value['y']),50)
+
+             # Handle player input (move player circle)
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_a]:
+                print("A was pressed")
+                #self.peer.getSocket().sendto(payload.encode(), list(self.peer.getConnections())[0])
+            if keys[pygame.K_d]:
+                print("D was pressed")
+            if keys[pygame.K_w]:
+                print("W was pressed")
+            if keys[pygame.K_s]:
+                print("S was pressed")
+
+            #pygame.draw.circle(self.screen, self.player.getColor(), (x, y),50)
             pygame.display.update()
             self.clock.tick(FPS)  # Limits FPS
