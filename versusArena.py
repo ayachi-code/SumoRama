@@ -61,25 +61,18 @@ class VersusArena:
             if "INIT-OK" == data:
                 self.playerPositionInit = True
             elif "INIT" in data: # We get start positions from other peer
-                dataPeer = {
-                    "x": int(data.split(" ")[1]),
-                    "y": int(data.split(" ")[2])  
-                }
-                
+         
                 self.enemy_circle['position'] = [int(data.split(" ")[1]), int(data.split(" ")[2])]
                 
                 self.peer.getSocket().sendto("INIT-OK".encode(), addr)
             elif "UPDATE" in data:
-                #print(data.split(" ", 1)[1])
                 newData = json.loads(data.split(" ",1)[1]) # Format; UPDATE {NEWDATA}
                 self.enemy_circle = newData
-                #print("Got new data from peer")
 
     def sendInitPositions(self, data):
         while True:
             if self.playerPositionInit == True:
                 break
-            #print("Sending positions " + data)
             self.peer.getSocket().sendto(data.encode(), list(self.peer.getConnections())[0])
             time.sleep(0.1)
 
@@ -151,21 +144,14 @@ class VersusArena:
             player_distance_to_center = math.sqrt((self.player_circle["position"][0] - self.sumo_ring_center[0])**2 +
                                                 (self.player_circle["position"][1] - self.sumo_ring_center[1])**2)
             if player_distance_to_center + self.player_circle["radius"] > self.sumo_ring_radius:
-                # Remove the player circle if it has moved outside the sumo ring
                 return True # Game Over
-                #player_circle = None
 
-        # Check and handle other circles
-        #circles_to_remove = []
-        
         # Checks if other 1v1 peer is out of circle
         distance_to_center = math.sqrt((self.enemy_circle["position"][0] - self.sumo_ring_center[0])**2 +
                                         (self.enemy_circle["position"][1] - self.sumo_ring_center[1])**2)
         if distance_to_center + self.enemy_circle["radius"] > self.sumo_ring_radius:
             return True
-            # Mark circle for removal if it has moved outside the sumo ring
-            #circles_to_remove.append(circle)
-
+       
         return False # Not out of circle
     
     def run(self):
@@ -200,36 +186,19 @@ class VersusArena:
                     self.rushing = False  # Stop rushing after duration expires
                     self.player_circle["velocity"] = [0, 0]  # Stop the player circle
 
-
-           # for key, value in self.peerPositions.items(): # Draw the players
-                #print(value)
-            #    pygame.draw.circle(self.screen, self.player.getColor(), (value['x'],value['y']),50)
-
             pygame.draw.circle(self.screen, self.player.getColor(), (self.player_circle['position'][0],self.player_circle['position'][1]),40)
             pygame.draw.circle(self.screen, self.player.getColor(), (self.enemy_circle['position'][0],self.enemy_circle['position'][1]),40)
 
              # Handle player input (move player circle)
             keys = pygame.key.get_pressed()
             if keys[pygame.K_a]:
-                #print("A was pressed")
-                print(self.enemy_circle)
-                print(self.player_circle)
-                #self.peerPositions[str(self.peer.getPort())]['x'] -= 3
                 self.player_circle['position'][0] -= 3
             if keys[pygame.K_d]:
-                #print("D was pressed")
-                #self.peerPositions[str(self.peer.getPort())]['x'] += 3
                 self.player_circle['position'][0] += 3
 
             if keys[pygame.K_w]:
-                #print("W was pressed")
-                #self.peerPositions[str(self.peer.getPort())]['y'] -= 3
                 self.player_circle['position'][1] -= 3
-
-                #print(self.peerPositions[str(self.peer.getPort())]['y'])
             if keys[pygame.K_s]:
-                #print("S was pressed")
-                #self.peerPositions[str(self.peer.getPort())]['y'] += 3
                 self.player_circle['position'][1] += 3
 
             if self.checkIfGameOver() == True:
@@ -237,17 +206,8 @@ class VersusArena:
             else:
                 print("Game is not over")
 
-            #self.checkIfGameOver()
-
-            #pygame.draw.circle(self.screen, self.player.getColor(), (x, y),50)
-
-            # Send data to other client (every frame)
-
-            #print(self.peerPositions)
-
             if self.player_circle is not None:
                 self.handle_collision(self.player_circle, self.enemy_circle)
-
 
             if self.player_circle is not None:
                 self.player_circle["position"][0] += self.player_circle["velocity"][0] * self.clock.get_time() / 1000
