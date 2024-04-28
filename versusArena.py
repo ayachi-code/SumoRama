@@ -189,7 +189,6 @@ class VersusArena:
                 self.gameState.setCurrentState('1v1GameOver')
                 self.gameOver.setWinner(self.winnerOfTheGame)
                 
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.gameStateRun = False

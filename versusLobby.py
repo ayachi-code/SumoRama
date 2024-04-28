@@ -171,6 +171,7 @@ class VersusLobby:
                 self.arena.setPeer(self.peer)
                 self.gameState.setCurrentState('versusArena')
                 self.gameStateRun = False
+                self.playerQuit = True
                 print("start versus arena")
 
             self.screen.fill((153,0,17))
