@@ -58,9 +58,9 @@ class JoinMenu:
                     break
                 self.socketCon.sendto(handshakeMessage.encode(), ('127.0.0.1', int(self.ip_port.getText())))
                 #self.socketCon.sendto(handshakeMessage.encode(), (self.ip_input.getText(), int(self.ip_port.getText())))
-                print("Sending request to host")
-                print(self.hostAck)
-                time.sleep(1)
+                #print("Sending request to host")
+                #print(self.hostAck)
+                time.sleep(0.1)
                 maxRequestSend -= 1
         except Exception as e:
             print(e)
@@ -136,7 +136,6 @@ class JoinMenu:
 
                             while True:
                                 if self.hostAck:
-                                    #self.hostAck = None # Resets ack 
                                     break
                                 elif self.hostAck == False:
                                     raise Exception

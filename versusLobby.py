@@ -111,6 +111,7 @@ class VersusLobby:
         self.peer.resetConnections()
         self.readyUp = []
         self.peerPressedReadyUp = False    
+        self.pressedReadyUpButton = False
         
     def pollPeer(self, peer): # Poll peer to check if they are in lobby
         maxTimeOut = 2
