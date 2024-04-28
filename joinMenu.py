@@ -19,7 +19,7 @@ BUTTONHEIGHT = 150
 BUTTONSIZETEXT = 140
 
 class JoinMenu:
-    def __init__(self, screen, gameState, lobbyVersus, player):
+    def __init__(self, screen, gameState, lobbyVersus):
         pygame.init()
         pygame.font.init()
         self.clock = pygame.time.Clock()

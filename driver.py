@@ -32,10 +32,11 @@ class Game:
 
         self.start = mainMenu.MainMenu(self.screen, self.gameStateManager, self.player)
         self.versusMenu = versusMenu.VersusMenu(self.screen, self.gameStateManager, self.player)
-        self.lobbyVersus = versusLobby.VersusLobby(self.screen, self.gameStateManager, None, self.player)
-        self.joinMenu = joinMenu.JoinMenu(self.screen, self.gameStateManager, self.lobbyVersus, self.player)
         self.errorJoin = errorJoin.ErrorJoin(self.screen, self.gameStateManager)
-        self.versusArena = versusArena.VersusArena(self.screen, self.gameStateManager)
+
+        self.versusArena = versusArena.VersusArena(self.screen, self.gameStateManager, self.player, None)
+        self.lobbyVersus = versusLobby.VersusLobby(self.screen, self.gameStateManager, None, self.player, self.versusArena)
+        self.joinMenu = joinMenu.JoinMenu(self.screen, self.gameStateManager, self.lobbyVersus)
 
         self.states = {'start': self.start, '1v1Menu': self.versusMenu, 'joinMenu': self.joinMenu, 'lobby1v1': self.lobbyVersus, 'errorJoin': self.errorJoin, 'versusArena': self.versusArena}
 

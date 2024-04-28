@@ -16,7 +16,7 @@ SCREEN_HEIGHT = 800
 BUTTONSIZETEXT = 100
 
 class VersusLobby:
-    def __init__(self, screen, gameState, peerIP, player):
+    def __init__(self, screen, gameState, peerIP, player, arena):
         pygame.init()
         pygame.font.init()
 
@@ -28,9 +28,11 @@ class VersusLobby:
         self.gameState = gameState 
         self.peerIP = peerIP
         self.player = player
+        self.arena = arena
 
         self.port = None
         self.peer = None
+
 
         self.peerName = ""
         self.peerColor = (255,255,255)
@@ -160,6 +162,7 @@ class VersusLobby:
    
         while self.gameStateRun:
             if len(self.readyUp) == 2: # 2 players ready-up we can start the game
+                self.arena.setPeer(self.peer)
                 self.gameState.setCurrentState('versusArena')
                 self.gameStateRun = False    
                 print("start versus arena")            
@@ -229,6 +232,6 @@ class VersusLobby:
                         if addressOfPeer != None:
                             self.readyUp.append(self.peer.getPort()) # Appends players unique port to ready up
                             self.peer.getSocket().sendto("READY".encode(), addressOfPeer) # Sends ready to peer, MUST BE ACKNOWLEDGED
-                                               
+
             pygame.display.update()
             self.clock.tick(FPS)  # Limits FPS
