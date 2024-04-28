@@ -6,6 +6,8 @@ import peer
 import threading
 import time
 
+#TODO When host leaves joiner must get a the error message
+
 FPS = 60
 
 SCREEN_WIDTH = 1300
