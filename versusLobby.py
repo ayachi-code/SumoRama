@@ -229,7 +229,6 @@ class VersusLobby:
                         if addressOfPeer != None:
                             self.readyUp.append(self.peer.getPort()) # Appends players unique port to ready up
                             self.peer.getSocket().sendto("READY".encode(), addressOfPeer) # Sends ready to peer, MUST BE ACKNOWLEDGED
-                        #print("Ready up")
-                   
+                                               
             pygame.display.update()
             self.clock.tick(FPS)  # Limits FPS
