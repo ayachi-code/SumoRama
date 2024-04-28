@@ -6,7 +6,7 @@ import peer
 import threading
 import time
 
-#TODO When host leaves joiner must get a the error message
+#TODO: Add Lobby portocol to documentation
 
 FPS = 60
 
@@ -52,7 +52,6 @@ class VersusLobby:
         while True:
             data, addr = self.peer.getSocket().recvfrom(1024)
             data = data.decode()
-            #print(data)
             if self.playerQuit: # Stops thread when player quits
                 break
 
@@ -147,7 +146,6 @@ class VersusLobby:
         #print("IP " + self.peerIP)
         #print("Port " + str(self.port))
         self.gameStateRun = True
-        print("tst")
         self.peer = peer.Peer('127.0.0.1',  random.randint(6000, 8080)) # Creates peer object
         self.peer.start()
 
