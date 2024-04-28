@@ -28,12 +28,21 @@ class GameOverVersus:
         
         self.gameFont = pygame.font.SysFont('Comic Sans MS', 130)
 
+        self.winner = None # Stores the winner
+
+    def setWinner(self, winner):
+        self.winner = winner
+
+    def resetWinner(self):
+        self.winner = None
+
+    def getWinner(self):
+        return self.winner
 
     def run(self):
         self.gameStateRun = True
         while self.gameStateRun:
             self.screen.fill((153,0,17)) # Red screen
-
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
