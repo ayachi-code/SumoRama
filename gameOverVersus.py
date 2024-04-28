@@ -28,13 +28,13 @@ class GameOverVersus:
         
         self.gameFont = pygame.font.SysFont('Comic Sans MS', 130)
 
-        self.winner = None # Stores the winner
+        self.winner = "" # Stores the winner
 
     def setWinner(self, winner):
         self.winner = winner
 
     def resetWinner(self):
-        self.winner = None
+        self.winner = ""
 
     def getWinner(self):
         return self.winner
@@ -55,10 +55,9 @@ class GameOverVersus:
             gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH/1.9, 140))
             self.screen.blit(gameScreen_surface, gameScreen_rect)
 
-            gameScreen_surfaceTwo = self.gameFont.render('Player420 won the game', True, (255, 255, 255))
+            gameScreen_surfaceTwo = self.gameFont.render(self.winner + ' won the game', True, (255, 255, 255))
             gameScreen_rectTwo = gameScreen_surfaceTwo.get_rect(center=(SCREEN_WIDTH/1.9, 300))
             self.screen.blit(gameScreen_surfaceTwo, gameScreen_rectTwo)
-
 
             # Return button
             goBackButton = button.Button(self.buttonColor,SCREEN_WIDTH/7.5,SCREEN_HEIGHT/1.75,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Return')
@@ -75,7 +74,7 @@ class GameOverVersus:
             self.clock.tick(FPS)  # Limit to 60 FPS
 
 
-if __name__ == "__main__":
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  # Set display resolution
-    game = GameOverVersus(screen, None)
-    game.run()
+#if __name__ == "__main__":
+#    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  # Set display resolution
+#    game = GameOverVersus(screen, None)
+#    game.run()
