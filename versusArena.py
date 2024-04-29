@@ -83,6 +83,7 @@ class VersusArena:
                 self.enemy_circle['name'] = data.split(" ")[3]
                 self.peer.getSocket().sendto("INIT-OK".encode(), addr)
             elif "UPDATE" in data:
+                #print(data)
                 newData = json.loads(data.split(" ",1)[1])
                 self.enemy_circle = newData
 
@@ -112,9 +113,11 @@ class VersusArena:
 
     def rush_to_cursor(self):
         mouse_x, mouse_y = pygame.mouse.get_pos()
+
         if self.player_circle is not None:
             direction = [mouse_x - self.player_circle["position"][0], mouse_y - self.player_circle["position"][1]]
             length = math.sqrt(direction[0]**2 + direction[1]**2)
+
             if length > 0:
                 direction = [direction[0] / length, direction[1] / length]
                 self.player_circle["velocity"][0] = direction[0] * self.rush_speed
@@ -205,12 +208,10 @@ class VersusArena:
             dy = self.player_circle['position'][1] - self.last_player_position[1]
             distance_moved = math.sqrt(dx ** 2 + dy ** 2)
 
-            # Cheat detection
             if distance_moved > MAX_MOVE_DISTANCE_PER_TICK and self.newRoundState == True: # Cheat detection False positive, random spawn in ring is detected as teleporting
                 self.newRoundState = False
             elif distance_moved > MAX_MOVE_DISTANCE_PER_TICK and self.newRoundState == False: # Player moved to fast
-                print("Cheat detected: The player is going to fast !!!")
-                #Kick player
+                print("Movement to fast, but resolved by lockstep")
 
         self.last_player_position = self.player_circle['position'] # Stores last position
 
@@ -225,6 +226,10 @@ class VersusArena:
         self.displayCountdown()
 
         while self.gameStateRun:
+
+            if self.cheat_detection_enabled: # Cheat detection method
+                self.detectCheat()
+
             current_time = time.time()
             delta_time = current_time - self.last_tick_time
             self.last_tick_time = current_time
@@ -293,9 +298,6 @@ class VersusArena:
                 self.player_circle['position'][1] -= 3
             if keys[pygame.K_s]:
                 self.player_circle['position'][1] += 3
-
-            if self.cheat_detection_enabled: # Cheat detection method
-                self.detectCheat()
 
             if self.player_circle is not None:
                 self.handle_collision(self.player_circle, self.enemy_circle) # Collision detection
