@@ -6,25 +6,29 @@ import json
 import math
 
 FPS = 60
+
 SCREEN_WIDTH = 1300
 SCREEN_HEIGHT = 800
+
 GAME_TICK_RATE = 1 / FPS  # Game tick rate in seconds
 MAX_MOVE_DISTANCE_PER_TICK = 10  # Threashold max allowed move distance
 
 class VersusArena:
     def __init__(self, screen, gameState, player, peer, gameOver):
-        pygame.init()
-        pygame.font.init()
+        pygame.init() # Init pygame
+        pygame.font.init() # Init font
 
         self.gameFont = pygame.font.SysFont('Comic Sans MS', 40)
         self.clock = pygame.time.Clock()
 
+        # Set arguments to class
         self.screen = screen
         self.gameState = gameState
         self.peer = peer
         self.player = player
         self.gameOver = gameOver
 
+        
         self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": self.player.getName(),"score": 0}
         self.enemy_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": None, "score": 0}
 
@@ -32,17 +36,20 @@ class VersusArena:
         self.sumo_ring_center = [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]
         self.circle_radius = 40
 
+        # Rush variables
         self.rush_duration = 0.5
         self.rush_speed = 300
         self.rushing = False
         self.rush_start_time = 0
 
+        # Shrink variables
         self.shrink_timer = 0
         self.timerScreen = 10
         self.shrink_interval = 10
         self.shrink_scale = 0.9
         self.colorShrinkTimer = (0,0,0)
 
+        # Game state variables
         self.gameStateRun = True
         self.playerPositionInit = None
         self.winnerOfTheGame = None
@@ -57,12 +64,13 @@ class VersusArena:
         self.last_player_position = None
         self.cheat_detection_enabled = True  # Toggle cheat detection
 
+        # State to check if a new round is set
         self.newRoundState = False
 
-    def setPeer(self, peer):
+    def setPeer(self, peer): # Setter for peer variable
         self.peer = peer
 
-    def listenForData(self):
+    def listenForData(self): # Listens for incoming data from other peer
         while True:
             data, addr = self.peer.getSocket().recvfrom(65535)
             data = data.decode()
@@ -77,14 +85,14 @@ class VersusArena:
                 newData = json.loads(data.split(" ",1)[1])
                 self.enemy_circle = newData
 
-    def sendInitPositions(self, data):
+    def sendInitPositions(self, data): # Send init positions to other peer
         while True:
             if self.playerPositionInit == True:
                 break
             self.peer.getSocket().sendto(data.encode(), list(self.peer.getConnections())[0])
             time.sleep(0.1)
 
-    def initPositions(self):
+    def initPositions(self): # Inits position from client perspectuve and starts thread to poll other peer
         randomPointInRing = self.randomPointInCircle(self.sumo_ring_radius-(0.3 * self.sumo_ring_radius), self.sumo_ring_center[0], self.sumo_ring_center[1])
         self.player_circle['position'] = [math.ceil(randomPointInRing[0]),math.ceil(randomPointInRing[1])]
 
@@ -93,7 +101,7 @@ class VersusArena:
         sendInit_thread = threading.Thread(target=self.sendInitPositions,args=(payload,), daemon=True)
         sendInit_thread.start()
 
-    def randomPointInCircle(self, radius, centerX, centerY):
+    def randomPointInCircle(self, radius, centerX, centerY): # Uses circle formula to generate random point on circle
         alpha = 2 * math.pi * random.random()
         r = radius * math.sqrt(random.random())
 
@@ -155,7 +163,7 @@ class VersusArena:
 
         return False
 
-    def resetStates(self):
+    def resetStates(self): # REsets state for different game from same client
         self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": self.player.getName(),"score": 0}
         self.enemy_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": None, "score": 0}
         self.gameStateRun = True
@@ -164,7 +172,7 @@ class VersusArena:
         self.sumo_ring_radius = 450
         self.score = 0
 
-    def newRound(self):
+    def newRound(self): # Sets states for new round, e.g circle is reset
         self.sumo_ring_radius = 450
 
         randomPointInRingPlayer = self.randomPointInCircle(self.sumo_ring_radius-(0.3 * self.sumo_ring_radius), self.sumo_ring_center[0], self.sumo_ring_center[1])
@@ -178,7 +186,7 @@ class VersusArena:
         self.shrink_timer = 0
         self.colorShrinkTimer = 10
 
-    def displayCountdown(self):
+    def displayCountdown(self): # Shows a counter before starting the game, preps player to be ready
         countdown_font = pygame.font.SysFont('Comic Sans MS', 100)
         for i in range(5, 0, -1):
             self.screen.fill((255, 255, 255))
@@ -235,15 +243,18 @@ class VersusArena:
                 print("Round over")
                 self.newRound()
 
-            if math.ceil(self.timerScreen - self.shrink_timer) <= 5:
+            if math.ceil(self.timerScreen - self.shrink_timer) <= 5: # Shows different color depending how close the timer is to the end.
                 self.colorShrinkTimer = (255, 0, 0)
             else:
                 self.colorShrinkTimer = (0,0,0)
 
+            # Score displayed on screen
             gameScreen_Score = self.gameFont.render('Score: ' + str(self.score), True, (0,0,0))
             gameScreen_rect = gameScreen_Score.get_rect(center=(SCREEN_WIDTH - SCREEN_WIDTH/7, 20))
             self.screen.blit(gameScreen_Score, gameScreen_rect)
 
+
+            # Time displayed on screen
             gameScreen_waveTimer = self.gameFont.render('0:' + str(math.ceil(self.timerScreen - self.shrink_timer)), True, self.colorShrinkTimer)
             gameScreen_rect = gameScreen_waveTimer.get_rect(center=(SCREEN_WIDTH - 30, 20))
             self.screen.blit(gameScreen_waveTimer, gameScreen_rect)
@@ -254,11 +265,11 @@ class VersusArena:
                     pygame.quit()
                     exit(0)
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE and not self.rushing and self.player_circle is not None:
+                    if event.key == pygame.K_SPACE and not self.rushing and self.player_circle is not None: # Rush state set
                         self.rushing = True
                         self.rush_start_time = pygame.time.get_ticks()
 
-            if self.rushing and self.player_circle is not None:
+            if self.rushing and self.player_circle is not None: 
                 current_time = pygame.time.get_ticks()
                 if current_time - self.rush_start_time < self.rush_duration * 1000:
                     self.rush_to_cursor()
@@ -266,9 +277,12 @@ class VersusArena:
                     self.rushing = False
                     self.player_circle["velocity"] = [0, 0]
 
+            # Draw players on the screen
             pygame.draw.circle(self.screen, self.player.getColor(), (self.player_circle['position'][0],self.player_circle['position'][1]),40)
             pygame.draw.circle(self.screen, self.player.getColor(), (self.enemy_circle['position'][0],self.enemy_circle['position'][1]),40)
 
+
+            # Movement for player wasd
             keys = pygame.key.get_pressed()
             if keys[pygame.K_a]:
                 self.player_circle['position'][0] -= 3
@@ -283,24 +297,26 @@ class VersusArena:
                 self.detectCheat()
 
             if self.player_circle is not None:
-                self.handle_collision(self.player_circle, self.enemy_circle)
+                self.handle_collision(self.player_circle, self.enemy_circle) # Collision detection
 
-            if self.player_circle is not None:
+            if self.player_circle is not None: # Changes position depending on the speed
                 self.player_circle["position"][0] += self.player_circle["velocity"][0] * self.clock.get_time() / 1000
                 self.player_circle["position"][1] += self.player_circle["velocity"][1] * self.clock.get_time() / 1000
 
+            # Shrink timer updated
             self.shrink_timer += self.clock.get_time() / 1000
-            
-            if self.shrink_timer >= self.shrink_interval:
+
+            if self.shrink_timer >= self.shrink_interval: # If timer exceeds threshold than make the circle smaller and reset timers.
                 self.sumo_ring_radius *= self.shrink_scale
                 self.shrink_timer = 0
                 self.timerScreen = 10
 
-            pygame.draw.circle(self.screen, (255, 0, 0), self.sumo_ring_center, int(self.sumo_ring_radius), 30)
+            pygame.draw.circle(self.screen, (255, 0, 0), self.sumo_ring_center, int(self.sumo_ring_radius), 30) # Draw the sumo ring
 
+            # Sends data to client
             peerPositionJSON = json.dumps(self.player_circle)
             payload = "UPDATE " + peerPositionJSON
             self.peer.getSocket().sendto(payload.encode(), list(self.peer.getConnections())[0])
 
             pygame.display.update()
-            self.clock.tick(FPS)
+            self.clock.tick(FPS) # FPS locked
