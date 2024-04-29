@@ -188,7 +188,7 @@ class VersusArena:
                 self.gameState.setCurrentState('1v1GameOver')
                 self.gameOver.setWinner(self.winnerOfTheGame)
 
-            gameScreen_waveTimer = self.gameFont.render('0:' + str(self.timerScreen), True, (0, 0, 0))
+            gameScreen_waveTimer = self.gameFont.render('0:' + str(math.ceil(self.timerScreen - self.shrink_timer)), True, (0, 0, 0))
             gameScreen_rect = gameScreen_waveTimer.get_rect(center=(SCREEN_WIDTH - 30, 20))
             self.screen.blit(gameScreen_waveTimer, gameScreen_rect)
 
@@ -232,12 +232,13 @@ class VersusArena:
                 self.player_circle["position"][1] += self.player_circle["velocity"][1] * self.clock.get_time() / 1000
 
             self.shrink_timer += self.clock.get_time() / 1000
+            
             if self.shrink_timer >= self.shrink_interval:
                 self.sumo_ring_radius *= self.shrink_scale # Makes the circle smaller with the shrink scalar
                 self.shrink_timer = 0
                 self.timerScreen = 10 # Resets timer back to 10 on screen
 
-            pygame.draw.circle(self.screen, (255, 0, 0), self.sumo_ring_center, int(self.sumo_ring_radius), 3)
+            pygame.draw.circle(self.screen, (255, 0, 0), self.sumo_ring_center, int(self.sumo_ring_radius), 3) # Draws the sumo ring
 
             # Sends player data to other peer
             peerPositionJSON = json.dumps(self.player_circle)
