@@ -213,6 +213,7 @@ class VersusArena:
             pygame.draw.circle(self.screen, self.player.getColor(), (self.player_circle['position'][0],self.player_circle['position'][1]),40)
             pygame.draw.circle(self.screen, self.player.getColor(), (self.enemy_circle['position'][0],self.enemy_circle['position'][1]),40)
 
+            # Player movement wasd
             keys = pygame.key.get_pressed()
             if keys[pygame.K_a]:
                 self.player_circle['position'][0] -= 3
@@ -223,24 +224,25 @@ class VersusArena:
             if keys[pygame.K_s]:
                 self.player_circle['position'][1] += 3
 
-            if self.player_circle is not None:
+            if self.player_circle is not None: # Collision handeling
                 self.handle_collision(self.player_circle, self.enemy_circle)
 
-            if self.player_circle is not None:
+            if self.player_circle is not None: # Update position based on speed :)
                 self.player_circle["position"][0] += self.player_circle["velocity"][0] * self.clock.get_time() / 1000
                 self.player_circle["position"][1] += self.player_circle["velocity"][1] * self.clock.get_time() / 1000
 
             self.shrink_timer += self.clock.get_time() / 1000
             if self.shrink_timer >= self.shrink_interval:
-                self.sumo_ring_radius *= self.shrink_scale
+                self.sumo_ring_radius *= self.shrink_scale # Makes the circle smaller with the shrink scalar
                 self.shrink_timer = 0
-                self.timerScreen = 10
+                self.timerScreen = 10 # Resets timer back to 10 on screen
 
             pygame.draw.circle(self.screen, (255, 0, 0), self.sumo_ring_center, int(self.sumo_ring_radius), 3)
 
+            # Sends player data to other peer
             peerPositionJSON = json.dumps(self.player_circle)
             payload = "UPDATE " + peerPositionJSON
             self.peer.getSocket().sendto(payload.encode(), list(self.peer.getConnections())[0])
 
             pygame.display.update()
-            self.clock.tick(FPS)
+            self.clock.tick(FPS) # Limits game to FPS(60)
