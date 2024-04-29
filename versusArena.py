@@ -50,6 +50,7 @@ class VersusArena:
         self.gameStateRun = True
         self.playerPositionInit = None
         self.winnerOfTheGame = None
+        self.score = 0
 
     def setPeer(self, peer): # Setter for peer
         self.peer = peer
@@ -142,6 +143,7 @@ class VersusArena:
         if distance_to_center + self.enemy_circle["radius"] > self.sumo_ring_radius:
             self.winnerOfTheGame = self.player.getName()
             self.player_circle["score"] += 1 # Increase score with 1
+            self.score += 1
             return True
 
         return False
@@ -153,6 +155,7 @@ class VersusArena:
         self.playerPositionInit = None
         self.winnerOfTheGame = None
         self.sumo_ring_radius = 450
+        self.score = 0
 
     def newRound(self): # Makes game ready for new round e.g circle reset
         self.sumo_ring_radius = 450
@@ -207,6 +210,10 @@ class VersusArena:
                 self.colorShrinkTimer = (255, 0, 0)
             else:
                 self.colorShrinkTimer = (0,0,0)
+
+            gameScreen_Score = self.gameFont.render('Score: ' + str(self.score), True, (0,0,0))
+            gameScreen_rect = gameScreen_Score.get_rect(center=(SCREEN_WIDTH - SCREEN_WIDTH/7, 20))
+            self.screen.blit(gameScreen_Score, gameScreen_rect)
 
             gameScreen_waveTimer = self.gameFont.render('0:' + str(math.ceil(self.timerScreen - self.shrink_timer)), True, self.colorShrinkTimer)
             gameScreen_rect = gameScreen_waveTimer.get_rect(center=(SCREEN_WIDTH - 30, 20))
