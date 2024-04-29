@@ -12,7 +12,7 @@ SCREEN_WIDTH = 1300
 SCREEN_HEIGHT = 800
 
 GAME_TICK_RATE = 1 / FPS  # Game tick rate in seconds
-MAX_MOVE_DISTANCE_PER_TICK = 10  # Threashold max allowed move distance
+MAX_MOVE_DISTANCE_PER_TICK = 6  # Threashold max allowed move distance
 
 class VersusArena:
     def __init__(self, screen, gameState, player, peer, gameOver):
