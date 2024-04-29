@@ -44,6 +44,7 @@ class VersusArena:
         self.timerScreen = 10
         self.shrink_interval = 10
         self.shrink_scale = 0.9
+        self.colorShrinkTimer = (0,0,0) # Starts with black
 
         # Game STates
         self.gameStateRun = True
@@ -87,6 +88,7 @@ class VersusArena:
     def randomPointInCircle(self, radius, centerX, centerY): # Uses circle formula to find a random point in a circle
         alpha = 2 * math.pi * random.random()
         r = radius * math.sqrt(random.random())
+
         x = r * math.cos(alpha) + centerX
         y = r * math.sin(alpha) + centerY
         return (x,y)
@@ -169,17 +171,11 @@ class VersusArena:
         recv_thread = threading.Thread(target=self.listenForData, daemon=True)
         recv_thread.start()
 
-        #print(self.peer.getConnections())
-
         self.initPositions() 
-
-        #print(self.playerPositionInit)
 
         self.displayCountdown() # Assures sync between clients
 
         while self.gameStateRun and self.playerPositionInit:
-            #print(self.playerPositionInit)
-
             self.screen.fill((255, 255, 255)) # White screen arena
 
             if self.checkIfGameOver() == True and self.playerPositionInit == True:
@@ -188,7 +184,13 @@ class VersusArena:
                 self.gameState.setCurrentState('1v1GameOver')
                 self.gameOver.setWinner(self.winnerOfTheGame)
 
-            gameScreen_waveTimer = self.gameFont.render('0:' + str(math.ceil(self.timerScreen - self.shrink_timer)), True, (0, 0, 0))
+
+            if math.ceil(self.timerScreen - self.shrink_timer) <= 5:
+                self.colorShrinkTimer = (255, 0, 0)
+            else:
+                self.colorShrinkTimer = (0,0,0)
+
+            gameScreen_waveTimer = self.gameFont.render('0:' + str(math.ceil(self.timerScreen - self.shrink_timer)), True, self.colorShrinkTimer)
             gameScreen_rect = gameScreen_waveTimer.get_rect(center=(SCREEN_WIDTH - 30, 20))
             self.screen.blit(gameScreen_waveTimer, gameScreen_rect)
 
@@ -238,7 +240,8 @@ class VersusArena:
                 self.shrink_timer = 0
                 self.timerScreen = 10 # Resets timer back to 10 on screen
 
-            pygame.draw.circle(self.screen, (255, 0, 0), self.sumo_ring_center, int(self.sumo_ring_radius), 3) # Draws the sumo ring
+
+            pygame.draw.circle(self.screen, (255, 0, 0), self.sumo_ring_center, int(self.sumo_ring_radius), 30) # Draws the sumo ring
 
             # Sends player data to other peer
             peerPositionJSON = json.dumps(self.player_circle)
