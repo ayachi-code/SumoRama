@@ -25,7 +25,7 @@ class VersusArena:
         self.player = player
         self.gameOver = gameOver
 
-        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": self.player.getName(), "score": 0}
+        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": self.player.getName(),"score": 0}
         self.enemy_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": None, "score": 0}
 
         self.sumo_ring_radius = 450
@@ -133,6 +133,7 @@ class VersusArena:
 
             if player_distance_to_center + self.player_circle["radius"] > self.sumo_ring_radius:
                 self.winnerOfTheGame = self.enemy_circle['name']
+                self.enemy_circle["score"] += 1 # Increase score with 1
                 return True
 
         distance_to_center = math.sqrt((self.enemy_circle["position"][0] - self.sumo_ring_center[0])**2 +
@@ -140,13 +141,14 @@ class VersusArena:
         
         if distance_to_center + self.enemy_circle["radius"] > self.sumo_ring_radius:
             self.winnerOfTheGame = self.player.getName()
+            self.player_circle["score"] += 1 # Increase score with 1
             return True
 
         return False
 
     def resetStates(self):
-        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": self.player.getName()}
-        self.enemy_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": None}
+        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": self.player.getName(),"score": 0}
+        self.enemy_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": None, "score": 0}
         self.gameStateRun = True
         self.playerPositionInit = None
         self.winnerOfTheGame = None
@@ -158,8 +160,8 @@ class VersusArena:
         randomPointInRingPlayer = self.randomPointInCircle(self.sumo_ring_radius-(0.3 * self.sumo_ring_radius), self.sumo_ring_center[0], self.sumo_ring_center[1])
         randomPointInRingEnemy = self.randomPointInCircle(self.sumo_ring_radius-(0.3 * self.sumo_ring_radius), self.sumo_ring_center[0], self.sumo_ring_center[1])
 
-        self.player_circle = {"position": [randomPointInRingPlayer[0],randomPointInRingPlayer[1]], "velocity": [0,0], "radius": 40, "name": self.player.getName()}
-        self.enemy_circle = {"position": [randomPointInRingEnemy[0],randomPointInRingEnemy[1]], "velocity": [0,0], "radius": 40, "name": self.enemy_circle["name"]}
+        self.player_circle = {"position": [randomPointInRingPlayer[0],randomPointInRingPlayer[1]], "velocity": [0,0], "radius": 40, "name": self.player.getName(), "score": self.player_circle["score"]}
+        self.enemy_circle = {"position": [randomPointInRingEnemy[0],randomPointInRingEnemy[1]], "velocity": [0,0], "radius": 40, "name": self.enemy_circle["name"], "score": self.player_circle["score"]}
 
         # Resets the timers
         self.shrink_timer = 0
@@ -188,13 +190,20 @@ class VersusArena:
 
         self.displayCountdown() # Assures sync between clients
 
-        while self.gameStateRun and self.playerPositionInit:
+        while self.gameStateRun:
             self.screen.fill((255, 255, 255)) # White screen arena
+
+
+            #print(self.player_circle['score'])
+            if self.player_circle["score"] == 3 or self.enemy_circle["score"] == 3:
+                print("Game over")
+                self.gameStateRun = False
+                self.gameState.setCurrentState('1v1GameOver')
+                self.gameOver.setWinner(self.winnerOfTheGame)
 
             if self.checkIfGameOver() == True and self.playerPositionInit:
                 print("Round over")
                 self.newRound()
-            
                 #self.gameStateRun = False
                 #self.gameState.setCurrentState('1v1GameOver')
                 #self.gameOver.setWinner(self.winnerOfTheGame)
