@@ -193,8 +193,6 @@ class VersusArena:
         while self.gameStateRun:
             self.screen.fill((255, 255, 255)) # White screen arena
 
-
-            #print(self.player_circle['score'])
             if self.player_circle["score"] == 3 or self.enemy_circle["score"] == 3:
                 print("Game over")
                 self.gameStateRun = False
@@ -204,10 +202,6 @@ class VersusArena:
             if self.checkIfGameOver() == True and self.playerPositionInit:
                 print("Round over")
                 self.newRound()
-                #self.gameStateRun = False
-                #self.gameState.setCurrentState('1v1GameOver')
-                #self.gameOver.setWinner(self.winnerOfTheGame)
-
 
             if math.ceil(self.timerScreen - self.shrink_timer) <= 5:
                 self.colorShrinkTimer = (255, 0, 0)
