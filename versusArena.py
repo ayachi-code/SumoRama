@@ -25,8 +25,8 @@ class VersusArena:
         self.player = player
         self.gameOver = gameOver
 
-        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": self.player.getName()}
-        self.enemy_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": None}
+        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": self.player.getName(), "score": 0}
+        self.enemy_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": None, "score": 0}
 
         self.sumo_ring_radius = 450
         self.sumo_ring_center = [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]
@@ -152,6 +152,19 @@ class VersusArena:
         self.winnerOfTheGame = None
         self.sumo_ring_radius = 450
 
+    def newRound(self): # Makes game ready for new round e.g circle reset
+        self.sumo_ring_radius = 450
+
+        randomPointInRingPlayer = self.randomPointInCircle(self.sumo_ring_radius-(0.3 * self.sumo_ring_radius), self.sumo_ring_center[0], self.sumo_ring_center[1])
+        randomPointInRingEnemy = self.randomPointInCircle(self.sumo_ring_radius-(0.3 * self.sumo_ring_radius), self.sumo_ring_center[0], self.sumo_ring_center[1])
+
+        self.player_circle = {"position": [randomPointInRingPlayer[0],randomPointInRingPlayer[1]], "velocity": [0,0], "radius": 40, "name": self.player.getName()}
+        self.enemy_circle = {"position": [randomPointInRingEnemy[0],randomPointInRingEnemy[1]], "velocity": [0,0], "radius": 40, "name": self.enemy_circle["name"]}
+
+        # Resets the timers
+        self.shrink_timer = 0
+        self.colorShrinkTimer = 10
+
     def displayCountdown(self):
         countdown_font = pygame.font.SysFont('Comic Sans MS', 100)
         for i in range(5, 0, -1):  # Countdown from 5 to 1 seconds
@@ -178,11 +191,13 @@ class VersusArena:
         while self.gameStateRun and self.playerPositionInit:
             self.screen.fill((255, 255, 255)) # White screen arena
 
-            if self.checkIfGameOver() == True and self.playerPositionInit == True:
-                print("Game over")
-                self.gameStateRun = False
-                self.gameState.setCurrentState('1v1GameOver')
-                self.gameOver.setWinner(self.winnerOfTheGame)
+            if self.checkIfGameOver() == True and self.playerPositionInit:
+                print("Round over")
+                self.newRound()
+            
+                #self.gameStateRun = False
+                #self.gameState.setCurrentState('1v1GameOver')
+                #self.gameOver.setWinner(self.winnerOfTheGame)
 
 
             if math.ceil(self.timerScreen - self.shrink_timer) <= 5:
@@ -239,7 +254,6 @@ class VersusArena:
                 self.sumo_ring_radius *= self.shrink_scale # Makes the circle smaller with the shrink scalar
                 self.shrink_timer = 0
                 self.timerScreen = 10 # Resets timer back to 10 on screen
-
 
             pygame.draw.circle(self.screen, (255, 0, 0), self.sumo_ring_center, int(self.sumo_ring_radius), 30) # Draws the sumo ring
 
