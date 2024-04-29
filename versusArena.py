@@ -5,6 +5,7 @@ import time
 import json
 import math
 
+#Constants
 FPS = 60
 
 SCREEN_WIDTH = 1300
