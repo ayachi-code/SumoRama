@@ -336,6 +336,8 @@ class VersusArena:
         send_thread.start()
 
         #self.isPeerAliveSender()
+        bg = pygame.image.load("assets/sumoBc/sumoFloor4.jpg").convert()
+        bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
         while self.gameStateRun:
             current_time = time.time()
@@ -345,7 +347,9 @@ class VersusArena:
             if self.lockstep_enabled and delta_time < self.game_tick_rate: # Assures that the game is synced per frame
                 time.sleep(self.game_tick_rate - delta_time)
 
-            self.screen.fill((255, 255, 255))
+            #self.screen.fill((255, 255, 255)) # The white background color
+
+            self.screen.blit(bg, (0, 0))
 
             if self.cheat_detection_enabled: # Cheat detection method
                 self.detectCheat()
