@@ -1,4 +1,4 @@
  echo "Hello World" | nc -u -w1 127.0.0.1 7928
 
 
-echo 'UPDATE {"position": [0,0], "velocity": [0, 0], "radius": 40, "name": "Player359", "score": 0}' | nc -u -w1 127.0.0.1 6198
+echo 'UPDATE {"position": [700,800], "velocity": [0, 0], "radius": 40, "name": "Player224", "score": 0}' | nc -u -w1 127.0.0.1 6021

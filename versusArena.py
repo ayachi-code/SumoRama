@@ -176,6 +176,7 @@ class VersusArena:
         self.winnerOfTheGame = None
         self.sumo_ring_radius = 450
         self.score = 0
+        self.last_player_position = None
 
     def newRound(self): # Sets states for new round, e.g circle is reset
         self.sumo_ring_radius = 450
@@ -186,7 +187,9 @@ class VersusArena:
         self.newRoundState = True
         
         self.player_circle = {"position": [randomPointInRingPlayer[0],randomPointInRingPlayer[1]], "velocity": [0,0], "radius": 40, "name": self.player.getName(), "score": self.player_circle["score"]}
-        self.enemy_circle = {"position": [randomPointInRingEnemy[0],randomPointInRingEnemy[1]], "velocity": [0,0], "radius": 40, "name": self.enemy_circle["name"], "score": self.player_circle["score"]}
+        self.enemy_circle = {"position": [randomPointInRingEnemy[0],randomPointInRingEnemy[1]], "velocity": [0,0], "radius": 40, "name": self.enemy_circle["name"], "score": self.enemy_circle["score"]}
+
+        self.last_player_position = self.enemy_circle['position']
 
         self.shrink_timer = 0
         self.colorShrinkTimer = 10
@@ -208,12 +211,20 @@ class VersusArena:
             dx = self.enemy_circle['position'][0] - self.last_player_position[0]
             dy = self.enemy_circle['position'][1] - self.last_player_position[1]
             distance_moved = math.sqrt(dx ** 2 + dy ** 2)
-            print(distance_moved)
+
+            #print(distance_moved)
 
             if distance_moved > MAX_MOVE_DISTANCE_PER_TICK and self.newRoundState == True: # Cheat detection False positive, random spawn in ring is detected as teleporting
-                self.newRoundState = False
+                print("New round" + str(distance_moved))
+                #self.newRoundState = False
             elif distance_moved > MAX_MOVE_DISTANCE_PER_TICK and self.newRoundState == False: # Player moved to fast
-                print("Movement to fast, but resolved by lockstep")
+                print(distance_moved)
+                print(self.newRoundState)
+                #print(distance_moved)
+                print("Movement to fast, enemy player is cheating :((")
+                self.score = 3 # Make not cheating player win
+                self.player_circle['score'] = 3
+                self.winnerOfTheGame = self.player_circle['name']
 
         self.last_player_position = self.enemy_circle['position'] # Stores last position
 
@@ -228,10 +239,6 @@ class VersusArena:
         self.displayCountdown()
 
         while self.gameStateRun:
-
-            if self.cheat_detection_enabled: # Cheat detection method
-                self.detectCheat()
-
             current_time = time.time()
             delta_time = current_time - self.last_tick_time
             self.last_tick_time = current_time
@@ -250,6 +257,8 @@ class VersusArena:
             if self.checkIfGameOver() == True and self.playerPositionInit:
                 print("Round over")
                 self.newRound()
+                #print(self.enemy_circle)
+                #print(self.player_circle)
 
             if math.ceil(self.timerScreen - self.shrink_timer) <= 5: # Shows different color depending how close the timer is to the end.
                 self.colorShrinkTimer = (255, 0, 0)
@@ -317,6 +326,10 @@ class VersusArena:
                 self.timerScreen = 10
 
             pygame.draw.circle(self.screen, (255, 0, 0), self.sumo_ring_center, int(self.sumo_ring_radius), 30) # Draw the sumo ring
+
+
+            if self.cheat_detection_enabled: # Cheat detection method
+                self.detectCheat()
 
             # Sends data to client
             peerPositionJSON = json.dumps(self.player_circle)

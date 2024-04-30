@@ -45,6 +45,9 @@ class GameOverVersus:
             gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH/1.9, 140))
             self.screen.blit(gameScreen_surface, gameScreen_rect)
 
+            if self.winner == None:
+                self.winner = "You cheater!!"
+            
             gameScreen_surfaceTwo = self.gameFont.render(self.winner + ' won the game', True, (255, 255, 255))
             gameScreen_rectTwo = gameScreen_surfaceTwo.get_rect(center=(SCREEN_WIDTH/1.9, 300))
             self.screen.blit(gameScreen_surfaceTwo, gameScreen_rectTwo)
