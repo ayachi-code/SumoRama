@@ -204,6 +204,15 @@ class VersusLobby:
             pygame.draw.circle(self.screen, self.player.getColor(), (SCREEN_WIDTH/4, SCREEN_HEIGHT/2),100)
             
             if self.peerName != "": # Show player circle if connected
+                #VS Text
+
+                versusFont = pygame.font.SysFont('Comic Sans MS', 130)
+
+                gameScreen_surfaceLobbyTitle = versusFont.render('VS', True, (255, 255, 255))
+                gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
+                self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
+
+
                 pygame.draw.circle(self.screen, self.peerColor, (SCREEN_WIDTH - SCREEN_WIDTH/4, SCREEN_HEIGHT/2),100)
 
                 if self.peerPressedReadyUp:
