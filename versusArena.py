@@ -5,7 +5,7 @@ import time
 import json
 import math
 
-#TODO: FEAUTRES Color selector
+#TODO: Polish 1v1 last time FEAUTRES Color selector
 
 #Constants
 FPS = 60
