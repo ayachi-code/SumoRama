@@ -32,8 +32,8 @@ class VersusArena:
         self.gameOver = gameOver
 
         
-        #self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": self.player.getName(),"score": 0}
-        #self.enemy_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": None, "score": 0}
+        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": self.player.getName(),"score": 0}
+        self.enemy_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": None, "score": 0}
 
         self.sumo_ring_radius = 450
         self.sumo_ring_center = [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]
@@ -49,7 +49,7 @@ class VersusArena:
         self.shrink_timer = 0
         self.timerScreen = 10
         self.shrink_interval = 10
-        self.shrink_scale = 0.9
+        self.shrink_scale = 0.90
         self.colorShrinkTimer = (0,0,0)
 
         # Game state variables
@@ -80,7 +80,6 @@ class VersusArena:
             data, addr = self.peer.getSocket().recvfrom(65535)
             data = data.decode()
 
-
             if data == "ALIVE-OK": # We recieved ack from peer
                 #print("Yo my bro is alive" + str(self.peer.getSequenceNumber()))
                 self.aliveAck = True     
@@ -100,6 +99,7 @@ class VersusArena:
                 #print(data)
                 newData = json.loads(data.split(" ",1)[1])
                 self.enemy_circle = newData
+                #self.last_player_position = self.enemy_circle['position']
 
     def sendInitPositions(self, data): # Send init positions to other peer
         while True:
@@ -166,8 +166,9 @@ class VersusArena:
             player_distance_to_center = math.sqrt((self.player_circle["position"][0] - self.sumo_ring_center[0])**2 + (self.player_circle["position"][1] - self.sumo_ring_center[1])**2)
                 
             if player_distance_to_center + self.player_circle["radius"] > self.sumo_ring_radius:
-                    self.winnerOfTheGame = self.enemy_circle['name']
-                    self.enemy_circle["score"] += 1
+                    #self.winnerOfTheGame = self.enemy_circle['name']
+                    #self.enemy_circle["score"] += 1
+                    return
 
             distance_to_center = math.sqrt((self.enemy_circle["position"][0] - self.sumo_ring_center[0])**2 + (self.enemy_circle["position"][1] - self.sumo_ring_center[1])**2)
             
@@ -175,12 +176,12 @@ class VersusArena:
                 self.winnerOfTheGame = self.player.getName()
                 self.player_circle["score"] += 1
                 self.score += 1
+                return
 
 
     def checkIfGameOver(self):
         if self.player_circle is not None:
-            player_distance_to_center = math.sqrt((self.player_circle["position"][0] - self.sumo_ring_center[0])**2 +
-                                                (self.player_circle["position"][1] - self.sumo_ring_center[1])**2)
+            player_distance_to_center = math.sqrt((self.player_circle["position"][0] - self.sumo_ring_center[0])**2 + (self.player_circle["position"][1] - self.sumo_ring_center[1])**2)
             
             if player_distance_to_center + self.player_circle["radius"] > self.sumo_ring_radius:
                 return True
@@ -189,6 +190,7 @@ class VersusArena:
                                         (self.enemy_circle["position"][1] - self.sumo_ring_center[1])**2)
         
         if distance_to_center + self.enemy_circle["radius"] > self.sumo_ring_radius:
+            print("other player is out")
             return True
 
         return False
@@ -215,10 +217,12 @@ class VersusArena:
         self.player_circle = {"position": [randomPointInRingPlayer[0],randomPointInRingPlayer[1]], "velocity": [0,0], "radius": 40, "name": self.player.getName(), "score": self.player_circle["score"]}
         self.enemy_circle = {"position": [randomPointInRingEnemy[0],randomPointInRingEnemy[1]], "velocity": [0,0], "radius": 40, "name": self.enemy_circle["name"], "score": self.enemy_circle["score"]}
 
+        #print(self.enemy_circle['position'])
+
         #print("New position")
         #print(self.enemy_circle['position'])
 
-        print(print(self.enemy_circle['position']))
+        #print(print(self.enemy_circle['position']))
 
         self.last_player_position = self.enemy_circle['position']
 
@@ -274,15 +278,20 @@ class VersusArena:
 
             #print(distance_moved)
 
-            if self.inSumoRing(self.sumo_ring_center[0], self.sumo_ring_center[1], self.sumo_ring_radius, self.enemy_circle['position'][0], self.enemy_circle['position'][1]) == False:
-                print("Not in circle cheat...")
-                self.score = 3 # Make not cheating player win
-                self.player_circle['score'] = 3
-                self.winnerOfTheGame = self.player_circle['name']
-                return
+            # if self.inSumoRing(self.sumo_ring_center[0], self.sumo_ring_center[1], self.sumo_ring_radius+50, self.enemy_circle['position'][0], self.enemy_circle['position'][1]) == False:
+                
+                
+            #     print("Not in circle cheat...")
+            #     self.score = 3 # Make not cheating player win
+            #     self.player_circle['score'] = 3
+            #     self.winnerOfTheGame = self.player_circle['name']
+            #     return
 
             if self.enemy_circle['position'][0] == 0 and self.enemy_circle['position'][1] == 0:
                 print("Origin cheat") 
+                print(self.inSumoRing(self.sumo_ring_center[0], self.sumo_ring_center[1], self.sumo_ring_radius, self.enemy_circle['position'][0], self.enemy_circle['position'][1]))
+                print(self.checkIfGameOver())
+
                 self.score = 3 # Make not cheating player win
                 self.player_circle['score'] = 3
                 self.winnerOfTheGame = self.player_circle['name']
@@ -296,17 +305,24 @@ class VersusArena:
                 self.winnerOfTheGame = self.player_circle['name']
                 return
 
-            if distance_moved > MAX_MOVE_DISTANCE_PER_TICK and self.checkIfGameOver() == True and self.newRoundState == True: # Cheat detection False positive, random spawn in ring is detected as teleporting
-                print("Cheat detection detects new round teleportng" + str(distance_moved))
-            #   print("Movement fast because player spawns")
-                self.newRoundState = False
-            if distance_moved > MAX_MOVE_DISTANCE_PER_TICK and self.checkIfGameOver() == False and self.newRoundState == False: # and self.newRoundState == False: # Player moved to fast and this is not a round switch
-                #print(self.enemy_circle['position'])
-                #print(self.last_player_position)
-                print("Movement to fast, enemy player is cheating :((")
-                self.score = 3 # Make not cheating player win
-                self.player_circle['score'] = 3
-                self.winnerOfTheGame = self.player_circle['name']
+            #print(distance_moved)
+
+            # if distance_moved > MAX_MOVE_DISTANCE_PER_TICK and self.newRoundState == True: # Cheat detection False positive, random spawn in ring is detected as teleporting
+            #     print("Cheat detection detects new round teleportng" + str(distance_moved))
+            #     #print(self.enemy_circle['position'])
+            #     #print(self.last_player_position)
+            # #   print("Movement fast because player spawns")
+            #     self.newRoundState = False
+            # elif distance_moved > MAX_MOVE_DISTANCE_PER_TICK and self.checkIfGameOver() == False and self.newRoundState == False: # and self.newRoundState == False: # Player moved to fast and this is not a round switch
+            #     #print(self.enemy_circle['position'])
+            #     #print("THe fidner van cheat")
+            #     #print(self.last_player_position)
+            #     #print(distance_moved)
+            #     #print(self.enemy_circle['position'][0])
+            #     print("Movement to fast, enemy player is cheating :((")
+            #     #self.score = 3 # Make not cheating player win
+            #     #self.player_circle['score'] = 3
+            #     #self.winnerOfTheGame = self.player_circle['name']
 
         self.last_player_position = self.enemy_circle['position'] # Locks last position
 
@@ -314,6 +330,13 @@ class VersusArena:
         if ((x - circle_x) * (x - circle_x) + (y - circle_y) * (y - circle_y) <= rad * rad):
             return True;
         else:
+            #print((x - circle_x) * (x - circle_x) + (y - circle_y) * (y - circle_y))
+            #print(x)
+            #print(circle_x)
+            #print(x)
+            #print(circle_y)
+            #print(y)
+            #print(rad)
             return False;
 
     def isPeerAliveSender(self): # Sends peer alive messages to make sure they are not gone
@@ -355,6 +378,8 @@ class VersusArena:
         bg = pygame.image.load("assets/sumoBc/sumoFloor4.jpg").convert()
         bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
+        print("Start game loop")
+
         while self.gameStateRun:
             current_time = time.time()
             delta_time = current_time - self.last_tick_time
@@ -367,21 +392,40 @@ class VersusArena:
 
             self.screen.blit(bg, (0, 0))
 
-            if self.cheat_detection_enabled: # Cheat detection method
-                self.detectCheat()
+            #print(self.player_circle['position'])
+
+
+            # if self.checkIfGameOver() == True and self.gameStateRun != False:
+            #     print("Round over")
+            #     #print(self.player_circle)
+            #     #print(self.enemy_circle)
+            #     self.giveRightPlayerPoints()
+            #     #print(self.player_circle)
+            #     #print(self.enemy_circle)
+            #     self.newRound()
+
+            #     #print(self.enemy_circle)
+            #     #print(self.player_circle)
+
+
+            # if self.cheat_detection_enabled: # Cheat detection method
+            #     self.detectCheat() 
+
+    
 
             if self.player_circle["score"] >= 3 or self.enemy_circle["score"] >= 3:
                 print("Game over")
+                print(self.player_circle["score"])
+                print(self.enemy_circle["score"])
+                if self.enemy_circle["score"] > self.player_circle["score"]:
+                    self.winnerOfTheGame = self.enemy_circle["name"]
+                elif self.player_circle["score"] > self.enemy_circle["score"]:
+                    self.winnerOfTheGame = self.player_circle["name"]
+
                 self.gameStateRun = False
                 self.gameState.setCurrentState('1v1GameOver')
                 self.gameOver.setWinner(self.winnerOfTheGame)
 
-            if self.checkIfGameOver() == True and self.playerPositionInit and self.gameStateRun != False:
-                print("Round over")
-                self.giveRightPlayerPoints()
-                self.newRound()
-                #print(self.enemy_circle)
-                #print(self.player_circle)
 
 
             if math.ceil(self.timerScreen - self.shrink_timer) <= 5: # Shows different color depending how close the timer is to the end.
@@ -420,16 +464,16 @@ class VersusArena:
 
             # Draw players on the screen
 
-            pygame.draw.circle(self.screen, (0,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),50)
+            #pygame.draw.circle(self.screen, (0,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),41)
             pygame.draw.circle(self.screen, self.player.getColor(), (self.player_circle['position'][0],self.player_circle['position'][1]),40)
 
             pygame.draw.circle(self.screen, self.player.getColor(), (self.enemy_circle['position'][0],self.enemy_circle['position'][1]),40)
-
 
             # Movement for player wasd
             keys = pygame.key.get_pressed()
             if keys[pygame.K_a]:
                 self.player_circle['position'][0] -= 3
+                #print(self.player_circle['position'])
             if keys[pygame.K_d]:
                 self.player_circle['position'][0] += 3
             if keys[pygame.K_w]:
@@ -454,10 +498,23 @@ class VersusArena:
 
             pygame.draw.circle(self.screen, (255, 0, 0), self.sumo_ring_center, int(self.sumo_ring_radius), 30) # Draw the sumo ring
 
+
+            
+
             # Sends data to client
             peerPositionJSON = json.dumps(self.player_circle)
             payload = "UPDATE " + peerPositionJSON
             self.peer.getSocket().sendto(payload.encode(), list(self.peer.getConnections())[0])
+
+                
+            if self.cheat_detection_enabled: # Cheat detection method
+                self.detectCheat() 
+
+            
+            if self.checkIfGameOver() == True and self.gameStateRun != False:
+                print("Round over")
+                self.giveRightPlayerPoints()
+                self.newRound()
 
             pygame.display.update()
             self.clock.tick(FPS) # FPS locked
