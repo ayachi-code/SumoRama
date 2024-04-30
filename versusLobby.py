@@ -172,11 +172,21 @@ class VersusLobby:
                 self.gameState.setCurrentState('versusArena')
                 self.gameStateRun = False
                 self.playerQuit = True
+                self.peerIP = None
                 print("start versus arena")
 
+            
             self.screen.fill((153,0,17))
+            
             pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT/10),  2)
   
+
+            if self.peerIP == None: # Host
+                gameScreen_surfaceLobbyTitle = self.fontOfTitle.render('127.0.0.1:' + str(self.peer.getPort()), True, (255, 255, 255))
+                gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_WIDTH - (SCREEN_WIDTH/4), SCREEN_HEIGHT/17))
+                self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
+
+
             gameScreen_surfaceLobbyTitle = self.fontOfTitle.render('Lobby', True, (255, 255, 255))
             gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/17))
             self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
