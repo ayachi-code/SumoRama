@@ -32,8 +32,8 @@ class VersusArena:
         self.gameOver = gameOver
 
         
-        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": self.player.getName(),"score": 0}
-        self.enemy_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": None, "score": 0}
+        #self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": self.player.getName(),"score": 0}
+        #self.enemy_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": None, "score": 0}
 
         self.sumo_ring_radius = 450
         self.sumo_ring_center = [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]
@@ -183,21 +183,12 @@ class VersusArena:
                                                 (self.player_circle["position"][1] - self.sumo_ring_center[1])**2)
             
             if player_distance_to_center + self.player_circle["radius"] > self.sumo_ring_radius:
-                #self.newRoundState = True
-                #print("dd")
-                #print(self.playerPositionInit)
-                #print(self.gameStateRun)
-                #self.winnerOfTheGame = self.enemy_circle['name']
-                #self.enemy_circle["score"] += 1
                 return True
 
         distance_to_center = math.sqrt((self.enemy_circle["position"][0] - self.sumo_ring_center[0])**2 +
                                         (self.enemy_circle["position"][1] - self.sumo_ring_center[1])**2)
         
         if distance_to_center + self.enemy_circle["radius"] > self.sumo_ring_radius:
-            #self.winnerOfTheGame = self.player.getName()
-            #self.player_circle["score"] += 1
-            #self.score += 1
             return True
 
         return False
@@ -236,11 +227,30 @@ class VersusArena:
 
     def displayCountdown(self): # Shows a counter before starting the game, preps player to be ready
         countdown_font = pygame.font.SysFont('Comic Sans MS', 100)
-        for i in range(5, 0, -1):
-            self.screen.fill((255, 255, 255))
+        
+        tip_font = pygame.font.SysFont('Comic Sans MS', 50)
 
-            countdown_text = countdown_font.render(str(i), True, (0, 0, 0))
-            text_rect = countdown_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+        gameStartIn_font = pygame.font.SysFont('Comic Sans MS', 140)
+
+        # Tip for player
+        
+        for i in range(5, 0, -1):
+            self.screen.fill((153,0,17))
+
+            gameScreen_surface = countdown_font.render('Sumo Rama', True, (255, 255, 255))
+            gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/10))
+            self.screen.blit(gameScreen_surface, gameScreen_rect)
+
+            gameScreen_surface = gameStartIn_font.render('Game starts in ', True, (255, 255, 255))
+            gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/3))
+            self.screen.blit(gameScreen_surface, gameScreen_rect)
+
+            countdown_text = countdown_font.render(str(i), True, (255, 255, 255))
+            text_rect = countdown_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.75))
+            self.screen.blit(countdown_text, text_rect)
+
+            countdown_text = tip_font.render("Tip: Camping is not a good strategy since the circle shrinks", True, (255, 255, 255))
+            text_rect = countdown_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.2))
             self.screen.blit(countdown_text, text_rect)
             
             pygame.display.update()
@@ -281,12 +291,8 @@ class VersusArena:
             #   print("Movement fast because player spawns")
                 self.newRoundState = False
             if distance_moved > MAX_MOVE_DISTANCE_PER_TICK and self.checkIfGameOver() == False and self.newRoundState == False: # and self.newRoundState == False: # Player moved to fast and this is not a round switch
-                print(self.enemy_circle['position'])
-                print(self.last_player_position)
-                #print(distance_moved)
-                #print(self.newRoundState)
-                #print(distance_moved)
                 #print(self.enemy_circle['position'])
+                #print(self.last_player_position)
                 print("Movement to fast, enemy player is cheating :((")
                 self.score = 3 # Make not cheating player win
                 self.player_circle['score'] = 3
@@ -442,3 +448,9 @@ class VersusArena:
 
             pygame.display.update()
             self.clock.tick(FPS) # FPS locked
+
+
+if __name__ == "__main__":
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  # Set display resolution
+    game = VersusArena(screen, None, None, None,None)
+    game.displayCountdown()
