@@ -1,4 +1,8 @@
  echo "Hello World" | nc -u -w1 127.0.0.1 7928
 
-
+score cheat
 echo 'UPDATE {"position": [700,800], "velocity": [0, 0], "radius": 40, "name": "Player224", "score": 100}' | nc -u -w1 127.0.0.1 6021
+
+movement cheat
+
+echo 'UPDATE {"position": [0,0], "velocity": [0, 0], "radius": 40, "name": "Player224", "score": 0}' | nc -u -w1 127.0.0.1 6195
