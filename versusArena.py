@@ -5,7 +5,7 @@ import time
 import json
 import math
 
-#TODO: cheat detect polish, player leave, test, FEAUTRES DONE: (Ip address bij host laten zien, background toevoegen aan 1v1 map, Countdown mooier maken, player heeft zwarte border om zich heen, color selector)
+#TODO: FEAUTRES Color selector
 
 #Constants
 FPS = 60
