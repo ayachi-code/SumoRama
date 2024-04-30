@@ -5,6 +5,8 @@ import time
 import json
 import math
 
+#TODO: cheat detect polish, player leave, test, FEAUTRES DONE: (Ip address bij host laten zien, background toevoegen aan 1v1 map, Countdown mooier maken, player heeft zwarte border om zich heen, color selector)
+
 #Constants
 FPS = 60
 
@@ -12,7 +14,7 @@ SCREEN_WIDTH = 1300
 SCREEN_HEIGHT = 800
 
 GAME_TICK_RATE = 1 / FPS  # Game tick rate in seconds
-MAX_MOVE_DISTANCE_PER_TICK = 6  # Threashold max allowed move distance
+MAX_MOVE_DISTANCE_PER_TICK = 10  # Threashold max allowed move distance
 
 class VersusArena:
     def __init__(self, screen, gameState, player, peer, gameOver):
@@ -150,7 +152,6 @@ class VersusArena:
             player_distance_to_center = math.sqrt((self.player_circle["position"][0] - self.sumo_ring_center[0])**2 +
                                                 (self.player_circle["position"][1] - self.sumo_ring_center[1])**2)
             
-
             if player_distance_to_center + self.player_circle["radius"] > self.sumo_ring_radius:
                 self.winnerOfTheGame = self.enemy_circle['name']
                 self.enemy_circle["score"] += 1
@@ -204,16 +205,17 @@ class VersusArena:
 
     def detectCheat(self):
         if self.last_player_position is not None:
-            dx = self.player_circle['position'][0] - self.last_player_position[0]
-            dy = self.player_circle['position'][1] - self.last_player_position[1]
+            dx = self.enemy_circle['position'][0] - self.last_player_position[0]
+            dy = self.enemy_circle['position'][1] - self.last_player_position[1]
             distance_moved = math.sqrt(dx ** 2 + dy ** 2)
+            print(distance_moved)
 
             if distance_moved > MAX_MOVE_DISTANCE_PER_TICK and self.newRoundState == True: # Cheat detection False positive, random spawn in ring is detected as teleporting
                 self.newRoundState = False
             elif distance_moved > MAX_MOVE_DISTANCE_PER_TICK and self.newRoundState == False: # Player moved to fast
                 print("Movement to fast, but resolved by lockstep")
 
-        self.last_player_position = self.player_circle['position'] # Stores last position
+        self.last_player_position = self.enemy_circle['position'] # Stores last position
 
     def run(self):
         self.resetStates()
