@@ -14,7 +14,7 @@ SCREEN_WIDTH = 1300
 SCREEN_HEIGHT = 800
 
 GAME_TICK_RATE = 1 / FPS  # Game tick rate in seconds
-MAX_MOVE_DISTANCE_PER_TICK = 10  # Threashold max allowed move distance
+MAX_MOVE_DISTANCE_PER_TICK = 20  # Threashold max allowed move distance
 
 class VersusArena:
     def __init__(self, screen, gameState, player, peer, gameOver):
@@ -206,7 +206,7 @@ class VersusArena:
             pygame.display.update()
             pygame.time.wait(1000)
 
-    def detectCheat(self):
+    def detectCheat(self): # Cheat detection for teleporting and score cheating
         if self.last_player_position is not None:
             dx = self.enemy_circle['position'][0] - self.last_player_position[0]
             dy = self.enemy_circle['position'][1] - self.last_player_position[1]
@@ -214,10 +214,18 @@ class VersusArena:
 
             #print(distance_moved)
 
+            if self.enemy_circle['score'] > 3: # Score cheat
+                print(self.enemy_circle['score'])
+                print("Player is using score cheats")
+                self.score = 3 # Make not cheating player win
+                self.player_circle['score'] = 3
+                self.winnerOfTheGame = self.player_circle['name']
+                return
+
             if distance_moved > MAX_MOVE_DISTANCE_PER_TICK and self.newRoundState == True: # Cheat detection False positive, random spawn in ring is detected as teleporting
                 print("New round" + str(distance_moved))
-                #self.newRoundState = False
-            elif distance_moved > MAX_MOVE_DISTANCE_PER_TICK and self.newRoundState == False: # Player moved to fast
+                self.newRoundState = False
+            elif distance_moved > MAX_MOVE_DISTANCE_PER_TICK and self.newRoundState == False: # Player moved to fast and this is not a round switch
                 print(distance_moved)
                 print(self.newRoundState)
                 #print(distance_moved)
@@ -226,6 +234,7 @@ class VersusArena:
                 self.player_circle['score'] = 3
                 self.winnerOfTheGame = self.player_circle['name']
 
+            
         self.last_player_position = self.enemy_circle['position'] # Stores last position
 
     def run(self):
