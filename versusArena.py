@@ -214,7 +214,7 @@ class VersusArena:
 
             #print(distance_moved)
 
-            if self.enemy_circle['score'] > 3: # Score cheat
+            if self.enemy_circle['score'] > 4: # Score cheat
                 print(self.enemy_circle['score'])
                 print("Player is using score cheats")
                 self.score = 3 # Make not cheating player win
@@ -223,19 +223,18 @@ class VersusArena:
                 return
 
             if distance_moved > MAX_MOVE_DISTANCE_PER_TICK and self.newRoundState == True: # Cheat detection False positive, random spawn in ring is detected as teleporting
-                print("New round" + str(distance_moved))
+                #print("New round" + str(distance_moved))
                 self.newRoundState = False
             elif distance_moved > MAX_MOVE_DISTANCE_PER_TICK and self.newRoundState == False: # Player moved to fast and this is not a round switch
-                print(distance_moved)
-                print(self.newRoundState)
+                #print(distance_moved)
+                #print(self.newRoundState)
                 #print(distance_moved)
                 print("Movement to fast, enemy player is cheating :((")
                 self.score = 3 # Make not cheating player win
                 self.player_circle['score'] = 3
                 self.winnerOfTheGame = self.player_circle['name']
 
-            
-        self.last_player_position = self.enemy_circle['position'] # Stores last position
+        self.last_player_position = self.enemy_circle['position'] # Locks last position
 
     def run(self):
         self.resetStates()
