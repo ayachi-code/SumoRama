@@ -27,6 +27,8 @@ class GameOverVersus:
 
         self.winner = "" # Stores the winner
 
+        self.gameOverMessage = ""
+
     def setWinner(self, winner):
         self.winner = winner
 
@@ -38,6 +40,14 @@ class GameOverVersus:
 
     def run(self):
         self.gameStateRun = True
+
+
+        if self.winner == None:
+            self.winner = "You cheater!!"
+            self.gameOverMessage = ""
+        else:
+            self.gameOverMessage = " won the game"
+            
         while self.gameStateRun:
             self.screen.fill((153,0,17)) # Red screen
 
@@ -45,10 +55,7 @@ class GameOverVersus:
             gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH/1.9, 140))
             self.screen.blit(gameScreen_surface, gameScreen_rect)
 
-            if self.winner == None:
-                self.winner = "You cheater!!"
-            
-            gameScreen_surfaceTwo = self.gameFont.render(self.winner + ' won the game', True, (255, 255, 255))
+            gameScreen_surfaceTwo = self.gameFont.render(self.winner + self.gameOverMessage, True, (255, 255, 255))
             gameScreen_rectTwo = gameScreen_surfaceTwo.get_rect(center=(SCREEN_WIDTH/1.9, 300))
             self.screen.blit(gameScreen_surfaceTwo, gameScreen_rectTwo)
 
