@@ -226,14 +226,18 @@ class VersusArena:
         self.colorShrinkTimer = 10
 
     def displayCountdown(self): # Shows a counter before starting the game, preps player to be ready
-        countdown_font = pygame.font.SysFont('Comic Sans MS', 100)
+        countdown_font = pygame.font.SysFont('Comic Sans MS', 150)
         
         tip_font = pygame.font.SysFont('Comic Sans MS', 50)
 
         gameStartIn_font = pygame.font.SysFont('Comic Sans MS', 140)
 
-        # Tip for player
-        
+        tips = ["Camping is not a good strategy since the circle shrinks","Losing a lot of games in a row? Take a break!", "With the rushing ability comes great responsibility.", "Use WASD keys to move around the map", "With the space key you can rush against players"]
+
+        nextTip = 0
+
+        currentTip = random.choice(tips)
+
         for i in range(5, 0, -1):
             self.screen.fill((153,0,17))
 
@@ -249,10 +253,16 @@ class VersusArena:
             text_rect = countdown_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.75))
             self.screen.blit(countdown_text, text_rect)
 
-            countdown_text = tip_font.render("Tip: Camping is not a good strategy since the circle shrinks", True, (255, 255, 255))
-            text_rect = countdown_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.2))
+            pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - (SCREEN_HEIGHT/4)),  4)
+
+            if nextTip % 2 == 0:
+                currentTip = random.choice(tips)
+
+            countdown_text = tip_font.render("Tip: " + currentTip, True, (255, 255, 255))
+            text_rect = countdown_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT // 1.15))
             self.screen.blit(countdown_text, text_rect)
-            
+
+            nextTip += 1
             pygame.display.update()
             pygame.time.wait(1000)
 
