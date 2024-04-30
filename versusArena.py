@@ -419,7 +419,10 @@ class VersusArena:
                     self.player_circle["velocity"] = [0, 0]
 
             # Draw players on the screen
+
+            pygame.draw.circle(self.screen, (0,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),50)
             pygame.draw.circle(self.screen, self.player.getColor(), (self.player_circle['position'][0],self.player_circle['position'][1]),40)
+
             pygame.draw.circle(self.screen, self.player.getColor(), (self.enemy_circle['position'][0],self.enemy_circle['position'][1]),40)
 
 
@@ -460,7 +463,7 @@ class VersusArena:
             self.clock.tick(FPS) # FPS locked
 
 
-if __name__ == "__main__":
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  # Set display resolution
-    game = VersusArena(screen, None, None, None,None)
-    game.displayCountdown()
+#if __name__ == "__main__":
+#    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  # Set display resolution
+#    game = VersusArena(screen, None, None, None,None)
+#    game.displayCountdown()
