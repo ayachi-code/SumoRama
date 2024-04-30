@@ -5,4 +5,4 @@ echo 'UPDATE {"position": [700,800], "velocity": [0, 0], "radius": 40, "name": "
 
 movement cheat
 
-echo 'UPDATE {"position": [1,10], "velocity": [0, 0], "radius": 40, "name": "Player224", "score": 0}' | nc -u -w1 127.0.0.1 6049
+echo 'UPDATE {"position": [600,200], "velocity": [0, 0], "radius": 40, "name": "Player224", "score": 0}' | nc -u -w1 127.0.0.1 7473
