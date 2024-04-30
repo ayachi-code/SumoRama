@@ -48,7 +48,7 @@ class VersusArena:
         # Shrink variables
         self.shrink_timer = 0
         self.timerScreen = 10
-        self.shrink_interval = 10
+        self.shrink_interval = 1000
         self.shrink_scale = 0.9
         self.colorShrinkTimer = (0,0,0)
 
