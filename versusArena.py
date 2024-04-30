@@ -70,6 +70,8 @@ class VersusArena:
         # State to check if a new round is set
         self.newRoundState = False
 
+        self.aliveAck = None
+
     def setPeer(self, peer): # Setter for peer variable
         self.peer = peer
 
@@ -78,6 +80,15 @@ class VersusArena:
             data, addr = self.peer.getSocket().recvfrom(65535)
             data = data.decode()
 
+
+            if data == "ALIVE-OK": # We recieved ack from peer
+                #print("Yo my bro is alive" + str(self.peer.getSequenceNumber()))
+                self.aliveAck = True     
+                self.peer.increaseSequenceNumber()
+            elif "ALIVE" in data:
+                self.peer.getSocket().sendto("ALIVE-OK".encode(), addr)
+
+            # Protocool game loop
             if "INIT-OK" == data:
                 self.playerPositionInit = True
             elif "INIT" in data:
@@ -200,6 +211,7 @@ class VersusArena:
         self.sumo_ring_radius = 450
         self.score = 0
         self.last_player_position = None
+        self.aliveAck = None
 
     def newRound(self): # Sets states for new round, e.g circle is reset
         self.sumo_ring_radius = 450
@@ -288,6 +300,28 @@ class VersusArena:
         else:
             return False;
 
+    def isPeerAliveSender(self): # Sends peer alive messages to make sure they are not gone
+        isNotAliveCounter = 0
+        while True:
+            if isNotAliveCounter == 5: # 5 times no response??!!
+                # End game, player is gone
+                #print("Error end game since player left")
+                self.winnerOfTheGame = self.player_circle['name']
+                self.player_circle["score"] = 3
+                break
+                
+            payload = "ALIVE " + str(self.peer.getSequenceNumber())
+
+            self.peer.getSocket().sendto(payload.encode(), list(self.peer.getConnections())[0])
+            time.sleep(0.1)
+
+            if self.aliveAck != True:
+                #print("Yooo so many left " + str(isNotAliveCounter))
+                isNotAliveCounter += 1
+            else:
+                self.aliveAck = False # Resets alive ack for new ack
+                isNotAliveCounter = 0
+
     def run(self):
         self.resetStates()
 
@@ -297,6 +331,11 @@ class VersusArena:
         self.initPositions() 
 
         self.displayCountdown()
+
+        send_thread = threading.Thread(target=self.isPeerAliveSender, daemon=True)
+        send_thread.start()
+
+        #self.isPeerAliveSender()
 
         while self.gameStateRun:
             current_time = time.time()
