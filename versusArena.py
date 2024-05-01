@@ -71,6 +71,7 @@ class VersusArena:
         self.newRoundState = False
 
         self.aliveAck = None
+        self.gameDonePeer = False
 
     def setPeer(self, peer): # Setter for peer variable
         self.peer = peer
@@ -86,6 +87,10 @@ class VersusArena:
                 self.peer.increaseSequenceNumber()
             elif "ALIVE" in data:
                 self.peer.getSocket().sendto("ALIVE-OK".encode(), addr)
+
+            if data == "OUT-OF-RING":
+                print("Brooo we zij er uit")
+                self.gameDonePeer = True
 
             # Protocool game loop
             if "INIT-OK" == data:
@@ -184,14 +189,15 @@ class VersusArena:
             player_distance_to_center = math.sqrt((self.player_circle["position"][0] - self.sumo_ring_center[0])**2 + (self.player_circle["position"][1] - self.sumo_ring_center[1])**2)
             
             if player_distance_to_center + self.player_circle["radius"] > self.sumo_ring_radius:
+                self.peer.getSocket().sendto("OUT-OF-RING".encode(), list(self.peer.getConnections())[0])
                 return True
 
         distance_to_center = math.sqrt((self.enemy_circle["position"][0] - self.sumo_ring_center[0])**2 +
                                         (self.enemy_circle["position"][1] - self.sumo_ring_center[1])**2)
         
-        if distance_to_center + self.enemy_circle["radius"] > self.sumo_ring_radius:
-            print("other player is out")
-            return True
+        #if distance_to_center + self.enemy_circle["radius"] > self.sumo_ring_radius:
+        #    print("other player is out")
+        #    return True
 
         return False
 
@@ -278,14 +284,12 @@ class VersusArena:
 
             #print(distance_moved)
 
-            # if self.inSumoRing(self.sumo_ring_center[0], self.sumo_ring_center[1], self.sumo_ring_radius+50, self.enemy_circle['position'][0], self.enemy_circle['position'][1]) == False:
-                
-                
-            #     print("Not in circle cheat...")
-            #     self.score = 3 # Make not cheating player win
-            #     self.player_circle['score'] = 3
-            #     self.winnerOfTheGame = self.player_circle['name']
-            #     return
+            if self.inSumoRing(self.sumo_ring_center[0], self.sumo_ring_center[1], self.sumo_ring_radius+30, self.enemy_circle['position'][0], self.enemy_circle['position'][1]) == False:
+                print("Not in circle cheat...")
+                self.score = 3 # Make not cheating player win
+                self.player_circle['score'] = 3
+                self.winnerOfTheGame = self.player_circle['name']
+                return
 
             if self.enemy_circle['position'][0] == 0 and self.enemy_circle['position'][1] == 0:
                 print("Origin cheat") 
@@ -314,12 +318,12 @@ class VersusArena:
             #   print("Movement fast because player spawns")
                 self.newRoundState = False
             elif distance_moved > MAX_MOVE_DISTANCE_PER_TICK and self.checkIfGameOver() == False and self.newRoundState == False: # and self.newRoundState == False: # Player moved to fast and this is not a round switch
-                #print(self.enemy_circle['position'])
+                print(self.enemy_circle['position'])
                 #print("THe fidner van cheat")
-                #print(self.last_player_position)
-                #print(distance_moved)
+                print(self.last_player_position)
+                print(distance_moved)
                 #print(self.enemy_circle['position'][0])
-                print("Movement to fast, enemy player is cheating :((")
+                #print("Movement to fast, enemy player is cheating :((")
                 #self.score = 3 # Make not cheating player win
                 #self.player_circle['score'] = 3
                 #self.winnerOfTheGame = self.player_circle['name']
@@ -510,8 +514,8 @@ class VersusArena:
             if self.cheat_detection_enabled: # Cheat detection method
                 self.detectCheat() 
 
-            
-            if self.checkIfGameOver() == True and self.gameStateRun != False:
+            if self.checkIfGameOver() == True and self.gameStateRun != False or self.gameDonePeer == True:
+                self.gameDonePeer = False
                 print("Round over")
                 self.giveRightPlayerPoints()
                 self.newRound()
