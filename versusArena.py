@@ -210,12 +210,12 @@ class VersusArena:
         self.sumo_ring_radius = 450
 
         randomPointInRingPlayer = self.randomPointInCircle(self.sumo_ring_radius-(0.3 * self.sumo_ring_radius), self.sumo_ring_center[0], self.sumo_ring_center[1])
-        randomPointInRingEnemy = self.randomPointInCircle(self.sumo_ring_radius-(0.3 * self.sumo_ring_radius), self.sumo_ring_center[0], self.sumo_ring_center[1])
+        #randomPointInRingEnemy = self.randomPointInCircle(self.sumo_ring_radius-(0.3 * self.sumo_ring_radius), self.sumo_ring_center[0], self.sumo_ring_center[1])
 
         self.newRoundState = True
         
         self.player_circle = {"position": [randomPointInRingPlayer[0],randomPointInRingPlayer[1]], "velocity": [0,0], "radius": 40, "name": self.player.getName(), "score": self.player_circle["score"]}
-        self.enemy_circle = {"position": [randomPointInRingEnemy[0],randomPointInRingEnemy[1]], "velocity": [0,0], "radius": 40, "name": self.enemy_circle["name"], "score": self.enemy_circle["score"]}
+        #self.enemy_circle = {"position": [randomPointInRingEnemy[0],randomPointInRingEnemy[1]], "velocity": [0,0], "radius": 40, "name": self.enemy_circle["name"], "score": self.enemy_circle["score"]}
 
         #print(self.enemy_circle['position'])
 
@@ -307,22 +307,22 @@ class VersusArena:
 
             #print(distance_moved)
 
-            # if distance_moved > MAX_MOVE_DISTANCE_PER_TICK and self.newRoundState == True: # Cheat detection False positive, random spawn in ring is detected as teleporting
-            #     print("Cheat detection detects new round teleportng" + str(distance_moved))
-            #     #print(self.enemy_circle['position'])
-            #     #print(self.last_player_position)
-            # #   print("Movement fast because player spawns")
-            #     self.newRoundState = False
-            # elif distance_moved > MAX_MOVE_DISTANCE_PER_TICK and self.checkIfGameOver() == False and self.newRoundState == False: # and self.newRoundState == False: # Player moved to fast and this is not a round switch
-            #     #print(self.enemy_circle['position'])
-            #     #print("THe fidner van cheat")
-            #     #print(self.last_player_position)
-            #     #print(distance_moved)
-            #     #print(self.enemy_circle['position'][0])
-            #     print("Movement to fast, enemy player is cheating :((")
-            #     #self.score = 3 # Make not cheating player win
-            #     #self.player_circle['score'] = 3
-            #     #self.winnerOfTheGame = self.player_circle['name']
+            if distance_moved > MAX_MOVE_DISTANCE_PER_TICK and self.newRoundState == True: # Cheat detection False positive, random spawn in ring is detected as teleporting
+                print("Cheat detection detects new round teleportng" + str(distance_moved))
+                #print(self.enemy_circle['position'])
+                #print(self.last_player_position)
+            #   print("Movement fast because player spawns")
+                self.newRoundState = False
+            elif distance_moved > MAX_MOVE_DISTANCE_PER_TICK and self.checkIfGameOver() == False and self.newRoundState == False: # and self.newRoundState == False: # Player moved to fast and this is not a round switch
+                #print(self.enemy_circle['position'])
+                #print("THe fidner van cheat")
+                #print(self.last_player_position)
+                #print(distance_moved)
+                #print(self.enemy_circle['position'][0])
+                print("Movement to fast, enemy player is cheating :((")
+                #self.score = 3 # Make not cheating player win
+                #self.player_circle['score'] = 3
+                #self.winnerOfTheGame = self.player_circle['name']
 
         self.last_player_position = self.enemy_circle['position'] # Locks last position
 
