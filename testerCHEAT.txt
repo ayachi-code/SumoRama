@@ -7,4 +7,4 @@ movement cheat
 
 
 demo
-echo 'UPDATE {"position": [10,10], "velocity": [10, 10], "radius": 40, "name": "Player224", "score": 0}' | nc -u -w1 127.0.0.1 7003
+echo 'UPDATE {"position": [0,0], "velocity": [10, 10], "radius": 40, "name": "Player224", "score": 0}' | nc -u -w1 127.0.0.1 7873

@@ -5,7 +5,7 @@ import time
 import json
 import math
 
-#TODO: Polish 1v1 last time FEAUTRES Color selector
+#TODO: Polish 1v1 last time(Fix rejoin bug) FEAUTRES Color selector
 
 #Constants
 FPS = 60
@@ -191,14 +191,7 @@ class VersusArena:
             if player_distance_to_center + self.player_circle["radius"] > self.sumo_ring_radius:
                 self.peer.getSocket().sendto("OUT-OF-RING".encode(), list(self.peer.getConnections())[0])
                 return True
-
-        distance_to_center = math.sqrt((self.enemy_circle["position"][0] - self.sumo_ring_center[0])**2 +
-                                        (self.enemy_circle["position"][1] - self.sumo_ring_center[1])**2)
-        
-        #if distance_to_center + self.enemy_circle["radius"] > self.sumo_ring_radius:
-        #    print("other player is out")
-        #    return True
-
+ 
         return False
 
     def resetStates(self): # REsets state for different game from same client
