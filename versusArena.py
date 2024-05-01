@@ -346,6 +346,9 @@ class VersusArena:
                 self.player_circle["score"] = 3
                 break
                 
+            if self.gameStateRun == False: # Game is over thus kill the thread !
+                break
+            
             payload = "ALIVE " + str(self.peer.getSequenceNumber())
 
             self.peer.getSocket().sendto(payload.encode(), list(self.peer.getConnections())[0])
@@ -461,7 +464,7 @@ class VersusArena:
 
             # Draw players on the screen
 
-            #pygame.draw.circle(self.screen, (0,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),41)
+            pygame.draw.circle(self.screen, (0,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),45)
             pygame.draw.circle(self.screen, self.player.getColor(), (self.player_circle['position'][0],self.player_circle['position'][1]),40)
 
             pygame.draw.circle(self.screen, self.player.getColor(), (self.enemy_circle['position'][0],self.enemy_circle['position'][1]),40)
