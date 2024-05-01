@@ -14,7 +14,7 @@ SCREEN_WIDTH = 1300
 SCREEN_HEIGHT = 800
 
 GAME_TICK_RATE = 1 / FPS  # Game tick rate in seconds
-MAX_MOVE_DISTANCE_PER_TICK = 20  # Threashold max allowed move distance
+MAX_MOVE_DISTANCE_PER_TICK = 20  # Threashold max allowed move distance, I got this value by a lot of testing.
 
 class VersusArena:
     def __init__(self, screen, gameState, player, peer, gameOver):
@@ -32,6 +32,7 @@ class VersusArena:
         self.gameOver = gameOver
 
         
+        # Player circles
         self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": self.player.getName(),"score": 0}
         self.enemy_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": None, "score": 0}
 
@@ -88,9 +89,9 @@ class VersusArena:
             elif "ALIVE" in data:
                 self.peer.getSocket().sendto("ALIVE-OK".encode(), addr)
 
-            if data == "OUT-OF-RING":
-                print("Brooo we zij er uit")
+            if data == "OUT-OF-RING": # ASSURES SYNC OF Circle collision!!
                 self.gameDonePeer = True
+                self.newRoundState = True
 
             # Protocool game loop
             if "INIT-OK" == data:
@@ -106,7 +107,7 @@ class VersusArena:
                 self.enemy_circle = newData
                 #self.last_player_position = self.enemy_circle['position']
 
-    def sendInitPositions(self, data): # Send init positions to other peer
+    def sendInitPositions(self, data): # Send init positions to other peer, at the start of the game
         while True:
             if self.playerPositionInit == True:
                 break
@@ -123,7 +124,7 @@ class VersusArena:
         sendInit_thread.start()
  
 
-    def randomPointInCircle(self, radius, centerX, centerY): # Uses circle formula to generate random point on circle
+    def randomPointInCircle(self, radius, centerX, centerY): # Uses circle formula to generate random point on circle, the circle here is the sumo ring.
         alpha = 2 * math.pi * random.random()
         r = radius * math.sqrt(random.random())
 
@@ -131,7 +132,7 @@ class VersusArena:
         y = r * math.sin(alpha) + centerY
         return (x,y)
 
-    def rush_to_cursor(self):
+    def rush_to_cursor(self): # Method for the rush abbility in the game
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
         if self.player_circle is not None:
@@ -143,7 +144,7 @@ class VersusArena:
                 self.player_circle["velocity"][0] = direction[0] * self.rush_speed
                 self.player_circle["velocity"][1] = direction[1] * self.rush_speed
 
-    def handle_collision(self, circle1, circle2):
+    def handle_collision(self, circle1, circle2): # Collision between 2 circles
         distance = math.sqrt((circle1["position"][0] - circle2["position"][0])**2 +
                             (circle1["position"][1] - circle2["position"][1])**2)
         
@@ -166,7 +167,7 @@ class VersusArena:
                 circle2["position"][1] += move_distance * collision_direction[1]
 
 
-    def giveRightPlayerPoints(self):
+    def giveRightPlayerPoints(self): # Give points to the player.
         if self.player_circle is not None:
             player_distance_to_center = math.sqrt((self.player_circle["position"][0] - self.sumo_ring_center[0])**2 + (self.player_circle["position"][1] - self.sumo_ring_center[1])**2)
                 
@@ -184,7 +185,7 @@ class VersusArena:
                 return
 
 
-    def checkIfGameOver(self):
+    def checkIfGameOver(self): # Checks if the game is over, if so than make other peer know.
         if self.player_circle is not None:
             player_distance_to_center = math.sqrt((self.player_circle["position"][0] - self.sumo_ring_center[0])**2 + (self.player_circle["position"][1] - self.sumo_ring_center[1])**2)
             
@@ -194,7 +195,7 @@ class VersusArena:
  
         return False
 
-    def resetStates(self): # REsets state for different game from same client
+    def resetStates(self): # Resets state for different game from same client
         self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": self.player.getName(),"score": 0}
         self.enemy_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": None, "score": 0}
         self.gameStateRun = True
@@ -281,17 +282,24 @@ class VersusArena:
                 return
 
             if self.enemy_circle['score'] > 4: # Score cheat
-                print(self.enemy_circle['score'])
-                print("Player is using score cheats")
+                #print(self.enemy_circle['score'])
+                #print("Player is using score cheats")
                 self.score = 3 # Make not cheating player win
                 self.player_circle['score'] = 3
                 self.winnerOfTheGame = self.player_circle['name']
                 return
 
+            if distance_moved > MAX_MOVE_DISTANCE_PER_TICK:
+                print("There was a movemnt weirdness")
+                print(self.newRoundState)
+                #self.newRoundState = False
+
             if distance_moved > MAX_MOVE_DISTANCE_PER_TICK and self.newRoundState == True: # Cheat detection False positive, random spawn in ring is detected as teleporting
                 print("Cheat detection detects new round teleportng" + str(distance_moved))
                 self.newRoundState = False
             elif distance_moved > MAX_MOVE_DISTANCE_PER_TICK and self.checkIfGameOver() == False and self.newRoundState == False: # and self.newRoundState == False: # Player moved to fast and this is not a round switch
+                print("Movement hack")
+                print(distance_moved)
                 self.score = 3 # Make not cheating player win
                 self.player_circle['score'] = 3
                 self.winnerOfTheGame = self.player_circle['name']
@@ -341,10 +349,8 @@ class VersusArena:
         send_thread = threading.Thread(target=self.isPeerAliveSender, daemon=True)
         send_thread.start()
 
-        bg = pygame.image.load("assets/sumoBc/sumoFloor4.jpg").convert()
+        bg = pygame.image.load("assets/sumoBc/sumoFloor4.jpg").convert() # Cool sand background :3
         bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
-
-        print("Start game loop")
 
         while self.gameStateRun:
             current_time = time.time()
@@ -369,8 +375,6 @@ class VersusArena:
                 self.gameState.setCurrentState('1v1GameOver')
                 self.gameOver.setWinner(self.winnerOfTheGame)
 
-
-
             if math.ceil(self.timerScreen - self.shrink_timer) <= 5: # Shows different color depending how close the timer is to the end.
                 self.colorShrinkTimer = (255, 0, 0)
             else:
@@ -380,7 +384,6 @@ class VersusArena:
             gameScreen_Score = self.gameFont.render('Score: ' + str(self.score), True, (0,0,0))
             gameScreen_rect = gameScreen_Score.get_rect(center=(SCREEN_WIDTH - SCREEN_WIDTH/7, 20))
             self.screen.blit(gameScreen_Score, gameScreen_rect)
-
 
             # Time displayed on screen
             gameScreen_waveTimer = self.gameFont.render('0:' + str(math.ceil(self.timerScreen - self.shrink_timer)), True, self.colorShrinkTimer)
