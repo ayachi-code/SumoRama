@@ -2,6 +2,11 @@ import pygame
 import socket
 import random
 import threading
+import json
+
+import sys
+sys.path.append("../game") # Debug
+import player
 
 SERVER_HOST = '127.0.0.1' # Rendezbvous server host
 SERVER_PORT = 5378 # Rendezvous server port
@@ -56,25 +61,31 @@ class PlayerBox:
 
 
 class LobbyArena:
-    def __init__(self, screen, gameState):
+    def __init__(self, screen, gameState, player):
         pygame.init()
         pygame.font.init()
         self.clock = pygame.time.Clock()    
         self.fontOfTitle = pygame.font.SysFont('Comic Sans MS', 75)
+
+        self.player = player
         
         self.screen = screen
         self.gameState = gameState
         self.gameStateRun = True
+
+        self.peersInLobby = []
 
     def listener(self):
         while True:
             data, addr = sock.recvfrom(65535)
             data = data.decode()
             if "PEERS" in data:
-                print(data)
+                self.peersInLobby = json.loads(data.split(" ",1)[1])
+                print(self.peersInLobby)
 
-    def run(self):        
-        sock.sendto("HELLO".encode(), host_port)
+    def run(self):
+        payload = "HELLO-FROM " + self.player.getName() + " " + self.player.getColor()        
+        sock.sendto(payload.encode(), host_port)
 
         lister = threading.Thread(target=self.listener,args=(), daemon=True)
         lister.start()
@@ -108,5 +119,5 @@ class LobbyArena:
 
 if __name__ == "__main__":
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  # Set display resolution
-    game = LobbyArena(screen, None)
+    game = LobbyArena(screen, None, player.Player("Player69", "RED"))
     game.run()

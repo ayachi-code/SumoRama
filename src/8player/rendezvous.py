@@ -27,10 +27,12 @@ while True:
 
     data = data.decode()
 
-    if data == "HELLO":
+    if "HELLO-FROM" in data:
         print("Got a connection :)")
+        #print(data.split(" ")[2])
         #sock.sendto("HELLO-OK", client_socket)
-        connectedPeers[currentSession].append(client_socket) # Appends client socket to the session
+        connectedPeers[currentSession].append((client_socket, (data.split(" ")[1],data.split(" ")[2]))) # Appends client socket to the session
+        #print(connectedPeers[currentSession])
 
     if len(connectedPeers[currentSession]) > 1: 
         for peer in connectedPeers[currentSession]: # Broadcast new client
@@ -39,9 +41,13 @@ while True:
                 if peer != targetPeers:
                     otherPeers.append(targetPeers)
             payload = "PEERS " + json.dumps(otherPeers)
-            sock.sendto(payload.encode(),peer) # Sends all active peers to the peer
+            #print(payload)
+            sock.sendto(payload.encode(),peer[0]) # Sends all active peers to the peer
 
-    threading.Thread(target=handler)
+
+
+
+
 
 
 
