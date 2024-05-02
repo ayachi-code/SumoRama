@@ -4,6 +4,15 @@ import random
 import threading
 import json
 
+#TODO: 1. Player joint dan ziet hij zich zelf in de grote box
+#   2. Players worden gelaten zien op scherm wanneer joinen
+#   3. Players kunnen ready up doen en wordt gelocked op client
+#   4. Meerder sessions als 1 vol is.
+#       Tip: Verstuur session id naar client bij handshake
+#   5. Player kan leaven bij lobby en werkt
+#   6. Gane start als 50 % ready up heeft gedaan
+
+
 import sys
 sys.path.append("../game") # Debug
 import player
@@ -53,14 +62,15 @@ class PlayerBox:
         pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(x, y, self.width, self.height),  2)
         pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(x, (y+self.height)-50, self.width, 50),  2)
         
-        gameScreen_surfaceLobbyTitle = self.fontOfTitle.render('player1000', True, (255, 255, 255))
-        gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(x+self.width/2,(y+self.height)-25))
-        self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
+        if self.name != None:
+            gameScreen_surfaceLobbyTitle = self.fontOfTitle.render('player1000', True, (255, 255, 255))
+            gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(x+self.width/2,(y+self.height)-25))
+            self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
 
-        pygame.draw.circle(self.screen, (255,0,0),(x+self.width/2, y+(self.height/2)),40)
+            pygame.draw.circle(self.screen, (255,0,0),(x+self.width/2, y+(self.height/2)),40)
 
-        pygame.draw.rect(self.screen, (255,0,0), pygame.Rect(x, y, self.width/4, 50))
-        pygame.draw.rect(self.screen, (0,0,0), pygame.Rect(x, y, self.width/4, 52), 2)
+            pygame.draw.rect(self.screen, (255,0,0), pygame.Rect(x, y, self.width/4, 50))
+            pygame.draw.rect(self.screen, (0,0,0), pygame.Rect(x, y, self.width/4, 52), 2)
 
 
 class LobbyArena:
@@ -95,7 +105,7 @@ class LobbyArena:
         lister = threading.Thread(target=self.listener,args=(), daemon=True)
         lister.start()
         
-        player = PlayerBox("Bilal", None, self.screen,300, SCREEN_HEIGHT/3.33)
+        player = PlayerBox("a", None, self.screen,300, SCREEN_HEIGHT/3.33)
 
         while self.gameStateRun:
             self.screen.fill((153,0,17))
@@ -123,7 +133,7 @@ class LobbyArena:
             for i in range(0,3): # Prints the boxes on the screen
                 player.draw(0+400, (SCREEN_HEIGHT/10) + i * SCREEN_HEIGHT/3.33)
                 player.draw(300+400,(SCREEN_HEIGHT/10) + i * SCREEN_HEIGHT/3.33)
-                if i != 2:
+                if i == 0:
                     player.draw(600+400,(SCREEN_HEIGHT/10) + i * SCREEN_HEIGHT/3.33)
 
             for event in pygame.event.get():
