@@ -15,4 +15,3 @@ print("Rendezvous server is online")
 while True:
     client_socket, address = sock.accept()
     print(f'{address}' + " connected to match making sever")
-    

@@ -79,6 +79,8 @@ class MainMenu:
                         self.gameStateRun = False
                     elif morePlayerMode.isOver(pos):
                         print("Starting 8 player mode")
+                        self.gameState.setCurrentState('lobbyArena')
+                        self.gameStateRun = False
                     elif quitTheGame.isOver(pos):
                         print("Player quit the game")
                         pygame.quit()
