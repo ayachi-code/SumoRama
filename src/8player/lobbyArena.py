@@ -1,4 +1,22 @@
 import pygame
+import socket
+import random
+import threading
+
+SERVER_HOST = '127.0.0.1' # Rendezbvous server host
+SERVER_PORT = 5378 # Rendezvous server port
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # SOCK_DGRAM for udp
+
+random_number = random.uniform(6000, 10000) # Random port for udp
+
+random_integer = round(random_number)
+
+sock.bind((SERVER_HOST, random_integer))
+
+host_port = (SERVER_HOST, SERVER_PORT)
+
+print(random_integer)
 
 FPS = 60
 
@@ -48,7 +66,18 @@ class LobbyArena:
         self.gameState = gameState
         self.gameStateRun = True
 
-    def run(self):
+    def listener(self):
+        while True:
+            data, addr = sock.recvfrom(65535)
+            data = data.decode()
+            if "PEERS" in data:
+                print(data)
+
+    def run(self):        
+        sock.sendto("HELLO".encode(), host_port)
+
+        lister = threading.Thread(target=self.listener,args=(), daemon=True)
+        lister.start()
 
         player = PlayerBox("Bilal", None, self.screen)
 
