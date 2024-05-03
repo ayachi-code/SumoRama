@@ -4,8 +4,8 @@ import random
 import threading
 import json
 
-#TODO: 1. Player joint dan ziet hij zich zelf in de grote box
-#   2. Players worden gelaten zien op scherm wanneer joinen
+#TODO: 1. Player joint dan ziet hij zich zelf in de grote box [x]
+#   2. Players worden gelaten zien op scherm wanneer joinen [x]
 #   3. Players kunnen ready up doen en wordt gelocked op client
 #   4. Meerder sessions als 1 vol is.
 #       Tip: Verstuur session id naar client bij handshake
@@ -15,7 +15,11 @@ import json
 
 import sys
 sys.path.append("../game") # Debug
+sys.path.append("../lib/") # Debug
+
 import player
+import button
+
 
 SERVER_HOST = '127.0.0.1' # Rendezbvous server host
 SERVER_PORT = 5378 # Rendezvous server port
@@ -46,6 +50,7 @@ class PlayerBox:
         
         self.fontOfTitle = pygame.font.SysFont('Comic Sans MS', 30)
 
+        self.id = None # Unique id to identify a box
         
         # Sizes of the box
         self.width = width
@@ -53,6 +58,18 @@ class PlayerBox:
 
         #self.height = SCREEN_HEIGHT/3.33
         #self.width = 300
+
+    def getId(self):
+        return self.id
+    
+    def setId(self, newId):
+        self.id = newId
+
+    def getName(self):
+        return self.name
+    
+    def setName(self, newName):
+        self.name = newName
 
     def reset(self):
         self.name = None
@@ -63,7 +80,7 @@ class PlayerBox:
         pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(x, (y+self.height)-50, self.width, 50),  2)
         
         if self.name != None:
-            gameScreen_surfaceLobbyTitle = self.fontOfTitle.render('player1000', True, (255, 255, 255))
+            gameScreen_surfaceLobbyTitle = self.fontOfTitle.render(self.name, True, (255, 255, 255))
             gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(x+self.width/2,(y+self.height)-25))
             self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
 
@@ -88,15 +105,46 @@ class LobbyArena:
         self.gameState = gameState
         self.gameStateRun = True
 
-        self.peersInLobby = []
+        self.readyUpState = False
+        self.readyUpColor = (226,221,220) 
 
+        self.peersInLobby = []
+        self.playerBoxes = [PlayerBox(None, None, self.screen,300, SCREEN_HEIGHT/3.33), PlayerBox(None, None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, None, self.screen,300, SCREEN_HEIGHT/3.33 )]
+
+    def _isPlayerInLobby(self):
+        for box in self.playerBoxes:
+            if box.getId() == True:
+                return True
+        return False 
+    
     def listener(self):
         while True:
             data, addr = sock.recvfrom(65535)
             data = data.decode()
             if "PEERS" in data:
-                self.peersInLobby = json.loads(data.split(" ",1)[1])
-                print(self.peersInLobby)
+                peerInformation = json.loads(data.split(" ",1)[1])
+                
+                for peer in peerInformation:
+                    if peer[0][1] not in self.peersInLobby:
+                        print(peer)
+                        self.peersInLobby.append(peer[0][1])
+                        for box in self.playerBoxes:
+                            if box.getId() == None:
+                                box.setId(peer[0][1])
+                                box.setName(peer[1][0])
+                                break
+                
+    def _convertStringToColor(self, color): #Helper function that converts string color to rgb tuple HELPER function 
+        if color == "RED": 
+            return (255,0,0)
+        elif color == "BLACK":
+            return (255,255,255)
+        elif color == "GREEN":
+            return (0,255,0)
+        elif color == "BLUE":
+            return (0,0,255)
+        else:
+            return (0,0,0) # Default white character
 
     def run(self):
         payload = "HELLO-FROM " + self.player.getName() + " " + self.player.getColor()        
@@ -120,27 +168,45 @@ class LobbyArena:
             pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(0, SCREEN_HEIGHT/10, 400, 350),  2)
             pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(0, (SCREEN_HEIGHT/10+350)-50, 400, 50),  2)
             
-            gameScreen_surfaceLobbyTitle = self.fontOfTitlePlayerMain.render('player1000', True, (255, 255, 255))
+            gameScreen_surfaceLobbyTitle = self.fontOfTitlePlayerMain.render(self.player.getName(), True, (255, 255, 255))
             gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(400/2,SCREEN_HEIGHT/10 + 325))
             self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
 
-            pygame.draw.circle(self.screen, (255,0,0),(400/2, +(450/2)),70)
+            pygame.draw.circle(self.screen, self._convertStringToColor(self.player.getColor()),(400/2, +(450/2)),70)
 
-            pygame.draw.rect(self.screen, (255,0,0), pygame.Rect(0, SCREEN_HEIGHT/10, 350/4, 50))
+            if self.readyUpState == True:
+                pygame.draw.rect(self.screen, (0,255,0), pygame.Rect(0, SCREEN_HEIGHT/10, 350/4, 50))
+            else:
+                pygame.draw.rect(self.screen, (255,0,0), pygame.Rect(0, SCREEN_HEIGHT/10, 350/4, 50))
+
             pygame.draw.rect(self.screen, (0,0,0), pygame.Rect(0, SCREEN_HEIGHT/10, 350/4, 52), 2)
+     
+            for i in range(8):  # Iterate over all playerBoxes
+                if i < 3:
+                    x_offset = 0
+                elif i < 6:
+                    x_offset = 300
+                else:
+                    x_offset = 600
+                self.playerBoxes[i].draw(x_offset + 400, (SCREEN_HEIGHT/10) + (i % 3) * SCREEN_HEIGHT/3.33)
 
-            # Other peers
-            for i in range(0,3): # Prints the boxes on the screen
-                player.draw(0+400, (SCREEN_HEIGHT/10) + i * SCREEN_HEIGHT/3.33)
-                player.draw(300+400,(SCREEN_HEIGHT/10) + i * SCREEN_HEIGHT/3.33)
-                if i == 0:
-                    player.draw(600+400,(SCREEN_HEIGHT/10) + i * SCREEN_HEIGHT/3.33)
+
+            if self.readyUpState == True: # Lock ready up
+                self.readyUpColor = (128,128,128)
+                
+            readyUp = button.Button(self.readyUpColor ,0,SCREEN_HEIGHT/10 + 575 ,400,150,60,'Ready up')
+
+            readyUp.draw(self.screen, (0,0,0))
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.gameStateRun = False
+                if event.type == pygame.MOUSEBUTTONUP:
+                    pos = pygame.mouse.get_pos()
+                    if readyUp.isOver(pos):
+                        print("Ready up")
+                        self.readyUpState = True
             
-
             pygame.display.update()
             self.clock.tick(FPS)  # Limit to 60 FPS
             
