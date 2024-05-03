@@ -6,7 +6,8 @@ import json
 
 #TODO: 1. Player joint dan ziet hij zich zelf in de grote box [x]
 #   2. Players worden gelaten zien op scherm wanneer joinen [x]
-#   3. Players kunnen ready up doen en wordt gelocked op client
+#   3. Players kunnen ready up doen en wordt gelocked op client [x]
+#   3*. Game start sign als er 50% ready is en meer dan 4 players in de game
 #   4. Meerder sessions als 1 vol is.
 #       Tip: Verstuur session id naar client bij handshake
 #   5. Player kan leaven bij lobby en werkt
@@ -43,15 +44,15 @@ SCREEN_HEIGHT = 800
 
 
 class PlayerBox:
-    def __init__(self, name, readyUp, screen, width, height):
+    def __init__(self, name, screen, width, height):
         self.name = name
-        self.readyUp = readyUp
         self.screen = screen
         
         self.fontOfTitle = pygame.font.SysFont('Comic Sans MS', 30)
 
         self.id = None # Unique id to identify a box
-        
+        self.readyUp = False
+
         # Sizes of the box
         self.width = width
         self.height = height
@@ -71,9 +72,15 @@ class PlayerBox:
     def setName(self, newName):
         self.name = newName
 
+    def setReadyUp(self, state):
+        self.readyUp = state
+
+    def getReadyUp(self):
+        return self.readyUp
+
     def reset(self):
         self.name = None
-        self.readyUp = None
+        self.readyUp = False
 
     def draw(self, x,y):
         pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(x, y, self.width, self.height),  2)
@@ -86,7 +93,11 @@ class PlayerBox:
 
             pygame.draw.circle(self.screen, (255,0,0),(x+self.width/2, y+(self.height/2)),40)
 
-            pygame.draw.rect(self.screen, (255,0,0), pygame.Rect(x, y, self.width/4, 50))
+            if self.readyUp == False:
+                pygame.draw.rect(self.screen, (255,0,0), pygame.Rect(x, y, self.width/4, 50))
+            elif self.readyUp == True:
+                pygame.draw.rect(self.screen, (0,255,0), pygame.Rect(x, y, self.width/4, 50))
+
             pygame.draw.rect(self.screen, (0,0,0), pygame.Rect(x, y, self.width/4, 52), 2)
 
 
@@ -109,7 +120,7 @@ class LobbyArena:
         self.readyUpColor = (226,221,220) 
 
         self.peersInLobby = []
-        self.playerBoxes = [PlayerBox(None, None, self.screen,300, SCREEN_HEIGHT/3.33), PlayerBox(None, None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, None, self.screen,300, SCREEN_HEIGHT/3.33 )]
+        self.playerBoxes = [PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33), PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 )]
 
     def _isPlayerInLobby(self):
         for box in self.playerBoxes:
@@ -123,16 +134,22 @@ class LobbyArena:
             data = data.decode()
             if "PEERS" in data:
                 peerInformation = json.loads(data.split(" ",1)[1])
-                
                 for peer in peerInformation:
                     if peer[0][1] not in self.peersInLobby:
-                        print(peer)
+                        #print(peer)
                         self.peersInLobby.append(peer[0][1])
                         for box in self.playerBoxes:
                             if box.getId() == None:
                                 box.setId(peer[0][1])
                                 box.setName(peer[1][0])
                                 break
+            if "READY" in data:
+                print("Got ready up from " + data.split(" ")[1])
+                readyId = int(data.split(" ")[1])
+                for peer in self.playerBoxes:
+                    if peer.getId() == readyId:
+                        print("Readying up")
+                        peer.setReadyUp(True)
                 
     def _convertStringToColor(self, color): #Helper function that converts string color to rgb tuple HELPER function 
         if color == "RED": 
@@ -153,7 +170,7 @@ class LobbyArena:
         lister = threading.Thread(target=self.listener,args=(), daemon=True)
         lister.start()
         
-        player = PlayerBox("a", None, self.screen,300, SCREEN_HEIGHT/3.33)
+        #player = PlayerBox("a", None, self.screen,300, SCREEN_HEIGHT/3.33)
 
         while self.gameStateRun:
             self.screen.fill((153,0,17))
@@ -206,6 +223,9 @@ class LobbyArena:
                     if readyUp.isOver(pos):
                         print("Ready up")
                         self.readyUpState = True
+                        # Notify other peers trough rendezvous protocol
+                        payload = "READY-UP " + str(random_integer) 
+                        sock.sendto(payload.encode(), (host_port))
             
             pygame.display.update()
             self.clock.tick(FPS)  # Limit to 60 FPS

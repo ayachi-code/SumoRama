@@ -29,10 +29,15 @@ while True:
 
     if "HELLO-FROM" in data:
         print("Got a connection :)")
-        #print(data.split(" ")[2])
-        #sock.sendto("HELLO-OK", client_socket)
         connectedPeers[currentSession].append((client_socket, (data.split(" ")[1],data.split(" ")[2]))) # Appends client socket to the session
-        #print(connectedPeers[currentSession])
+
+    if "READY-UP" in data: # A peer readys up send it to all other peers
+        # Send ready up to all other peers
+        for peer in connectedPeers[currentSession]:
+            if peer[0] != client_socket: # Not resending to same peer
+                payload = "READY-OK " + data.split(" ")[1]
+                sock.sendto(payload.encode(), peer[0])
+       # print(data)
 
     if len(connectedPeers[currentSession]) > 1: 
         for peer in connectedPeers[currentSession]: # Broadcast new client
