@@ -96,8 +96,12 @@ while True:
         if stat == 1:
             stat = 0
             continue
-    
 
+    if "RESET" in data:
+        print("Resetting for new lobby")
+        connectedPeers = {}
+
+    
     if len(connectedPeers) > 1: 
         for peer in connectedPeers: # Broadcast new client
             otherPeersKey = []

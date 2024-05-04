@@ -303,14 +303,17 @@ class LobbyArena:
 
                 self.arena.setPeer(myPeer)
                 self.gameState.setCurrentState('playerArena')
+
+                sock.sendto("RESET".encode(), (host_port))
                 
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.gameStateRun = False
                 if event.type == pygame.MOUSEBUTTONUP:
                     pos = pygame.mouse.get_pos()
                     if readyUp.isOver(pos) and self.readyUpState != True and self.readyUpCounter != None:
-                        print("Ready up")
+                        print("Ready up") 
                         self.readyUpState = True
                         self.readyUpCounter += 1
                         payload = "READY-UP " + str(random_integer) 
