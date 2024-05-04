@@ -172,7 +172,7 @@ class LobbyArena:
                         for box in self.playerBoxes:
                             if box.getId() == None:
                                 box.setId(peer[1])
-                                box.setName(playerinfo[counter][1])
+                                box.setName(playerinfo[counter][0])
                                 box.setReadyUp(playerinfo[counter][2])
                                 break
                                             
@@ -189,7 +189,7 @@ class LobbyArena:
                         self.readyUpCounter += 1
                 
     def _convertStringToColor(self, color): #Helper function that converts string color to rgb tuple HELPER function 
-        if color == "RED": 
+        if color == "red": 
             return (255,0,0)
         elif color == "BLACK":
             return (255,255,255)
@@ -253,7 +253,7 @@ class LobbyArena:
             gameScreen_surfaceLobbyTitle = self.fontOfTitlePlayerMain.render(self.player.getName(), True, (255, 255, 255))
             gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(400/2,SCREEN_HEIGHT/10 + 325))
             self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
-
+            
             pygame.draw.circle(self.screen, self._convertStringToColor(self.player.getColor()),(400/2, +(450/2)),70)
 
             if self.readyUpState == True:
@@ -291,9 +291,7 @@ class LobbyArena:
             gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(150, SCREEN_HEIGHT/10 + 450))
             self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
 
-
             if self.readyUpCounter == 4:
-                #print(self.peersInLobby)
                 self.gameStateRun = False
                 self.gameState.setCurrentState('playerArena')
 
@@ -302,7 +300,7 @@ class LobbyArena:
                     self.gameStateRun = False
                 if event.type == pygame.MOUSEBUTTONUP:
                     pos = pygame.mouse.get_pos()
-                    if readyUp.isOver(pos) and self.readyUpState != True:
+                    if readyUp.isOver(pos) and self.readyUpState != True and self.readyUpCounter != None:
                         print("Ready up")
                         self.readyUpState = True
                         self.readyUpCounter += 1
