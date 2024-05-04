@@ -19,6 +19,7 @@ import versusArena
 import gameOverVersus
 import lobbyArena
 import playerArena
+import lobbyFull
 
 # Path to files in other directory
 
@@ -53,11 +54,11 @@ class Game:
         self.joinMenu = joinMenu.JoinMenu(self.screen, self.gameStateManager, self.lobbyVersus)
 
         # 8 player mode
-        self.lobbyArena = lobbyArena.LobbyArena(self.screen, self.gameStateManager, self.player)
         self.gameArena = playerArena.PlayerArena(self.screen, self.gameStateManager, self.player, None, self.gameOverVersus)
+        self.lobbyArena = lobbyArena.LobbyArena(self.screen, self.gameStateManager, self.player, self.gameArena)
+        self.lobbyFull = lobbyFull.LobbyFull(self.screen, self.gameStateManager)
 
-        self.states = {'start': self.start, '1v1Menu': self.versusMenu, 'joinMenu': self.joinMenu, 'lobby1v1': self.lobbyVersus, 'errorJoin': self.errorJoin, 'versusArena': self.versusArena, '1v1GameOver': self.gameOverVersus, 'lobbyArena': self.lobbyArena, 'playerArena': self.gameArena}
-
+        self.states = {'start': self.start, '1v1Menu': self.versusMenu, 'joinMenu': self.joinMenu, 'lobby1v1': self.lobbyVersus, 'errorJoin': self.errorJoin, 'versusArena': self.versusArena, '1v1GameOver': self.gameOverVersus, 'lobbyArena': self.lobbyArena, 'playerArena': self.gameArena, 'lobbyFull': self.lobbyFull}
 
         self.gameStateRun = True
     def run(self):

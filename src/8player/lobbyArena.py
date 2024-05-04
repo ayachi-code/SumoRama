@@ -4,19 +4,21 @@ import random
 import threading
 import json
 import time
+import lobbyFull
 
 #TODO: 1. Player joint dan ziet hij zich zelf in de grote box [x]
 #   2. Players worden gelaten zien op scherm wanneer joinen [x]
 #   3. Players kunnen ready up doen en wordt gelocked op client [x]
-#   3*. Game start sign als er 50% ready is en meer dan 4 players in de game
-#   4. Meerder sessions als 1 vol is.[-]
+#   3*. Game start sign als er 50% ready is en meer dan 4 players in de game [x]
+#   4. Meerder sessions als 1 vol is. --> Player kriijgt bericht als lobby vol is []
 #       Tip: Verstuur session id naar client bij handshake [-]
 #   5. Player kan leaven bij lobby en werkt [-]
-#   6. Gane start als 50 % ready up heeft gedaan
+#   6. Gane start als 50 % ready up heeft gedaan [x]
 #   7. Acks toevoegen [-]
 
 
 import sys
+
 sys.path.append("../game") # Debug
 sys.path.append("../lib/") # Debug
 
@@ -151,6 +153,10 @@ class LobbyArena:
         while True:
             data, addr = sock.recvfrom(65535)
             data = data.decode()
+
+
+            if self.gameStateRun == False:
+                break
             
             if "PEERS" in data:
                 print("peers")
@@ -206,25 +212,41 @@ class LobbyArena:
         while True:
             data, client_socket = sock.recvfrom(4096)
             data = data.decode()
-            print(data)
+        #    print(data)
             if data == "HELLO-OK":
+                print("Stop")
                 self.serverAck = True
                 break
+            elif data == "FULL":
+                print("stop")
+                self.gameStateRun = False
+                self.serverAck = True
+                self.gameState.setCurrentState('lobbyFull')
+                break
 
+    def sendForAckStartUp(self):
+        while True:    
+            if self.serverAck:
+                break
+            payload = "HELLO-FROM " + self.player.getName() + " " + self.player.getColor()        
+            sock.sendto(payload.encode(), host_port)
+            time.sleep(0.1)
 
     def run(self):
         
 
-        # lister = threading.Thread(target=self.listeningForAckStartUp, daemon=True)
-        # lister.start()
+        self.gameStateRun = True
+        self.serverAck = False
+
+        lister = threading.Thread(target=self.listeningForAckStartUp, daemon=True)
+        lister.start()
+
+        sender = threading.Thread(target=self.sendForAckStartUp, daemon=True)
+        sender.start()
         
-        # while True:    
-        #     payload = "HELLO-FROM " + self.player.getName() + " " + self.player.getColor()        
-        #     sock.sendto(payload.encode(), host_port)
-        #     time.sleep(0.1)
-        #     if self.serverAck:
-        #         self.serverAck = False
-        #         break
+        while True:    
+            if self.serverAck:
+                break
 
         lister = threading.Thread(target=self.listener,args=(), daemon=True)
         lister.start()
@@ -233,9 +255,9 @@ class LobbyArena:
         # iamAlive.start()
 
 
-        payload = "HELLO-FROM " + self.player.getName() + " " + self.player.getColor()       
+        #payload = "HELLO-FROM " + self.player.getName() + " " + self.player.getColor()       
         
-        sock.sendto(payload.encode(), host_port)
+        #sock.sendto(payload.encode(), host_port)
  
         #player = PlayerBox("a", None, self.screen,300, SCREEN_HEIGHT/3.33)
 

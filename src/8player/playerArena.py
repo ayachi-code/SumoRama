@@ -5,7 +5,6 @@ import time
 
 FPS = 60
 
-
 class PlayerArena:
     def __init__(self, screen, gameState, peer, player, gameOver):
         pygame.init() # Init pygame

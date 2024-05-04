@@ -6,6 +6,9 @@ import time
 SERVER_ADDRESS = '127.0.0.1'
 SERVER_PORT = 5378
 
+MAX_PLAYER_LOBBY = 4
+
+
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 sock.bind((SERVER_ADDRESS, SERVER_PORT))
@@ -76,10 +79,15 @@ while True:
     #     acknowledgedPeersAlve.append(data.split(" ")[1])
     if "HELLO-FROM" in data:
         print("Got a connection :)")
-        connectedPeers[client_socket] = [data.split(" ")[1], data.split(" ")[2], False]
-        #connectedPeers.append(client_socket: {data.split(" ")[1],data.split(" ")[2],False} ) # Appends client socket to the session
-        sock.sendto("HELLO-OK".encode(), client_socket)
-        #print(connectedPeers)
+        print(len(connectedPeers))
+        if len(connectedPeers) == MAX_PLAYER_LOBBY-1: # -1 cuz it counts 0
+            sock.sendto("FULL".encode(), client_socket)
+            continue
+        else:
+            connectedPeers[client_socket] = [data.split(" ")[1], data.split(" ")[2], False]
+            #connectedPeers.append(client_socket: {data.split(" ")[1],data.split(" ")[2],False} ) # Appends client socket to the session
+            sock.sendto("HELLO-OK".encode(), client_socket)
+            #print(connectedPeers)
 
     if "READY-UP" in data: # A peer readys up send it to all other peers
         # Send ready up to all other peers
