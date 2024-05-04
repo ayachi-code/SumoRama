@@ -3,15 +3,17 @@ import socket
 import random
 import threading
 import json
+import time
 
 #TODO: 1. Player joint dan ziet hij zich zelf in de grote box [x]
 #   2. Players worden gelaten zien op scherm wanneer joinen [x]
 #   3. Players kunnen ready up doen en wordt gelocked op client [x]
 #   3*. Game start sign als er 50% ready is en meer dan 4 players in de game
-#   4. Meerder sessions als 1 vol is.
-#       Tip: Verstuur session id naar client bij handshake
-#   5. Player kan leaven bij lobby en werkt
+#   4. Meerder sessions als 1 vol is.[-]
+#       Tip: Verstuur session id naar client bij handshake [-]
+#   5. Player kan leaven bij lobby en werkt [-]
 #   6. Gane start als 50 % ready up heeft gedaan
+#   7. Acks toevoegen [-]
 
 
 import sys
@@ -110,12 +112,17 @@ class LobbyArena:
 
         self.fontOfTitlePlayerMain = pygame.font.SysFont('Comic Sans MS', 40)
 
+        self.notifierReadyUp = pygame.font.SysFont('Comic Sans MS', 40)
+
         self.player = player
         
         self.screen = screen
         self.gameState = gameState
         self.gameStateRun = True
+        self.serverAck = False
 
+
+        self.readyUpCounter = None
         self.readyUpState = False
         self.readyUpColor = (226,221,220) 
 
@@ -128,21 +135,50 @@ class LobbyArena:
                 return True
         return False 
     
+    def iAmAlive(self):
+        while True:
+            data, addr = sock.recvfrom(65535)
+            data = data.decode()
+
+            if "ALIVE" == data:
+                payload = "ALIVE-OK " + str(random_integer)
+                sock.sendto(payload.encode(), host_port)
+                #print("server wants know if im alive")
+    
     def listener(self):
         while True:
             data, addr = sock.recvfrom(65535)
             data = data.decode()
+            
             if "PEERS" in data:
-                peerInformation = json.loads(data.split(" ",1)[1])
-                for peer in peerInformation:
-                    if peer[0][1] not in self.peersInLobby:
-                        #print(peer)
-                        self.peersInLobby.append(peer[0][1])
+                print("peers")
+                connectionInfo = data.split(" ",1)[1].split(" ")[0]
+                playerinfo = data.split(" ",1)[1].split(" ")[1]
+
+                connectionInfo = json.loads(connectionInfo)
+                playerinfo = json.loads(playerinfo)
+
+                if self.readyUpCounter == None:
+                    self.readyUpCounter = 0
+                    for peer in playerinfo:
+                        if peer[2] == True:
+                            self.readyUpCounter += 1
+
+                counter = 0
+
+                for peer in connectionInfo:
+                    if peer[1] not in self.peersInLobby:
+                        self.peersInLobby.append(peer[1])
                         for box in self.playerBoxes:
                             if box.getId() == None:
-                                box.setId(peer[0][1])
-                                box.setName(peer[1][0])
+                                box.setId(peer[1])
+                                box.setName(playerinfo[counter][1])
+                                box.setReadyUp(playerinfo[counter][2])
                                 break
+                                            
+                    counter += 1
+                    
+
             if "READY" in data:
                 print("Got ready up from " + data.split(" ")[1])
                 readyId = int(data.split(" ")[1])
@@ -150,6 +186,7 @@ class LobbyArena:
                     if peer.getId() == readyId:
                         print("Readying up")
                         peer.setReadyUp(True)
+                        self.readyUpCounter += 1
                 
     def _convertStringToColor(self, color): #Helper function that converts string color to rgb tuple HELPER function 
         if color == "RED": 
@@ -162,14 +199,42 @@ class LobbyArena:
             return (0,0,255)
         else:
             return (0,0,0) # Default white character
+        
+    def listeningForAckStartUp(self):
+        while True:
+            data, client_socket = sock.recvfrom(4096)
+            data = data.decode()
+            print(data)
+            if data == "HELLO-OK":
+                self.serverAck = True
+                break
+
 
     def run(self):
-        payload = "HELLO-FROM " + self.player.getName() + " " + self.player.getColor()        
-        sock.sendto(payload.encode(), host_port)
+        
+
+        # lister = threading.Thread(target=self.listeningForAckStartUp, daemon=True)
+        # lister.start()
+        
+        # while True:    
+        #     payload = "HELLO-FROM " + self.player.getName() + " " + self.player.getColor()        
+        #     sock.sendto(payload.encode(), host_port)
+        #     time.sleep(0.1)
+        #     if self.serverAck:
+        #         self.serverAck = False
+        #         break
 
         lister = threading.Thread(target=self.listener,args=(), daemon=True)
         lister.start()
+
+        # iamAlive = threading.Thread(target=self.iAmAlive,args=(), daemon=True)
+        # iamAlive.start()
+
+
+        payload = "HELLO-FROM " + self.player.getName() + " " + self.player.getColor()       
         
+        sock.sendto(payload.encode(), host_port)
+ 
         #player = PlayerBox("a", None, self.screen,300, SCREEN_HEIGHT/3.33)
 
         while self.gameStateRun:
@@ -215,15 +280,32 @@ class LobbyArena:
 
             readyUp.draw(self.screen, (0,0,0))
 
+            # Status
+
+            if self.readyUpCounter == None:
+                gameScreen_surfaceLobbyTitle = self.notifierReadyUp.render('No players :(', True, (255, 255, 255))
+            else:
+                gameScreen_surfaceLobbyTitle = self.notifierReadyUp.render('Ready up: ' + str((4-self.readyUpCounter))  +' left', True, (255, 255, 255))
+
+
+            gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(150, SCREEN_HEIGHT/10 + 450))
+            self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
+
+
+            if self.readyUpCounter == 4:
+                #print(self.peersInLobby)
+                self.gameStateRun = False
+                self.gameState.setCurrentState('playerArena')
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.gameStateRun = False
                 if event.type == pygame.MOUSEBUTTONUP:
                     pos = pygame.mouse.get_pos()
-                    if readyUp.isOver(pos):
+                    if readyUp.isOver(pos) and self.readyUpState != True:
                         print("Ready up")
                         self.readyUpState = True
-                        # Notify other peers trough rendezvous protocol
+                        self.readyUpCounter += 1
                         payload = "READY-UP " + str(random_integer) 
                         sock.sendto(payload.encode(), (host_port))
             
@@ -231,7 +313,7 @@ class LobbyArena:
             self.clock.tick(FPS)  # Limit to 60 FPS
             
 
-if __name__ == "__main__":
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  # Set display resolution
-    game = LobbyArena(screen, None, player.Player("Player69", "RED"))
-    game.run()
+# if __name__ == "__main__":
+#     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  # Set display resolution
+#     game = LobbyArena(screen, None, player.Player("Player69", "RED"))
+#     game.run()
