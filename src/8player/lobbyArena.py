@@ -22,6 +22,7 @@ sys.path.append("../lib/") # Debug
 
 import player
 import button
+import peer
 
 
 SERVER_HOST = '127.0.0.1' # Rendezbvous server host
@@ -104,7 +105,7 @@ class PlayerBox:
 
 
 class LobbyArena:
-    def __init__(self, screen, gameState, player):
+    def __init__(self, screen, gameState, player, arena):
         pygame.init()
         pygame.font.init()
         self.clock = pygame.time.Clock()    
@@ -120,6 +121,7 @@ class LobbyArena:
         self.gameState = gameState
         self.gameStateRun = True
         self.serverAck = False
+        self.arena = arena
 
 
         self.readyUpCounter = None
@@ -293,8 +295,15 @@ class LobbyArena:
 
             if self.readyUpCounter == 4:
                 self.gameStateRun = False
-                self.gameState.setCurrentState('playerArena')
+                myPeer = peer.Peer('127.0.0.1',  random_integer) # Creates peer object
 
+                for port in self.peersInLobby:
+                    myPeer.addCoonection(('127.0.0.1', port))
+                
+
+                self.arena.setPeer(myPeer)
+                self.gameState.setCurrentState('playerArena')
+                
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.gameStateRun = False
@@ -306,7 +315,7 @@ class LobbyArena:
                         self.readyUpCounter += 1
                         payload = "READY-UP " + str(random_integer) 
                         sock.sendto(payload.encode(), (host_port))
-            
+
             pygame.display.update()
             self.clock.tick(FPS)  # Limit to 60 FPS
             

@@ -23,9 +23,14 @@ class PlayerArena:
 
         self.gameStateRun = True
 
+
+    def setPeer(self, newPeer):
+        self.peer = newPeer
+
     def run(self):
         
         while self.gameStateRun:
+            print(self.peer.getConnections())
             # current_time = time.time()
             # delta_time = current_time - self.last_tick_time
             # self.last_tick_time = current_time
@@ -42,7 +47,6 @@ class PlayerArena:
                     exit(0)
 
             
-
             pygame.display.update()
             self.clock.tick(FPS) # FPS locked
 
