@@ -108,7 +108,7 @@ class PlayerBox:
 
 
 class LobbyArena:
-    def __init__(self, screen, gameState, player, arena):
+    def __init__(self, screen, gameState, player, arena, error):
         pygame.init()
         pygame.font.init()
         self.clock = pygame.time.Clock()    
@@ -125,6 +125,7 @@ class LobbyArena:
         self.gameStateRun = True
         self.serverAck = False
         self.arena = arena
+        self.error = error
 
 
         self.readyUpCounter = None
@@ -230,9 +231,12 @@ class LobbyArena:
                 self.serverAck = True
                 break
             elif data == "FULL":
+                print("vol")
                 self.gameStateRun = False
                 self.serverAck = True
-                self.gameState.setCurrentState('lobbyFull')
+                self.error.setErrorMessage('Lobby is full')
+                self.error.setBackButtonDest('start')
+                self.gameState.setCurrentState('error')
                 break
 
     def sendForAckStartUp(self):
