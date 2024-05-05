@@ -3,6 +3,7 @@ import threading
 import pygame
 import math
 import time
+import json
 import random
 
 FPS = 60
@@ -11,7 +12,7 @@ SCREEN_WIDTH = 1300
 SCREEN_HEIGHT = 800
 
 class PlayerArena:
-    def __init__(self, screen, gameState, peer, player, gameOver):
+    def __init__(self, screen, gameState, player, gameOver):
         pygame.init() # Init pygame
         pygame.font.init() # Init font
 
@@ -21,15 +22,26 @@ class PlayerArena:
         # Set arguments to class
         self.screen = screen
         self.gameState = gameState
-        self.peer = peer
+        self.peer = None
         self.player = player
         self.gameOver = gameOver
 
         self.gameStateRun = True
 
-        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0}
-
+        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None}
+        self.enemy_circles = [ # All possie enemy circles
+            
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None},
+        ]
+        
         self.confirmedPositions = []
+        self.placedPositionsReciever = []
 
         self.playerPositionInit = None
 
@@ -56,7 +68,34 @@ class PlayerArena:
             if "INIT" in data:
                 print("Got init of positions from " + data.split(" ")[3] + " DATA " + data)
                 payload = "CONFIRM " + str(self.peer.getPort())
+                xPosition = data.split(" ")[1]
+                yPosition = data.split(" ")[2]
+
                 self.peer.getSocket().sendto(payload.encode(), addr) # Confirms position
+                
+                for enemy in self.enemy_circles:
+                    if enemy['id'] == None and int(data.split(" ")[3]) not in self.placedPositionsReciever: # Prevents using more circles than needed
+                        enemy['id'] = data.split(" ")[3]
+                        enemy['position'] = [xPosition, yPosition]
+                        self.placedPositionsReciever.append(int(data.split(" ")[3]))
+            elif "UPDATE" in data:
+                newData = json.loads(data.split(" ",1)[1])
+                peerId = newData['id']
+                newPossition = newData['position']
+
+                for peer in self.enemy_circles: # TODO Maybe use hashmap for future update, increases performance
+                    # print(str(peer['id']) + "==" + str(peerId))
+                    if peer['id'] != None:
+                        if int(peer['id']) == int(peerId):
+                            # print("updating")
+                            peer['position'] = newPossition
+
+                #print(newData)
+
+
+                # if int(data.split(" ")[3]) not in self.placedPositionsReciever:
+                #     self.placedPositionsReciever.append(int(data.split(" ")[3]))
+
 
     def displayCountdown(self): # Shows a counter before starting the game, preps player to be ready
         countdown_font = pygame.font.SysFont('Comic Sans MS', 150)
@@ -132,6 +171,8 @@ class PlayerArena:
 
         #print("My connection info " + str(self.peer.getPort()))
 
+        self.player_circle['id'] = self.peer.getPort()
+
         listener = threading.Thread(target=self.listenData, daemon=True)
         listener.start()
 
@@ -150,6 +191,7 @@ class PlayerArena:
 
 
         while self.gameStateRun:
+            #print(self.enemy_circles)
             #print(self.peer.getConnections())
             # current_time = time.time()
             # delta_time = current_time - self.last_tick_time
@@ -167,6 +209,40 @@ class PlayerArena:
                     exit(0)
 
             
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_a]:
+                self.player_circle['position'][0] -= 3
+            if keys[pygame.K_d]:
+                self.player_circle['position'][0] += 3
+            if keys[pygame.K_w]:
+                self.player_circle['position'][1] -= 3
+            if keys[pygame.K_s]:
+                self.player_circle['position'][1] += 3
+
+
+            pygame.draw.circle(self.screen, (255,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),20)
+
+            pygame.draw.circle(self.screen, (255, 0, 0), self.sumo_ring_center, int(self.sumo_ring_radius), 30) # Draw the sumo ring
+            
+            for playerEnemy in self.enemy_circles:
+                # print(player['id'])
+                if playerEnemy['id'] != None:
+                    # print((playerEnemy['position'][0]))
+                    pygame.draw.circle(self.screen, (255,0,0), (int(playerEnemy['position'][0]),int(playerEnemy['position'][1])),20)
+
+            
+            #pygame.draw.circle(self.screen, self.player.getColor(), (self.enemy_circle['position'][0],self.enemy_circle['position'][1]),40)
+
+            #  # Sends data to client
+            peerPositionJSON = json.dumps(self.player_circle)
+            payload = "UPDATE " + peerPositionJSON
+            for enemyPlayer in self.enemy_circles:
+                if enemyPlayer['id'] != None:
+                    self.peer.getSocket().sendto(payload.encode(), ('127.0.0.1', int(enemyPlayer['id'])))
+
+            #self.peer.getSocket().sendto(payload.encode(), list(self.peer.getConnections())[0])
+
+
             pygame.display.update()
             self.clock.tick(FPS) # FPS locked
 

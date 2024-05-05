@@ -53,7 +53,7 @@ class Game:
         self.joinMenu = joinMenu.JoinMenu(self.screen, self.gameStateManager, self.lobbyVersus, self.error)
 
         # 8 player mode
-        self.gameArena = playerArena.PlayerArena(self.screen, self.gameStateManager, self.player, None, self.gameOverVersus)
+        self.gameArena = playerArena.PlayerArena(self.screen, self.gameStateManager, self.player, self.gameOverVersus)
         self.lobbyArena = lobbyArena.LobbyArena(self.screen, self.gameStateManager, self.player, self.gameArena, self.error)
 
         self.states = {'start': self.start, '1v1Menu': self.versusMenu, 'joinMenu': self.joinMenu, 'lobby1v1': self.lobbyVersus, 'versusArena': self.versusArena, '1v1GameOver': self.gameOverVersus, 'lobbyArena': self.lobbyArena, 'playerArena': self.gameArena, 'error': self.error}
