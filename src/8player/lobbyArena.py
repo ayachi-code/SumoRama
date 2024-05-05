@@ -86,6 +86,7 @@ class PlayerBox:
     def reset(self):
         self.name = None
         self.readyUp = False
+        self.id = None
 
     def draw(self, x,y):
         pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(x, y, self.width, self.height),  2)
@@ -154,11 +155,20 @@ class LobbyArena:
             data, addr = sock.recvfrom(65535)
             data = data.decode()
 
-
             if self.gameStateRun == False:
                 break
             
-            if "PEERS" in data:
+            if "quit" in data:
+                leavedID = data.split(" ")[1]
+                for box in self.playerBoxes:
+                    if box.getId() == int(leavedID):
+                        if box.getReadyUp() == True:
+                            self.readyUpCounter -= 1 # Player was ready however, no not because they left
+                        box.reset()
+                        break
+
+
+            elif "PEERS" in data:
                 print("peers")
                 connectionInfo = data.split(" ",1)[1].split(" ")[0]
                 playerinfo = data.split(" ",1)[1].split(" ")[1]
@@ -212,13 +222,14 @@ class LobbyArena:
         while True:
             data, client_socket = sock.recvfrom(4096)
             data = data.decode()
-        #    print(data)
+        
+            if self.gameStateRun == False:
+                break
+
             if data == "HELLO-OK":
-                print("Stop")
                 self.serverAck = True
                 break
             elif data == "FULL":
-                print("stop")
                 self.gameStateRun = False
                 self.serverAck = True
                 self.gameState.setCurrentState('lobbyFull')
@@ -332,6 +343,10 @@ class LobbyArena:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.gameStateRun = False
+                    payload = "quit " + str(random_integer) 
+                    sock.sendto(payload.encode(), (host_port))
+                    pygame.quit()
+                    exit(0)
                 if event.type == pygame.MOUSEBUTTONUP:
                     pos = pygame.mouse.get_pos()
                     if readyUp.isOver(pos) and self.readyUpState != True and self.readyUpCounter != None:

@@ -6,7 +6,7 @@ import time
 SERVER_ADDRESS = '127.0.0.1'
 SERVER_PORT = 5378
 
-MAX_PLAYER_LOBBY = 4
+MAX_PLAYER_LOBBY = 8
 
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -68,6 +68,23 @@ def sendReadyUp(self, payload):
 
 stat = 0
 
+def notifyPeers(message):
+    for peer in connectedPeers: # Broadcast new client
+        otherPeersKey = []
+        otherPeersValue = []
+
+        for targetPeers in connectedPeers:   
+            if peer != targetPeers:
+                otherPeersKey.append(targetPeers)
+                otherPeersValue.append(connectedPeers[targetPeers])
+
+        #print(connectedPeers[peer])
+        #payload = "PEERS " + json.dumps(otherPeersKey,separators=(',', ':')) + " " + json.dumps(otherPeersValue,separators=(',', ':'))
+
+        sock.sendto(message.encode(),peer) # Sends all active peers to the peer
+
+
+
 
 while True:
     data, client_socket = sock.recvfrom(4096)
@@ -75,12 +92,22 @@ while True:
     data = data.decode()
     #print(data)
 
+
+    if "quit" in data:
+        print("Player is quiting")
+        peerId = data.split(" ")[1]
+        connectedPeers.pop(('127.0.0.1', int(peerId)), None)
+        payload = "quit " + peerId
+        notifyPeers(payload)
+        continue
+
     # if "ALIVE-OK" in data:
     #     acknowledgedPeersAlve.append(data.split(" ")[1])
     if "HELLO-FROM" in data:
         print("Got a connection :)")
-        print(len(connectedPeers))
+        #print(len(connectedPeers))
         if len(connectedPeers) == MAX_PLAYER_LOBBY-1: # -1 cuz it counts 0
+            print("vol?")
             sock.sendto("FULL".encode(), client_socket)
             continue
         else:
@@ -108,7 +135,6 @@ while True:
     if "RESET" in data:
         print("Resetting for new lobby")
         connectedPeers = {}
-
     
     if len(connectedPeers) > 1: 
         for peer in connectedPeers: # Broadcast new client
