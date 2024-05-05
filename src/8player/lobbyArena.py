@@ -4,7 +4,6 @@ import random
 import threading
 import json
 import time
-import lobbyFull
 
 #TODO: 1. Player joint dan ziet hij zich zelf in de grote box [x]
 #   2. Players worden gelaten zien op scherm wanneer joinen [x]
