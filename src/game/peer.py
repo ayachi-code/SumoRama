@@ -35,6 +35,9 @@ class Peer:
     def getSocket(self):
         return self.socket
 
+    def setSocket(self, newSocket):
+        self.socket = newSocket
+
     def getHost(self):
         return self.host
     
