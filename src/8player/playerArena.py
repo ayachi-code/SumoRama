@@ -38,7 +38,7 @@ class PlayerArena:
 
         gameStartIn_font = pygame.font.SysFont('Comic Sans MS', 140)
 
-        tips = ["Camping is not a good strategy since the circle shrinks","Losing a lot of games in a row? Take a break!", "With the rushing ability comes great responsibility.", "Use WASD keys to move around the map", "With the space key you can rush against players"]
+        tips = ["Camping is not a good strategy since the circle shrinks","Losing a lot of games in a row? Take a break!", "With the rushing ability comes great responsibility.", "Use WASD keys to move around the map", "With the space key you can rush against players", "Press space to rush against other players!"]
 
         nextTip = 0
 
