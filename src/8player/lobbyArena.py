@@ -301,13 +301,19 @@ class LobbyArena:
 
             pygame.draw.rect(self.screen, (0,0,0), pygame.Rect(0, SCREEN_HEIGHT/10, 350/4, 52), 2)
      
+            counter = 0
             for i in range(8):  # Iterate over all playerBoxes
                 if i < 3:
                     x_offset = 0
                 elif i < 6:
                     x_offset = 300
                 else:
+                    counter += 1
                     x_offset = 600
+
+
+                if counter == 2:
+                    break
                 self.playerBoxes[i].draw(x_offset + 400, (SCREEN_HEIGHT/10) + (i % 3) * SCREEN_HEIGHT/3.33)
 
 
