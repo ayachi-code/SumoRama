@@ -240,12 +240,21 @@ class LobbyArena:
                 break
 
     def sendForAckStartUp(self):
+        upperBoundSend = 3
         while True:    
+            if upperBoundSend == 0:
+                self.gameStateRun = False
+                self.error.setErrorMessage('Matchmaking server is down')
+                self.error.setBackButtonDest('start')
+                self.gameState.setCurrentState('error')
+                break
+            
             if self.serverAck:
                 break
             payload = "HELLO-FROM " + self.player.getName() + " " + self.player.getColor()        
             sock.sendto(payload.encode(), host_port)
             time.sleep(0.1)
+            upperBoundSend -= 1
 
     def run(self):
         
@@ -260,7 +269,7 @@ class LobbyArena:
         sender.start()
         
         while True:    
-            if self.serverAck:
+            if self.serverAck or self.gameStateRun == False:
                 break
 
         lister = threading.Thread(target=self.listener,args=(), daemon=True)
@@ -311,7 +320,6 @@ class LobbyArena:
                 else:
                     counter += 1
                     x_offset = 600
-
 
                 if counter == 2:
                     break
