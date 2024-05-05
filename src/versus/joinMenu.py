@@ -19,7 +19,7 @@ BUTTONHEIGHT = 150
 BUTTONSIZETEXT = 140
 
 class JoinMenu:
-    def __init__(self, screen, gameState, lobbyVersus):
+    def __init__(self, screen, gameState, lobbyVersus, error):
         pygame.init()
         pygame.font.init()
         self.clock = pygame.time.Clock()
@@ -37,6 +37,7 @@ class JoinMenu:
 
         self.gameState = gameState
         self.lobbyVersus = lobbyVersus
+        self.error = error
 
         self.ip_input = '127.0.0.1' # input.InputBox(SCREEN_WIDTH/7.5,SCREEN_HIGHT/2.335, 700, 32)
         self.ip_port = input.InputBox(SCREEN_WIDTH/1.45,SCREEN_HIGHT/2.335, 140, 32)
@@ -51,7 +52,7 @@ class JoinMenu:
         try:
             while True:
                 if self.hostAck == True:
-                    print("Stopping sending for check fi excist host")
+                    print("Stopping sending for check if excist host")
                     break
                 if maxRequestSend <= 0:
                     self.hostAck = False
@@ -65,7 +66,10 @@ class JoinMenu:
         except Exception as e:
             print(e)
             self.gameStateRun = False
-            self.gameState.setCurrentState('errorJoin')
+            self.error.setErrorMessage('could not join peer')
+            self.error.setBackButtonDest('joinMenu')
+            self.gameState.setCurrentState('error')
+            # self.gameState.setCurrentState('errorJoin')
 
 
     def listenToHost(self):
@@ -149,7 +153,10 @@ class JoinMenu:
                         except Exception as e: # Show error screen
                             print(e)
                             self.gameStateRun = False
-                            self.gameState.setCurrentState('errorJoin')
+                            # self.gameState.setCurrentState('errorJoin')
+                            self.error.setErrorMessage('could not join peer')
+                            self.error.setBackButtonDest('joinMenu')
+                            self.gameState.setCurrentState('error')
                     elif back.isOver(pos):
                         print("Player quit the menu")
                         self.gameState.setCurrentState('1v1Menu')

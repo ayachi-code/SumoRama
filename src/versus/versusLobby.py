@@ -16,7 +16,7 @@ SCREEN_HEIGHT = 800
 BUTTONSIZETEXT = 100
 
 class VersusLobby:
-    def __init__(self, screen, gameState, peerIP, player, arena):
+    def __init__(self, screen, gameState, peerIP, player, arena, error):
         pygame.init()
         pygame.font.init()
 
@@ -29,6 +29,7 @@ class VersusLobby:
         self.peerIP = peerIP
         self.player = player
         self.arena = arena
+        self.error = error
 
         self.port = None
         self.peer = None
@@ -127,7 +128,10 @@ class VersusLobby:
                 if self.peerIP != None: # Joiner
                     print("HOST LEFT OHHHHH")
                     self.gameStateRun = False
-                    self.gameState.setCurrentState('errorJoin')
+                    # self.gameState.setCurrentState('errorJoin')
+                    self.error.setErrorMessage('Host left')
+                    self.error.setBackButtonDest('joinMenu')
+                    self.gameState.setCurrentState('error')
                     if self.peer.getSocket():
                         self.peer.getSocket().close()
                         self.resetStates()
