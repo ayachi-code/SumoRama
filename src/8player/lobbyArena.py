@@ -46,6 +46,8 @@ FPS = 60
 SCREEN_WIDTH = 1300
 SCREEN_HEIGHT = 800
 
+MAX_READY_UP = 1
+
 
 class PlayerBox:
     def __init__(self, name, screen, width, height):
@@ -335,7 +337,7 @@ class LobbyArena:
             gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(150, SCREEN_HEIGHT/10 + 450))
             self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
 
-            if self.readyUpCounter == 4:
+            if self.readyUpCounter == MAX_READY_UP:
                 self.gameStateRun = False
                 myPeer = peer.Peer('127.0.0.1',  random_integer) # Creates peer object
 
