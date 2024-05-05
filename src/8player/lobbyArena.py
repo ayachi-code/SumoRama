@@ -232,7 +232,6 @@ class LobbyArena:
                 self.serverAck = True
                 break
             elif data == "FULL":
-                print("vol")
                 self.gameStateRun = False
                 self.serverAck = True
                 self.error.setErrorMessage('Lobby is full')
@@ -340,6 +339,8 @@ class LobbyArena:
             if self.readyUpCounter == MAX_READY_UP:
                 self.gameStateRun = False
                 myPeer = peer.Peer('127.0.0.1',  random_integer) # Creates peer object
+                myPeer.setSocket(sock)
+                #myPeer.start() it is already binded
 
                 for port in self.peersInLobby:
                     myPeer.addCoonection(('127.0.0.1', port))
@@ -349,6 +350,7 @@ class LobbyArena:
                 self.gameState.setCurrentState('playerArena')
 
                 sock.sendto("RESET".encode(), (host_port))
+                print("STARTING ARENA!!")
                 
 
             for event in pygame.event.get():

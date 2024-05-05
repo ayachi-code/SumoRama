@@ -1,6 +1,7 @@
 import socket
 import threading
 import pygame
+import math
 import time
 import random
 
@@ -26,11 +27,37 @@ class PlayerArena:
 
         self.gameStateRun = True
 
+        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0}
+
+        self.confirmedPositions = []
+
+        self.playerPositionInit = None
+
+        self.sumo_ring_radius = 450
+        self.sumo_ring_center = [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]
+        self.circle_radius = 40
+
 
     def setPeer(self, newPeer):
         self.peer = newPeer
 
-    
+
+    def listenData(self):
+        while True:
+            data, addr = self.peer.getSocket().recvfrom(65535)
+            data = data.decode()
+            if "CONFIRM" in data:
+                if int(data.split(" ")[1]) not in self.confirmedPositions:
+                    self.confirmedPositions.append(int(data.split(" ")[1]))
+                
+                if len(self.confirmedPositions) == len(self.peer.getConnections()):
+                    self.playerPositionInit = True
+
+            if "INIT" in data:
+                print("Got init of positions from " + data.split(" ")[3] + " DATA " + data)
+                payload = "CONFIRM " + str(self.peer.getPort())
+                self.peer.getSocket().sendto(payload.encode(), addr) # Confirms position
+
     def displayCountdown(self): # Shows a counter before starting the game, preps player to be ready
         countdown_font = pygame.font.SysFont('Comic Sans MS', 150)
         
@@ -72,14 +99,58 @@ class PlayerArena:
             pygame.display.update()
             pygame.time.wait(1000)
 
+    def sendInitPositions(self, data): # Send init positions to other peer, at the start of the game
+        while True:
+            if self.playerPositionInit == True:
+                break
+            for peers in self.peer.getConnections():
+                self.peer.getSocket().sendto(data.encode(), peers)
+            time.sleep(0.1)
 
-    def run(self):
+    
+    def randomPointInCircle(self, radius, centerX, centerY): # Uses circle formula to generate random point on circle, the circle here is the sumo ring.
+        alpha = 2 * math.pi * random.random()
+        r = radius * math.sqrt(random.random())
+
+        x = r * math.cos(alpha) + centerX
+        y = r * math.sin(alpha) + centerY
+        return (x,y)
+
+    def initPosition(self):
+        randomPointInRing = self.randomPointInCircle(self.sumo_ring_radius-(0.3 * self.sumo_ring_radius), self.sumo_ring_center[0], self.sumo_ring_center[1])
+        self.player_circle['position'] = [math.ceil(randomPointInRing[0]),math.ceil(randomPointInRing[1])]
+
+        payload = "INIT " + str(math.ceil(randomPointInRing[0])) + " " + str(math.ceil(randomPointInRing[1])) + " " + str(self.peer.getPort())
+
+        sendInit_thread = threading.Thread(target=self.sendInitPositions,args=(payload,), daemon=True)
+        sendInit_thread.start()
         
+        
+    def run(self):
+
+        #self.displayCountdown() # Displays a countdown with some very usefull tips!
+
+        #print("My connection info " + str(self.peer.getPort()))
+
+        listener = threading.Thread(target=self.listenData, daemon=True)
+        listener.start()
+
+        self.initPosition()
 
         self.displayCountdown() # Displays a countdown with some very usefull tips!
 
+        # print(self.peer.getPort())
+
+        # print(self.peer.getConnections().get(0))
+        
+        # for peers in self.peer.getConnections():
+        #     payload = "Hi bro my id is " + str(self.peer.getPort())
+        #     print(peers)
+        #     self.peer.getSocket().sendto("hi".encode(), peers)
+
+
         while self.gameStateRun:
-            print(self.peer.getConnections())
+            #print(self.peer.getConnections())
             # current_time = time.time()
             # delta_time = current_time - self.last_tick_time
             # self.last_tick_time = current_time

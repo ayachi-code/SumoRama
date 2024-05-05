@@ -6,7 +6,7 @@ import time
 SERVER_ADDRESS = '127.0.0.1'
 SERVER_PORT = 5378
 
-MAX_PLAYER_LOBBY = 3
+MAX_PLAYER_LOBBY = 9
 
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
