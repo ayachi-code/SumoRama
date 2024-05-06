@@ -22,7 +22,7 @@ class VersusLobby:
 
         self.clock = pygame.time.Clock()
         self.screen = screen
-        self.fontOfTitle = pygame.font.SysFont('Comic Sans MS', 75)
+        self.fontOfTitle = pygame.font.SysFont('Comic Sans MS', 60)
 
         self.gameStateRun = True
         self.gameState = gameState 
@@ -178,7 +178,6 @@ class VersusLobby:
                 self.playerQuit = True
                 self.peerIP = None
                 print("start versus arena")
-
             
             self.screen.fill((153,0,17))
             

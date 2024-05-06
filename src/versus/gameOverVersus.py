@@ -23,7 +23,7 @@ class GameOverVersus:
         self.gameStateRun = True
         self.buttonColor = (226,221,220)
         
-        self.gameFont = pygame.font.SysFont('Comic Sans MS', 130)
+        self.gameFont = pygame.font.SysFont('Comic Sans MS', 90)
 
         self.winner = "" # Stores the winner
 

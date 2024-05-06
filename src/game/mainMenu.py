@@ -86,8 +86,8 @@ class MainMenu:
                         pygame.quit()
                         exit(0)
 
-            self.screen.blit(self.sumoImg, (w/10, 20))
-            self.screen.blit(self.sumoImg, (w/1.3, 20))
+            self.screen.blit(self.sumoImg, (w/13, 20))
+            self.screen.blit(self.sumoImg, (w/1.21, 20))
 
             pygame.display.update()
             self.clock.tick(FPS)  # Limit to 60 FPS

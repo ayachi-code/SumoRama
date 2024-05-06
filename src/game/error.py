@@ -22,7 +22,7 @@ class Error:
 
         self.gameStateRun = True
 
-        self.gameScreen = pygame.font.SysFont('Comic Sans MS', 100)
+        self.gameScreen = pygame.font.SysFont('Comic Sans MS', 70)
 
         self.gameState = gameState
 

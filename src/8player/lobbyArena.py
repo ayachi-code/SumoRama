@@ -224,6 +224,7 @@ class LobbyArena:
         while True:
             data, client_socket = sock.recvfrom(4096)
             data = data.decode()
+            print(data)
         
             if self.gameStateRun == False:
                 break
@@ -240,7 +241,7 @@ class LobbyArena:
                 break
 
     def sendForAckStartUp(self):
-        upperBoundSend = 3
+        upperBoundSend = 7
         while True:    
             if upperBoundSend == 0:
                 self.gameStateRun = False
