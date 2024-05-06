@@ -432,6 +432,8 @@ class VersusArena:
                 self.player_circle["position"][0] += self.player_circle["velocity"][0] * self.clock.get_time() / 1000
                 self.player_circle["position"][1] += self.player_circle["velocity"][1] * self.clock.get_time() / 1000
 
+            #print(self.clock.get_time())
+
             # Shrink timer updated
             self.shrink_timer += self.clock.get_time() / 1000
 

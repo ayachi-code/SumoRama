@@ -11,6 +11,9 @@ FPS = 60
 SCREEN_WIDTH = 1300
 SCREEN_HEIGHT = 800
 
+GAME_TICK_RATE = 1 / FPS  # Game tick rate in seconds
+
+
 class PlayerArena:
     def __init__(self, screen, gameState, player, gameOver):
         pygame.init() # Init pygame
@@ -55,6 +58,18 @@ class PlayerArena:
         self.sumo_ring_center = [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]
         self.circle_radius = 20
 
+
+        # Shrink variables
+        self.shrink_timer = 0
+        self.timerScreen = 10
+        self.shrink_interval = 10
+        self.shrink_scale = 0.90
+        self.colorShrinkTimer = (0,0,0)
+
+        # Lockstep simulation variables
+        self.game_tick_rate = GAME_TICK_RATE
+        self.last_tick_time = 0
+        self.lockstep_enabled = True  # Toggle lockstep simulation
 
     def setPeer(self, newPeer):
         self.peer = newPeer
@@ -221,27 +236,29 @@ class PlayerArena:
 
         self.displayCountdown() # Displays a countdown with some very usefull tips!
 
-        # print(self.peer.getPort())
-
-        # print(self.peer.getConnections().get(0))
-        
-        # for peers in self.peer.getConnections():
-        #     payload = "Hi bro my id is " + str(self.peer.getPort())
-        #     print(peers)
-        #     self.peer.getSocket().sendto("hi".encode(), peers)
+        start_time = time.time()
 
 
         while self.gameStateRun:
-            #print(self.enemy_circles)
-            #print(self.peer.getConnections())
-            # current_time = time.time()
-            # delta_time = current_time - self.last_tick_time
-            # self.last_tick_time = current_time
 
-            # if self.lockstep_enabled and delta_time < self.game_tick_rate: # Assures that the game is synced per frame
-            #     time.sleep(self.game_tick_rate - delta_time)
+            current_time = time.time()
+            elapsed_time = current_time - start_time
+
+            remaining_time = max(0, 10 - math.ceil(elapsed_time))  # Calculate remaining time
+
+            current_time = time.time()
+            delta_time = current_time - self.last_tick_time
+            self.last_tick_time = current_time
+
+            if self.lockstep_enabled and delta_time < self.game_tick_rate: # Assures that the game is synced per frame
+                time.sleep(self.game_tick_rate - delta_time)
 
             self.screen.fill((255,255,255))
+
+            # Time displayed on screen
+            gameScreen_waveTimer = self.gameFont.render('0:' + str(remaining_time), True, self.colorShrinkTimer)
+            gameScreen_rect = gameScreen_waveTimer.get_rect(center=(SCREEN_WIDTH - 30, 20))
+            self.screen.blit(gameScreen_waveTimer, gameScreen_rect)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -284,8 +301,6 @@ class PlayerArena:
 
 
             pygame.draw.circle(self.screen, (255,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),self.circle_radius)
-
-            pygame.draw.circle(self.screen, (255, 0, 0), self.sumo_ring_center, int(self.sumo_ring_radius), 30) # Draw the sumo ring
             
             for playerEnemy in self.enemy_circles:
                 # print(player['id'])
@@ -294,7 +309,13 @@ class PlayerArena:
                     pygame.draw.circle(self.screen, (255,0,0), (int(playerEnemy['position'][0]),int(playerEnemy['position'][1])),self.circle_radius)
 
             
-            #pygame.draw.circle(self.screen, self.player.getColor(), (self.enemy_circle['position'][0],self.enemy_circle['position'][1]),40)
+            if elapsed_time >= self.shrink_interval: # If timer exceeds threshold than make the circle smaller and reset timers.
+                self.sumo_ring_radius *= self.shrink_scale
+                start_time = time.time()  # Reset the timer
+                #self.shrink_timer = 0
+                #self.timerScreen = 10
+
+            pygame.draw.circle(self.screen, (255, 0, 0), self.sumo_ring_center, int(self.sumo_ring_radius), 30) # Draw the sumo ring
 
             #  # Sends data to client
             peerPositionJSON = json.dumps(self.player_circle)
@@ -302,8 +323,6 @@ class PlayerArena:
             for enemyPlayer in self.enemy_circles:
                 if enemyPlayer['id'] != None:
                     self.peer.getSocket().sendto(payload.encode(), ('127.0.0.1', int(enemyPlayer['id'])))
-
-            #self.peer.getSocket().sendto(payload.encode(), list(self.peer.getConnections())[0])
 
 
             pygame.display.update()
