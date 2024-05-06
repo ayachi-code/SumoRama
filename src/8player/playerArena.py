@@ -265,6 +265,11 @@ class PlayerArena:
 
             self.screen.blit(bg, (0, 0))
 
+            if math.ceil(remaining_time) <= 5: # Shows different color depending how close the timer is to the end.
+                self.colorShrinkTimer = (255, 0, 0)
+            else:
+                self.colorShrinkTimer = (0,0,0)
+
             # Time displayed on screen
             gameScreen_waveTimer = self.gameFont.render('0:' + str(remaining_time), True, self.colorShrinkTimer)
             gameScreen_rect = gameScreen_waveTimer.get_rect(center=(SCREEN_WIDTH - 30, 20))
