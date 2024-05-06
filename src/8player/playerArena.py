@@ -53,7 +53,7 @@ class PlayerArena:
 
         self.sumo_ring_radius = 450
         self.sumo_ring_center = [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]
-        self.circle_radius = 40
+        self.circle_radius = 20
 
 
     def setPeer(self, newPeer):
@@ -182,6 +182,28 @@ class PlayerArena:
                 direction = [direction[0] / length, direction[1] / length]
                 self.player_circle["velocity"][0] = direction[0] * self.rush_speed
                 self.player_circle["velocity"][1] = direction[1] * self.rush_speed
+    
+    def handle_collision(self, circle1, circle2): # Collision between 2 circles
+        distance = math.sqrt(( int(circle1["position"][0]) - int(circle2["position"][0]))**2 +
+                            (int(circle1["position"][1]) - int(circle2["position"][1]))**2)
+        
+
+        if distance < 2 * self.circle_radius:
+            overlap = 2 * self.circle_radius - distance
+            collision_direction = [ int(circle2["position"][0]) - int(circle1["position"][0]),
+                                int(circle2["position"][1]) - int(circle1["position"][1])]
+            
+            collision_length = math.sqrt(collision_direction[0]**2 + collision_direction[1]**2)
+
+            if collision_length > 0:
+                collision_direction = [collision_direction[0] / collision_length,
+                                    collision_direction[1] / collision_length]
+                move_distance = overlap / 2
+
+                circle1["position"][0] -= move_distance * collision_direction[0]
+                circle1["position"][1] -= move_distance * collision_direction[1]
+                circle2["position"][0] += move_distance * collision_direction[0]
+                circle2["position"][1] += move_distance * collision_direction[1]
         
         
     def run(self):
@@ -251,12 +273,17 @@ class PlayerArena:
                 self.player_circle['position'][1] += 3
 
             
+            if self.player_circle is not None:
+                for enemyPlayer in self.enemy_circles:
+                    if enemyPlayer != None:
+                        self.handle_collision(self.player_circle, enemyPlayer) # Collision detection
+
             if self.player_circle is not None: # Changes position depending on the speed
                 self.player_circle["position"][0] += self.player_circle["velocity"][0] * self.clock.get_time() / 1000
                 self.player_circle["position"][1] += self.player_circle["velocity"][1] * self.clock.get_time() / 1000
 
 
-            pygame.draw.circle(self.screen, (255,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),20)
+            pygame.draw.circle(self.screen, (255,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),self.circle_radius)
 
             pygame.draw.circle(self.screen, (255, 0, 0), self.sumo_ring_center, int(self.sumo_ring_radius), 30) # Draw the sumo ring
             
@@ -264,7 +291,7 @@ class PlayerArena:
                 # print(player['id'])
                 if playerEnemy['id'] != None:
                     # print((playerEnemy['position'][0]))
-                    pygame.draw.circle(self.screen, (255,0,0), (int(playerEnemy['position'][0]),int(playerEnemy['position'][1])),20)
+                    pygame.draw.circle(self.screen, (255,0,0), (int(playerEnemy['position'][0]),int(playerEnemy['position'][1])),self.circle_radius)
 
             
             #pygame.draw.circle(self.screen, self.player.getColor(), (self.enemy_circle['position'][0],self.enemy_circle['position'][1]),40)
