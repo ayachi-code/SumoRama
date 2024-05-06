@@ -6,6 +6,12 @@ import time
 import json
 import random
 
+#TODO
+# Sand background
+# Rescale summo size depended on number of players
+# Red color timer
+# Out of ring error is shown and player is hidden
+
 FPS = 60
 
 SCREEN_WIDTH = 1300
@@ -236,7 +242,10 @@ class PlayerArena:
 
         self.displayCountdown() # Displays a countdown with some very usefull tips!
 
-        start_time = time.time()
+        start_time = time.time() # Starts timer
+
+        bg = pygame.image.load("../assets/sumoBc/sumoFloor4.jpg").convert() # Cool sand background :3
+        bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
         while self.gameStateRun:
@@ -253,7 +262,8 @@ class PlayerArena:
             if self.lockstep_enabled and delta_time < self.game_tick_rate: # Assures that the game is synced per frame
                 time.sleep(self.game_tick_rate - delta_time)
 
-            self.screen.fill((255,255,255))
+
+            self.screen.blit(bg, (0, 0))
 
             # Time displayed on screen
             gameScreen_waveTimer = self.gameFont.render('0:' + str(remaining_time), True, self.colorShrinkTimer)
