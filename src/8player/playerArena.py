@@ -7,10 +7,12 @@ import json
 import random
 
 #TODO
-# Sand background
-# Rescale summo size depended on number of players
-# Red color timer
+# Sand background [x]
+# Rescale summo size depended on number of players [x]
+# Red color timer [x]
 # Out of ring error is shown and player is hidden
+
+# Maak position altijd een nummer
 
 FPS = 60
 
@@ -49,6 +51,7 @@ class PlayerArena:
             {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None},
         ]
 
+
         #rush variable
         self.rush_duration = 0.5
         self.rush_speed = 300
@@ -62,7 +65,7 @@ class PlayerArena:
 
         self.sumo_ring_radius = 450
         self.sumo_ring_center = [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]
-        self.circle_radius = 20
+        self.circle_radius = 40
 
 
         # Shrink variables
@@ -315,13 +318,16 @@ class PlayerArena:
                 self.player_circle["position"][1] += self.player_circle["velocity"][1] * self.clock.get_time() / 1000
 
 
-            pygame.draw.circle(self.screen, (255,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),self.circle_radius)
+
+            sizeRelativeSumo = self.circle_radius - len(self.peer.getConnections()) * 2.5
+            #print(len(self.peer.getConnections()))
+            pygame.draw.circle(self.screen, (255,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),sizeRelativeSumo)
             
             for playerEnemy in self.enemy_circles:
                 # print(player['id'])
                 if playerEnemy['id'] != None:
                     # print((playerEnemy['position'][0]))
-                    pygame.draw.circle(self.screen, (255,0,0), (int(playerEnemy['position'][0]),int(playerEnemy['position'][1])),self.circle_radius)
+                    pygame.draw.circle(self.screen, (255,0,0), (int(playerEnemy['position'][0]),int(playerEnemy['position'][1])),sizeRelativeSumo)
 
             
             if elapsed_time >= self.shrink_interval: # If timer exceeds threshold than make the circle smaller and reset timers.
