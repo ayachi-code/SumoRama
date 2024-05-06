@@ -10,9 +10,11 @@ import random
 # Sand background [x]
 # Rescale summo size depended on number of players [x]
 # Red color timer [x]
-# Out of ring error is shown and player is hidden
 
+# Out of ring error is shown and player is hidden
 # Maak position altijd een nummer
+# Score systeem
+# Winner en loser
 
 FPS = 60
 
