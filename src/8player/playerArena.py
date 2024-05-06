@@ -39,6 +39,12 @@ class PlayerArena:
             {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None},
             {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None},
         ]
+
+        #rush variable
+        self.rush_duration = 0.5
+        self.rush_speed = 300
+        self.rushing = False
+        self.rush_start_time = 0
         
         self.confirmedPositions = []
         self.placedPositionsReciever = []
@@ -163,6 +169,19 @@ class PlayerArena:
 
         sendInit_thread = threading.Thread(target=self.sendInitPositions,args=(payload,), daemon=True)
         sendInit_thread.start()
+
+    
+    def rush_to_cursor(self): # Method for the rush abbility in the game
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+
+        if self.player_circle is not None:
+            direction = [mouse_x - self.player_circle["position"][0], mouse_y - self.player_circle["position"][1]]
+            length = math.sqrt(direction[0]**2 + direction[1]**2)
+
+            if length > 0:
+                direction = [direction[0] / length, direction[1] / length]
+                self.player_circle["velocity"][0] = direction[0] * self.rush_speed
+                self.player_circle["velocity"][1] = direction[1] * self.rush_speed
         
         
     def run(self):
@@ -207,8 +226,20 @@ class PlayerArena:
                     self.gameStateRun = False
                     pygame.quit()
                     exit(0)
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE and not self.rushing and self.player_circle is not None: # Rush state set
+                        self.rushing = True
+                        self.rush_start_time = pygame.time.get_ticks()
 
-            
+            if self.rushing and self.player_circle is not None: 
+                current_time = pygame.time.get_ticks()
+                if current_time - self.rush_start_time < self.rush_duration * 1000:
+                    self.rush_to_cursor()
+                else:
+                    self.rushing = False
+                    self.player_circle["velocity"] = [0, 0]
+
+
             keys = pygame.key.get_pressed()
             if keys[pygame.K_a]:
                 self.player_circle['position'][0] -= 3
@@ -218,6 +249,11 @@ class PlayerArena:
                 self.player_circle['position'][1] -= 3
             if keys[pygame.K_s]:
                 self.player_circle['position'][1] += 3
+
+            
+            if self.player_circle is not None: # Changes position depending on the speed
+                self.player_circle["position"][0] += self.player_circle["velocity"][0] * self.clock.get_time() / 1000
+                self.player_circle["position"][1] += self.player_circle["velocity"][1] * self.clock.get_time() / 1000
 
 
             pygame.draw.circle(self.screen, (255,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),20)
