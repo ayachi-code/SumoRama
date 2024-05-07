@@ -26,6 +26,8 @@ SCREEN_HEIGHT = 800
 
 GAME_TICK_RATE = 1 / FPS  # Game tick rate in seconds
 
+MAX_ROUND = 4 # Max number of rounds in a game
+
 
 class PlayerArena:
     def __init__(self, screen, gameState, player, gameOver):
@@ -140,6 +142,7 @@ class PlayerArena:
                             # print("updating")
                             #print(type(newPossition[0]))
                             peer['position'] =  newPossition #newPossition[0]
+                            peer['score'] = newData['score']
             
 
                 #print(newData)
@@ -287,10 +290,19 @@ class PlayerArena:
         self.losers = [] # New round new chances, resets the loser list
         self.colorShrinkTimer = (0,0,0)
         self.start_time = time.time()
+
+    def getMaxScore(self):
+        max_score = self.player_circle['score']  # Start with the player's score
+        print(self.enemy_circles)
+
+        for enemy_circle in self.enemy_circles:
+            if enemy_circle['score'] > max_score:
+                max_score = enemy_circle['score']
+
+        return max_score
         
-        pass
+
         
-      
     def run(self):
 
         #self.displayCountdown() # Displays a countdown with some very usefull tips!
@@ -336,7 +348,12 @@ class PlayerArena:
                 self.newRound()
                 start_time = time.time() # resets countdown
                 self.round += 1 # Increases roudn counter
-                
+
+                if self.round == MAX_ROUND:
+                    print("max score is: " + str(self.getMaxScore()))
+                    print("Game is over and the winner is")
+
+
                 #print("Game is over bro all players are gone only 1 left")
                 # Give point to right player
                 # Go to the next round aka reset round
