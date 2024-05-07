@@ -6,6 +6,9 @@ import time
 import json
 import random
 
+#TODO SPECIAL FEAUTERS: Spectator mode is shown to peer
+
+
 #TODO
 # Sand background [x]
 # Rescale summo size depended on number of players [x]
@@ -92,9 +95,13 @@ class PlayerArena:
             data, addr = self.peer.getSocket().recvfrom(65535)
             data = data.decode()
             if "OUT_OF_RING" in data:
-                print("A peer is out of the ring")
-            
-            
+                peerID = data.split(" ")[1]
+                print("A peer is out of the ring " + peerID)
+                for player in self.enemy_circles:
+                    if player['id'] == peerID:
+                        player['visible'] = False
+                        break
+
             if "CONFIRM" in data:
                 if int(data.split(" ")[1]) not in self.confirmedPositions:
                     self.confirmedPositions.append(int(data.split(" ")[1]))
@@ -358,7 +365,7 @@ class PlayerArena:
 
             for playerEnemy in self.enemy_circles:
                 # print(player['id'])
-                if playerEnemy['id'] != None:
+                if playerEnemy['id'] != None and playerEnemy['visible'] == True:
                     # print((playerEnemy['position'][0]))
                     pygame.draw.circle(self.screen, (255,0,0), (int(playerEnemy['position'][0]),int(playerEnemy['position'][1])),self.realtiveSumoSize)
 
