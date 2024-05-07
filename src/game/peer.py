@@ -16,6 +16,10 @@ class Peer:
         self.socket.bind((self.host, self.port))
         print(f"Peer {self.host}:{self.port} is listening for incoming messages...")
 
+    def broadCast(self, message): # Broad cast to all other peers
+        for peer in self.connections:
+            self.socket.sendto(message.encode(), peer)
+
     def resetConnections(self):
         self.connections.clear()
 

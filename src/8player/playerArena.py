@@ -91,6 +91,10 @@ class PlayerArena:
         while True:
             data, addr = self.peer.getSocket().recvfrom(65535)
             data = data.decode()
+            if "OUT_OF_RING" in data:
+                print("A peer is out of the ring")
+            
+            
             if "CONFIRM" in data:
                 if int(data.split(" ")[1]) not in self.confirmedPositions:
                     self.confirmedPositions.append(int(data.split(" ")[1]))
@@ -123,6 +127,7 @@ class PlayerArena:
                             # print("updating")
                             #print(type(newPossition[0]))
                             peer['position'] =  newPossition #newPossition[0]
+            
 
                 #print(newData)
 
@@ -212,6 +217,11 @@ class PlayerArena:
                 self.player_circle["velocity"][1] = direction[1] * self.rush_speed
     
     def handle_collision(self, circle1, circle2): # Collision between 2 circles
+        circle1["position"][0] = float( circle1["position"][0])
+        circle1["position"][1] = float( circle1["position"][1])
+        circle2["position"][0] = float( circle2["position"][0])
+        circle2["position"][1] = float( circle2["position"][1])
+
         distance = math.sqrt(( float(circle1["position"][0]) - float(circle2["position"][0]))**2 +
                             (float(circle1["position"][1]) - float(circle2["position"][1]))**2)
         
@@ -285,8 +295,9 @@ class PlayerArena:
 
             if self.checkIfGameOver() and self.player_circle['visible'] == True:
                 self.player_circle['visible'] = False
+                payload = "OUT_OF_RING " + str(self.peer.getPort())
+                self.peer.broadCast(payload)
                 print("Out of the circle")
-
 
             if math.ceil(remaining_time) <= 5: # Shows different color depending how close the timer is to the end.
                 self.colorShrinkTimer = (255, 0, 0)
