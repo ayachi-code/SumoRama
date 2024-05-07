@@ -10,7 +10,7 @@ import random
 
 
 #TODO
-# Sudden death 
+# Sudden death [x]
 # Replaying restarts states
 # Player can leave and it will work
 # Fix smaller circles have bigger hitbox bug
@@ -242,8 +242,8 @@ class PlayerArena:
                             (float(circle1["position"][1]) - float(circle2["position"][1]))**2)
         
 
-        if distance < 2 * self.circle_radius:
-            overlap = 2 * self.circle_radius - distance
+        if distance < 2 * self.realtiveSumoSize:
+            overlap = 2 * self.realtiveSumoSize - distance
             collision_direction = [ float(circle2["position"][0]) - float(circle1["position"][0]),
                                 float(circle2["position"][1]) - float(circle1["position"][1])]
             
