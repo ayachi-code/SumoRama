@@ -87,6 +87,8 @@ class PlayerArena:
         self.lockstep_enabled = True  # Toggle lockstep simulation
 
         self.losers = [] # List that containst the losers of the round :(
+        
+        self.round = 1 # Starts on round 1
 
     def setPeer(self, newPeer):
         self.peer = newPeer
@@ -309,7 +311,6 @@ class PlayerArena:
         bg = pygame.image.load("../assets/sumoBc/sumoFloor4.jpg").convert() # Cool sand background :3
         bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
-
         while self.gameStateRun:
 
             current_time = time.time()
@@ -334,6 +335,8 @@ class PlayerArena:
 
                 self.newRound()
                 start_time = time.time() # resets countdown
+                self.round += 1 # Increases roudn counter
+                
                 #print("Game is over bro all players are gone only 1 left")
                 # Give point to right player
                 # Go to the next round aka reset round
@@ -350,6 +353,12 @@ class PlayerArena:
                 self.colorShrinkTimer = (255, 0, 0)
             else:
                 self.colorShrinkTimer = (0,0,0)
+
+
+            # Score displayed on screen
+            gameScreen_Score = self.gameFont.render('Round: ' + str(self.round), True, (0,0,0))
+            gameScreen_rect = gameScreen_Score.get_rect(center=(80, 20))
+            self.screen.blit(gameScreen_Score, gameScreen_rect)
 
 
              # Score displayed on screen
