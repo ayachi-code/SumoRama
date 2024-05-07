@@ -41,16 +41,16 @@ class PlayerArena:
 
         self.gameStateRun = True
 
-        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None}
+        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True}
         self.enemy_circles = [ # All possie enemy circles
             
-            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None},
-            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None},
-            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None},
-            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None},
-            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None},
-            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None},
-            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True}
         ]
 
 
@@ -232,8 +232,19 @@ class PlayerArena:
                 circle1["position"][1] -= float(move_distance * collision_direction[1])
                 circle2["position"][0] += float(move_distance * collision_direction[0])
                 circle2["position"][1] += float(move_distance * collision_direction[1])
+
+    def checkIfGameOver(self): # Checks if the game is over, if so than make other peer know.
+        if self.player_circle is not None:
+            player_distance_to_center = math.sqrt((self.player_circle["position"][0] - self.sumo_ring_center[0])**2 + (self.player_circle["position"][1] - self.sumo_ring_center[1])**2)
+                
+            if player_distance_to_center + self.player_circle["radius"] > self.sumo_ring_radius:
+                #self.peer.getSocket().sendto("OUT-OF-RING".encode(), list(self.peer.getConnections())[0])
+                #print("Out of ring")
+                return True
+    
+        return False
         
-        
+      
     def run(self):
 
         #self.displayCountdown() # Displays a countdown with some very usefull tips!
@@ -272,6 +283,11 @@ class PlayerArena:
 
             self.screen.blit(bg, (0, 0))
 
+            if self.checkIfGameOver() and self.player_circle['visible'] == True:
+                self.player_circle['visible'] = False
+                print("Out of the circle")
+
+
             if math.ceil(remaining_time) <= 5: # Shows different color depending how close the timer is to the end.
                 self.colorShrinkTimer = (255, 0, 0)
             else:
@@ -300,7 +316,6 @@ class PlayerArena:
                     self.rushing = False
                     self.player_circle["velocity"] = [0, 0]
 
-
             keys = pygame.key.get_pressed()
             if keys[pygame.K_a]:
                 self.player_circle['position'][0] -= 3
@@ -324,8 +339,10 @@ class PlayerArena:
 
             self.realtiveSumoSize = self.circle_radius - len(self.peer.getConnections()) * 2.5
             #print(len(self.peer.getConnections()))
-            pygame.draw.circle(self.screen, (0,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize+5)
-            pygame.draw.circle(self.screen, (255,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize)
+
+            if self.player_circle['visible'] == True:
+                pygame.draw.circle(self.screen, (0,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize+5)
+                pygame.draw.circle(self.screen, (255,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize)
 
 
             for playerEnemy in self.enemy_circles:
