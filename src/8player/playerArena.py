@@ -68,6 +68,7 @@ class PlayerArena:
         self.sumo_ring_radius = 450
         self.sumo_ring_center = [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]
         self.circle_radius = 40
+        self.realtiveSumoSize = self.circle_radius
 
 
         # Shrink variables
@@ -120,7 +121,8 @@ class PlayerArena:
                     if peer['id'] != None:
                         if int(peer['id']) == int(peerId):
                             # print("updating")
-                            peer['position'] = newPossition
+                            #print(type(newPossition[0]))
+                            peer['position'] =  newPossition #newPossition[0]
 
                 #print(newData)
 
@@ -210,14 +212,14 @@ class PlayerArena:
                 self.player_circle["velocity"][1] = direction[1] * self.rush_speed
     
     def handle_collision(self, circle1, circle2): # Collision between 2 circles
-        distance = math.sqrt(( int(circle1["position"][0]) - int(circle2["position"][0]))**2 +
-                            (int(circle1["position"][1]) - int(circle2["position"][1]))**2)
+        distance = math.sqrt(( float(circle1["position"][0]) - float(circle2["position"][0]))**2 +
+                            (float(circle1["position"][1]) - float(circle2["position"][1]))**2)
         
 
         if distance < 2 * self.circle_radius:
             overlap = 2 * self.circle_radius - distance
-            collision_direction = [ int(circle2["position"][0]) - int(circle1["position"][0]),
-                                int(circle2["position"][1]) - int(circle1["position"][1])]
+            collision_direction = [ float(circle2["position"][0]) - float(circle1["position"][0]),
+                                float(circle2["position"][1]) - float(circle1["position"][1])]
             
             collision_length = math.sqrt(collision_direction[0]**2 + collision_direction[1]**2)
 
@@ -226,10 +228,10 @@ class PlayerArena:
                                     collision_direction[1] / collision_length]
                 move_distance = overlap / 2
 
-                circle1["position"][0] -= move_distance * collision_direction[0]
-                circle1["position"][1] -= move_distance * collision_direction[1]
-                circle2["position"][0] += move_distance * collision_direction[0]
-                circle2["position"][1] += move_distance * collision_direction[1]
+                circle1["position"][0] -= float(move_distance * collision_direction[0])
+                circle1["position"][1] -= float(move_distance * collision_direction[1])
+                circle2["position"][0] += float(move_distance * collision_direction[0])
+                circle2["position"][1] += float(move_distance * collision_direction[1])
         
         
     def run(self):
@@ -320,16 +322,17 @@ class PlayerArena:
                 self.player_circle["position"][1] += self.player_circle["velocity"][1] * self.clock.get_time() / 1000
 
 
-
-            sizeRelativeSumo = self.circle_radius - len(self.peer.getConnections()) * 2.5
+            self.realtiveSumoSize = self.circle_radius - len(self.peer.getConnections()) * 2.5
             #print(len(self.peer.getConnections()))
-            pygame.draw.circle(self.screen, (255,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),sizeRelativeSumo)
-            
+            pygame.draw.circle(self.screen, (0,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize+5)
+            pygame.draw.circle(self.screen, (255,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize)
+
+
             for playerEnemy in self.enemy_circles:
                 # print(player['id'])
                 if playerEnemy['id'] != None:
                     # print((playerEnemy['position'][0]))
-                    pygame.draw.circle(self.screen, (255,0,0), (int(playerEnemy['position'][0]),int(playerEnemy['position'][1])),sizeRelativeSumo)
+                    pygame.draw.circle(self.screen, (255,0,0), (int(playerEnemy['position'][0]),int(playerEnemy['position'][1])),self.realtiveSumoSize)
 
             
             if elapsed_time >= self.shrink_interval: # If timer exceeds threshold than make the circle smaller and reset timers.
