@@ -275,7 +275,7 @@ class PlayerArena:
         #self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True}
 
         self.player_circle = {"position": [randomPointInRingPlayer[0],randomPointInRingPlayer[1]], "velocity": [0,0], "radius": 40, "name": self.player.getName(), "score": self.player_circle["score"], "visible": True, "id": self.peer.getPort()}
-        for enemy in self.enemy_circles: # Shows all plaeyrs again
+        for enemy in self.enemy_circles: # Shows all players again
             if enemy['visible'] == False:
                 enemy['visible'] = True
 
@@ -368,7 +368,7 @@ class PlayerArena:
                     pygame.quit()
                     exit(0)
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE and not self.rushing and self.player_circle is not None: # Rush state set
+                    if event.key == pygame.K_SPACE and not self.rushing and self.player_circle is not None and self.player_circle['visible']: # Rush state set
                         self.rushing = True
                         self.rush_start_time = pygame.time.get_ticks()
 
@@ -380,15 +380,17 @@ class PlayerArena:
                     self.rushing = False
                     self.player_circle["velocity"] = [0, 0]
 
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_a]:
-                self.player_circle['position'][0] -= 3
-            if keys[pygame.K_d]:
-                self.player_circle['position'][0] += 3
-            if keys[pygame.K_w]:
-                self.player_circle['position'][1] -= 3
-            if keys[pygame.K_s]:
-                self.player_circle['position'][1] += 3
+
+            if self.player_circle['visible'] == True: # Prevents ghost players
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_a]:
+                    self.player_circle['position'][0] -= 3
+                if keys[pygame.K_d]:
+                    self.player_circle['position'][0] += 3
+                if keys[pygame.K_w]:
+                    self.player_circle['position'][1] -= 3
+                if keys[pygame.K_s]:
+                    self.player_circle['position'][1] += 3
 
 
             if self.player_circle is not None:
