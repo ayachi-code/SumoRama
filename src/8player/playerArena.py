@@ -13,7 +13,7 @@ import random
 # Sudden death 
 # Replaying restarts states
 # Player can leave and it will work
-
+# Fix smaller circles have bigger hitbox bug
 
 
 FPS = 60
@@ -88,6 +88,7 @@ class PlayerArena:
         self.losers = [] # List that containst the losers of the round :(
         
         self.round = 1 # Starts on round 1
+        self.suddenDeath = False
 
     def setPeer(self, newPeer):
         self.peer = newPeer
@@ -141,6 +142,7 @@ class PlayerArena:
                             peer['position'] =  newPossition #newPossition[0]
                             peer['score'] = newData['score']
                             peer['name'] = newData['name']
+                            peer['visible'] = newData['visible']
             
 
                 #print(newData)
@@ -291,7 +293,6 @@ class PlayerArena:
 
     def getMaxScore(self):
         max_score = self.player_circle['score']  # Start with the player's score
-        print(self.enemy_circles)
 
         for enemy_circle in self.enemy_circles:
             if enemy_circle['score'] > max_score:
@@ -338,8 +339,23 @@ class PlayerArena:
             self.screen.blit(bg, (0, 0))
 
             if len(self.losers) == len(self.peer.getConnections()):
-                print("going to the new round")
-                print(self.peer.getPort())
+                print("round over")
+                if self.suddenDeath: # check if it is a sudden death round
+                    winner = None
+                    print("sudden death round is over")
+                    if self.player_circle['visible'] == True:
+                        winner = self.player_circle['name']
+                    else:
+                        for player in self.enemy_circles:
+                            if player['visible'] == True:
+                                winner = player['name']
+                                break
+                    
+                    self.gameStateRun = False
+                    self.gameState.setCurrentState('gameOver')
+                    self.gameOver.setWinner(winner)
+                    continue
+                    
                 if str(self.peer.getPort()) not in self.losers: # I am not a loser hehe, I am a winner! Thus give ne the point...
                     self.player_circle['score'] += 1 # Increases winners score with 1
 
@@ -347,7 +363,8 @@ class PlayerArena:
                 start_time = time.time() # resets countdown
                 self.round += 1 # Increases roudn counter
 
-                if self.round == MAX_ROUND:
+                if self.round == MAX_ROUND and self.suddenDeath == False:
+                    print("game over")
                     maxScore = self.getMaxScore()
                     winner = []
                     if self.player_circle['score'] == maxScore:
@@ -363,18 +380,18 @@ class PlayerArena:
                         print(winner)
                         self.gameOver.setWinner(winner[0][1])
                     else: # suddend death round
-                        pass
-
+                        print("Sudden death")
+                        self.suddenDeath = True
+                        print(winner)
+                        if (str(self.peer.getPort()), self.player_circle['name']) not in winner:
+                            print("Not in winner")
+                            self.player_circle['visible'] = False
+                        #self.player_circle['score'] = 0
+                        
                     #print(winner)
 
                     # print("max score is: " + str(self.getMaxScore()))
                     # print("Game is over and the winner is")
-
-
-                #print("Game is over bro all players are gone only 1 left")
-                # Give point to right player
-                # Go to the next round aka reset round
-
 
             if self.checkIfOutOfRing() and self.player_circle['visible'] == True:
                 self.player_circle['visible'] = False
@@ -389,16 +406,25 @@ class PlayerArena:
                 self.colorShrinkTimer = (0,0,0)
 
 
-            # Score displayed on screen
-            gameScreen_Score = self.gameFont.render('Round: ' + str(self.round), True, (0,0,0))
-            gameScreen_rect = gameScreen_Score.get_rect(center=(80, 20))
-            self.screen.blit(gameScreen_Score, gameScreen_rect)
+            #print(self.suddenDeath)
+
+            if self.suddenDeath == True:
+                # Score displayed on screen
+                gameScreen_Score = self.gameFont.render('Sudden death round', True, (0,0,0))
+                gameScreen_rect = gameScreen_Score.get_rect(center=(140, 20))
+                self.screen.blit(gameScreen_Score, gameScreen_rect)
+            else:
+                # Score displayed on screen
+                gameScreen_Score = self.gameFont.render('Round: ' + str(self.round), True, (0,0,0))
+                gameScreen_rect = gameScreen_Score.get_rect(center=(80, 20))
+                self.screen.blit(gameScreen_Score, gameScreen_rect)
 
 
-             # Score displayed on screen
-            gameScreen_Score = self.gameFont.render('Score: ' + str(self.player_circle['score']), True, (0,0,0))
-            gameScreen_rect = gameScreen_Score.get_rect(center=(SCREEN_WIDTH - SCREEN_WIDTH/7, 20))
-            self.screen.blit(gameScreen_Score, gameScreen_rect)
+            if self.suddenDeath == False:
+                # Score displayed on screen
+                gameScreen_Score = self.gameFont.render('Score: ' + str(self.player_circle['score']), True, (0,0,0))
+                gameScreen_rect = gameScreen_Score.get_rect(center=(SCREEN_WIDTH - SCREEN_WIDTH/7, 20))
+                self.screen.blit(gameScreen_Score, gameScreen_rect)
 
             # Time displayed on screen
             gameScreen_waveTimer = self.gameFont.render('0:' + str(remaining_time), True, self.colorShrinkTimer)
