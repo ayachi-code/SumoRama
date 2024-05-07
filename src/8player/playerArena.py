@@ -9,11 +9,11 @@ import random
 #TODO SPECIAL FEAUTERS: Spectator mode is shown to peer
 
 
-#TODO
-# Sudden death [x]
-# Replaying restarts states
+#TODO 8 mei
+# Clean code a lot
+# Fix init position bug
 # Player can leave and it will work
-# Fix smaller circles have bigger hitbox bug [x]
+# Clean code
 
 
 FPS = 60
@@ -301,7 +301,7 @@ class PlayerArena:
         return max_score
     
     def resetStates(self): # reset states for new game
-        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": self.player.getName(),"score": 0}
+        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": self.player.getName(),"score": 0, "visible": True}
         self.enemy_circles = [ # All possie enemy circles
             {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
             {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
