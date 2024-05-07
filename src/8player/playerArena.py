@@ -143,6 +143,7 @@ class PlayerArena:
                             #print(type(newPossition[0]))
                             peer['position'] =  newPossition #newPossition[0]
                             peer['score'] = newData['score']
+                            peer['name'] = newData['name']
             
 
                 #print(newData)
@@ -350,8 +351,27 @@ class PlayerArena:
                 self.round += 1 # Increases roudn counter
 
                 if self.round == MAX_ROUND:
-                    print("max score is: " + str(self.getMaxScore()))
-                    print("Game is over and the winner is")
+                    maxScore = self.getMaxScore()
+                    winner = []
+                    if self.player_circle['score'] == maxScore:
+                        winner.append((str(self.player_circle['id']), self.player_circle['name']))
+
+                    for player in self.enemy_circles:
+                        if player['score'] == maxScore:
+                            winner.append((player['id'], player['name']))
+
+                    if len(winner) == 1: # There is one winner in the game
+                        self.gameStateRun = False
+                        self.gameState.setCurrentState('gameOver')
+                        print(winner)
+                        self.gameOver.setWinner(winner[0][1])
+                    else: # suddend death round
+                        pass
+
+                    #print(winner)
+
+                    # print("max score is: " + str(self.getMaxScore()))
+                    # print("Game is over and the winner is")
 
 
                 #print("Game is over bro all players are gone only 1 left")
