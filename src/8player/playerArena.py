@@ -86,6 +86,8 @@ class PlayerArena:
         self.last_tick_time = 0
         self.lockstep_enabled = True  # Toggle lockstep simulation
 
+        self.losers = [] # List that containst the losers of the round :(
+
     def setPeer(self, newPeer):
         self.peer = newPeer
 
@@ -101,6 +103,8 @@ class PlayerArena:
                     if player['id'] == peerID:
                         player['visible'] = False
                         break
+                if peerID not in self.losers:
+                    self.losers.append(peerID) # Adds loser to the loser list
 
             if "CONFIRM" in data:
                 if int(data.split(" ")[1]) not in self.confirmedPositions:
@@ -250,7 +254,7 @@ class PlayerArena:
                 circle2["position"][0] += float(move_distance * collision_direction[0])
                 circle2["position"][1] += float(move_distance * collision_direction[1])
 
-    def checkIfGameOver(self): # Checks if the game is over, if so than make other peer know.
+    def checkIfOutOfRing(self): # Checks if the game is over, if so than make other peer know.
         if self.player_circle is not None:
             player_distance_to_center = math.sqrt((self.player_circle["position"][0] - self.sumo_ring_center[0])**2 + (self.player_circle["position"][1] - self.sumo_ring_center[1])**2)
                 
@@ -300,8 +304,16 @@ class PlayerArena:
 
             self.screen.blit(bg, (0, 0))
 
-            if self.checkIfGameOver() and self.player_circle['visible'] == True:
+            if len(self.losers) == len(self.peer.getConnections()):
+                pass
+                #print("Game is over bro all players are gone only 1 left")
+                # Give point to right player
+                # Go to the next round aka reset round
+
+
+            if self.checkIfOutOfRing() and self.player_circle['visible'] == True:
                 self.player_circle['visible'] = False
+                self.losers.append(str(self.peer.getPort())) # Add yourself as a loser
                 payload = "OUT_OF_RING " + str(self.peer.getPort())
                 self.peer.broadCast(payload)
                 print("Out of the circle")
@@ -310,6 +322,12 @@ class PlayerArena:
                 self.colorShrinkTimer = (255, 0, 0)
             else:
                 self.colorShrinkTimer = (0,0,0)
+
+
+             # Score displayed on screen
+            gameScreen_Score = self.gameFont.render('Score: ' + str(self.player_circle['score']), True, (0,0,0))
+            gameScreen_rect = gameScreen_Score.get_rect(center=(SCREEN_WIDTH - SCREEN_WIDTH/7, 20))
+            self.screen.blit(gameScreen_Score, gameScreen_rect)
 
             # Time displayed on screen
             gameScreen_waveTimer = self.gameFont.render('0:' + str(remaining_time), True, self.colorShrinkTimer)
@@ -344,7 +362,7 @@ class PlayerArena:
             if keys[pygame.K_s]:
                 self.player_circle['position'][1] += 3
 
-            
+
             if self.player_circle is not None:
                 for enemyPlayer in self.enemy_circles:
                     if enemyPlayer != None:
