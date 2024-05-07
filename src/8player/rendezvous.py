@@ -15,16 +15,16 @@ sock.bind((SERVER_ADDRESS, SERVER_PORT))
 
 connectedPeers = {} # 'Session1: ['peers']'
 
-allSessions = ['session1']
+# allSessions = ['session1']
 
-currentSession = 'session1' # Start session
+# currentSession = 'session1' # Start session
 
 print("Rendezvous server is online")
 
 
-acknowledgedPeersAlve = []
+# acknowledgedPeersAlve = []
 
-acknowledgedPeersReady = []
+# acknowledgedPeersReady = []
 
 peersStatus = [] # Keeps track the counter used to track if a peer did not response
 
@@ -47,14 +47,14 @@ peersStatus = [] # Keeps track the counter used to track if a peer did not respo
 # sendAlive.start()
 
 
-def isPeerAliveReciever():
-    while True:
-        data, client_socket = sock.recvfrom(4096)
-        data = data.decode()
-        #print(data)
+# def isPeerAliveReciever():
+#     while True:
+#         data, client_socket = sock.recvfrom(4096)
+#         data = data.decode()
+#         #print(data)
 
-        if "ALIVE-OK" in data:
-            acknowledgedPeersAlve.append(data.split(" ")[1])
+#         if "ALIVE-OK" in data:
+#             acknowledgedPeersAlve.append(data.split(" ")[1])
 
 
 
@@ -113,8 +113,12 @@ while True:
         else:
             connectedPeers[client_socket] = [data.split(" ")[1], data.split(" ")[2], False]
             #connectedPeers.append(client_socket: {data.split(" ")[1],data.split(" ")[2],False} ) # Appends client socket to the session
+            print("Sending hello-ok")
+            print(client_socket)
             sock.sendto("HELLO-OK".encode(), client_socket)
             #print(connectedPeers)
+            if len(connectedPeers) == 1:
+                continue
 
     if "READY-UP" in data: # A peer readys up send it to all other peers
         # Send ready up to all other peers
@@ -135,6 +139,11 @@ while True:
     if "RESET" in data:
         print("Resetting for new lobby")
         connectedPeers = {}
+        peersStatus = []
+        stat = 0
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.bind((SERVER_ADDRESS, SERVER_PORT))
+        continue
     
     if len(connectedPeers) > 1: 
         for peer in connectedPeers: # Broadcast new client

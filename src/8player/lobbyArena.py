@@ -29,17 +29,17 @@ import peer
 SERVER_HOST = '127.0.0.1' # Rendezbvous server host
 SERVER_PORT = 5378 # Rendezvous server port
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # SOCK_DGRAM for udp
+# sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # SOCK_DGRAM for udp
 
-random_number = random.uniform(6000, 10000) # Random port for udp
+# random_number = random.uniform(6000, 10000) # Random port for udp
 
-random_integer = round(random_number)
+# random_integer = round(random_number)
 
-sock.bind((SERVER_HOST, random_integer))
+# sock.bind((SERVER_HOST, random_integer))
 
-host_port = (SERVER_HOST, SERVER_PORT)
+# host_port = (SERVER_HOST, SERVER_PORT)
 
-print(random_integer)
+# print(random_integer)
 
 FPS = 60
 
@@ -142,19 +142,19 @@ class LobbyArena:
                 return True
         return False 
     
-    def iAmAlive(self):
-        while True:
-            data, addr = sock.recvfrom(65535)
-            data = data.decode()
+    # def iAmAlive(self):
+    #     while True:
+    #         data, addr = sock.recvfrom(65535)
+    #         data = data.decode()
 
-            if "ALIVE" == data:
-                payload = "ALIVE-OK " + str(random_integer)
-                sock.sendto(payload.encode(), host_port)
-                #print("server wants know if im alive")
+    #         if "ALIVE" == data:
+    #             payload = "ALIVE-OK " + str(self.random_integer)
+    #             sock.sendto(payload.encode(), host_port)
+    #             #print("server wants know if im alive")
     
     def listener(self):
         while True:
-            data, addr = sock.recvfrom(65535)
+            data, addr = self.sock.recvfrom(65535)
             data = data.decode()
 
             if self.gameStateRun == False:
@@ -168,8 +168,6 @@ class LobbyArena:
                             self.readyUpCounter -= 1 # Player was ready however, no not because they left
                         box.reset()
                         break
-
-
             elif "PEERS" in data:
                 print("peers")
                 connectionInfo = data.split(" ",1)[1].split(" ")[0]
@@ -222,7 +220,7 @@ class LobbyArena:
         
     def listeningForAckStartUp(self):
         while True:
-            data, client_socket = sock.recvfrom(4096)
+            data, client_socket = self.sock.recvfrom(4096)
             data = data.decode()
             print(data)
         
@@ -230,6 +228,7 @@ class LobbyArena:
                 break
 
             if data == "HELLO-OK":
+                print("Hello from server")
                 self.serverAck = True
                 break
             elif data == "FULL":
@@ -241,8 +240,11 @@ class LobbyArena:
                 break
 
     def sendForAckStartUp(self):
-        upperBoundSend = 7
-        while True:    
+        upperBoundSend = 70000000
+        while True:
+            if self.serverAck or self.gameStateRun == False:
+                print("Am i dead?")
+                break
             if upperBoundSend == 0:
                 self.gameStateRun = False
                 self.error.setErrorMessage('Matchmaking server is down')
@@ -250,25 +252,54 @@ class LobbyArena:
                 self.gameState.setCurrentState('error')
                 break
             
-            if self.serverAck:
-                break
+            print("tst")
             payload = "HELLO-FROM " + self.player.getName() + " " + self.player.getColor()        
-            sock.sendto(payload.encode(), host_port)
+            self.sock.sendto(payload.encode(), self.host_port)
             time.sleep(0.1)
             upperBoundSend -= 1
-
+            
     def run(self):
-        
+        pygame.init()
+        pygame.font.init()
+        self.clock = pygame.time.Clock()    
+        self.fontOfTitle = pygame.font.SysFont('Comic Sans MS', 75)
+
+        self.fontOfTitlePlayerMain = pygame.font.SysFont('Comic Sans MS', 40)
+
+        self.notifierReadyUp = pygame.font.SysFont('Comic Sans MS', 40)
+
 
         self.gameStateRun = True
         self.serverAck = False
+ 
+        self.readyUpCounter = None
+        self.readyUpState = False
+        self.readyUpColor = (226,221,220) 
+
+        self.peersInLobby = []
+        self.playerBoxes = [PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33), PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 )]
+
+        print("Startimg hello thread")
+
+
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # SOCK_DGRAM for udp
+
+        self.random_number = random.uniform(6000, 10000) # Random port for udp
+
+        self.random_integer = round(self.random_number)
+
+        self.sock.bind((SERVER_HOST, self.random_integer))
+
+        self.host_port = (SERVER_HOST, SERVER_PORT)
+
 
         lister = threading.Thread(target=self.listeningForAckStartUp, daemon=True)
         lister.start()
 
         sender = threading.Thread(target=self.sendForAckStartUp, daemon=True)
         sender.start()
-        
+        # sender.join()
+
         while True:    
             if self.serverAck or self.gameStateRun == False:
                 break
@@ -347,8 +378,8 @@ class LobbyArena:
 
             if self.readyUpCounter == MAX_READY_UP:
                 self.gameStateRun = False
-                myPeer = peer.Peer('127.0.0.1',  random_integer) # Creates peer object
-                myPeer.setSocket(sock)
+                myPeer = peer.Peer('127.0.0.1',  self.random_integer) # Creates peer object
+                myPeer.setSocket(self.sock)
                 #myPeer.start() it is already binded
 
                 for port in self.peersInLobby:
@@ -358,15 +389,23 @@ class LobbyArena:
                 self.arena.setPeer(myPeer)
                 self.gameState.setCurrentState('playerArena')
 
-                sock.sendto("RESET".encode(), (host_port))
+                self.sock.sendto("RESET".encode(), (self.host_port))
+                # reset states
+                # self.readyUpCounter = None
+                # self.readyUpState = False
+                # self.readyUpColor = (226,221,220) 
+                # self.serverAck = False
+
+                # self.peersInLobby = []
+                # self.playerBoxes = [PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33), PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 )]
                 print("STARTING ARENA!!")
-                
+                continue     
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.gameStateRun = False
-                    payload = "quit " + str(random_integer) 
-                    sock.sendto(payload.encode(), (host_port))
+                    payload = "quit " + str(self.random_integer) 
+                    self.sock.sendto(payload.encode(), (self.host_port))
                     pygame.quit()
                     exit(0)
                 if event.type == pygame.MOUSEBUTTONUP:
@@ -375,8 +414,8 @@ class LobbyArena:
                         print("Ready up") 
                         self.readyUpState = True
                         self.readyUpCounter += 1
-                        payload = "READY-UP " + str(random_integer) 
-                        sock.sendto(payload.encode(), (host_port))
+                        payload = "READY-UP " + str(self.random_integer) 
+                        self.sock.sendto(payload.encode(), (self.host_port))
 
             pygame.display.update()
             self.clock.tick(FPS)  # Limit to 60 FPS

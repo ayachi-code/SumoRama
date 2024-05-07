@@ -13,7 +13,7 @@ import random
 # Sudden death [x]
 # Replaying restarts states
 # Player can leave and it will work
-# Fix smaller circles have bigger hitbox bug
+# Fix smaller circles have bigger hitbox bug [x]
 
 
 FPS = 60
@@ -299,11 +299,35 @@ class PlayerArena:
                 max_score = enemy_circle['score']
 
         return max_score
-        
+    
+    def resetStates(self): # reset states for new game
+        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": self.player.getName(),"score": 0}
+        self.enemy_circles = [ # All possie enemy circles
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True}
+        ]
+        self.sumo_ring_radius = 450
+        self.losers = []
+          
+        self.confirmedPositions = []
+        self.placedPositionsReciever = []
 
-        
+        self.playerPositionInit = None
+
+        self.circle_radius = 40
+        self.realtiveSumoSize = self.circle_radius
+
+        self.round = 1 # Starts on round 1
+        self.suddenDeath = False
+
+
     def run(self):
-
+        self.gameStateRun = True
         #self.displayCountdown() # Displays a countdown with some very usefull tips!
 
         #print("My connection info " + str(self.peer.getPort()))
@@ -354,6 +378,7 @@ class PlayerArena:
                     self.gameStateRun = False
                     self.gameState.setCurrentState('gameOver')
                     self.gameOver.setWinner(winner)
+                    self.resetStates()
                     continue
                     
                 if str(self.peer.getPort()) not in self.losers: # I am not a loser hehe, I am a winner! Thus give ne the point...
@@ -377,8 +402,10 @@ class PlayerArena:
                     if len(winner) == 1: # There is one winner in the game
                         self.gameStateRun = False
                         self.gameState.setCurrentState('gameOver')
-                        print(winner)
+                        # print(winner)
                         self.gameOver.setWinner(winner[0][1])
+                        self.resetStates()
+                        continue
                     else: # suddend death round
                         print("Sudden death")
                         self.suddenDeath = True
