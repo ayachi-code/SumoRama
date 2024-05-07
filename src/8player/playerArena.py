@@ -10,14 +10,11 @@ import random
 
 
 #TODO
-# Sand background [x]
-# Rescale summo size depended on number of players [x]
-# Red color timer [x]
+# Sudden death 
+# Replaying restarts states
+# Player can leave and it will work
 
-# Out of ring error is shown and player is hidden
-# Maak position altijd een nummer
-# Score systeem
-# Winner en loser
+
 
 FPS = 60
 
