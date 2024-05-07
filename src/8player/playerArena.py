@@ -264,6 +264,29 @@ class PlayerArena:
                 return True
     
         return False
+    
+    def newRound(self):
+        self.sumo_ring_radius = 450
+
+        randomPointInRingPlayer = self.randomPointInCircle(self.sumo_ring_radius-(0.3 * self.sumo_ring_radius), self.sumo_ring_center[0], self.sumo_ring_center[1])
+
+        #self.newRoundState = True
+        
+        #self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True}
+
+        self.player_circle = {"position": [randomPointInRingPlayer[0],randomPointInRingPlayer[1]], "velocity": [0,0], "radius": 40, "name": self.player.getName(), "score": self.player_circle["score"], "visible": True, "id": self.peer.getPort()}
+        for enemy in self.enemy_circles: # Shows all plaeyrs again
+            if enemy['visible'] == False:
+                enemy['visible'] = True
+
+        #self.last_player_position = self.enemy_circle['position']
+
+        #self.shrink_timer = 0
+        self.losers = [] # New round new chances, resets the loser list
+        self.colorShrinkTimer = (0,0,0)
+        self.start_time = time.time()
+        
+        pass
         
       
     def run(self):
@@ -294,7 +317,6 @@ class PlayerArena:
 
             remaining_time = max(0, 10 - math.ceil(elapsed_time))  # Calculate remaining time
 
-            current_time = time.time()
             delta_time = current_time - self.last_tick_time
             self.last_tick_time = current_time
 
@@ -305,7 +327,13 @@ class PlayerArena:
             self.screen.blit(bg, (0, 0))
 
             if len(self.losers) == len(self.peer.getConnections()):
-                pass
+                print("going to the new round")
+                print(self.peer.getPort())
+                if str(self.peer.getPort()) not in self.losers: # I am not a loser hehe, I am a winner! Thus give ne the point...
+                    self.player_circle['score'] += 1 # Increases winners score with 1
+
+                self.newRound()
+                start_time = time.time() # resets countdown
                 #print("Game is over bro all players are gone only 1 left")
                 # Give point to right player
                 # Go to the next round aka reset round
