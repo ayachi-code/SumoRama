@@ -86,7 +86,8 @@ class PlayerArena:
         self.lockstep_enabled = True  # Toggle lockstep simulation
 
         self.losers = [] # List that containst the losers of the round :(
-        
+        self.suddenDeathCandidates = []
+
         self.round = 1 # Starts on round 1
         self.suddenDeath = False
 
@@ -362,25 +363,40 @@ class PlayerArena:
 
             self.screen.blit(bg, (0, 0))
 
-            if len(self.losers) == len(self.peer.getConnections()):
-                print("round over")
-                if self.suddenDeath: # check if it is a sudden death round
-                    winner = None
-                    print("sudden death round is over")
-                    if self.player_circle['visible'] == True:
-                        winner = self.player_circle['name']
-                    else:
-                        for player in self.enemy_circles:
-                            if player['visible'] == True:
-                                winner = player['name']
-                                break
+            
+
+
+            if len(self.losers) == len(self.suddenDeathCandidates)-1 and self.suddenDeath == True:
+                print("Game is over and the winner is")
+                if self.player_circle['visible'] == True:
+                    winner = self.player_circle['name']
+                else:
+                    for player in self.enemy_circles:
+                        if player['visible'] == True:
+                            winner = player['name']
+                            break
                     
-                    self.gameStateRun = False
-                    self.gameState.setCurrentState('gameOver')
-                    self.gameOver.setWinner(winner)
-                    self.resetStates()
-                    continue
-                    
+                self.gameStateRun = False
+                self.gameState.setCurrentState('gameOver')
+                self.gameOver.setWinner(winner)
+                self.resetStates()
+                continue
+
+            if self.checkIfOutOfRing() and self.player_circle['visible'] == True:
+                self.player_circle['visible'] = False
+                self.losers.append(str(self.peer.getPort())) # Add yourself as a loser
+                payload = "OUT_OF_RING " + str(self.peer.getPort())
+                self.peer.broadCast(payload)
+                print("Out of the circle")
+
+            if math.ceil(remaining_time) <= 5: # Shows different color depending how close the timer is to the end.
+                self.colorShrinkTimer = (255, 0, 0)
+            else:
+                self.colorShrinkTimer = (0,0,0)
+
+
+            if len(self.losers) == len(self.peer.getConnections()) and self.suddenDeath == False:
+                print("round over")     
                 if str(self.peer.getPort()) not in self.losers: # I am not a loser hehe, I am a winner! Thus give ne the point...
                     self.player_circle['score'] += 1 # Increases winners score with 1
 
@@ -390,8 +406,21 @@ class PlayerArena:
 
                 if self.round == MAX_ROUND and self.suddenDeath == False:
                     print("game over")
+                    peerPositionJSON = json.dumps(self.player_circle)
+                    payload = "UPDATE " + peerPositionJSON
+                    for enemyPlayer in self.enemy_circles:
+                        if enemyPlayer['id'] != None:
+                            self.peer.getSocket().sendto(payload.encode(), ('127.0.0.1', int(enemyPlayer['id'])))
+                    
+                    time.sleep(0.1) # Perhaps add a 3 second count down
+
+
                     maxScore = self.getMaxScore()
+                    print(maxScore)
+                    print(self.enemy_circles)
+                    print(self.player_circle)
                     winner = []
+
                     if self.player_circle['score'] == maxScore:
                         winner.append((str(self.player_circle['id']), self.player_circle['name']))
 
@@ -408,30 +437,22 @@ class PlayerArena:
                         continue
                     else: # suddend death round
                         print("Sudden death")
+                        self.suddenDeathCandidates = winner
                         self.suddenDeath = True
-                        print(winner)
                         if (str(self.peer.getPort()), self.player_circle['name']) not in winner:
                             print("Not in winner")
                             self.player_circle['visible'] = False
+                        else:
+                            print("in winner")
+                            print(str(self.peer.getPort()), self.player_circle['name'])
+                        print(winner)
+                        continue
                         #self.player_circle['score'] = 0
                         
                     #print(winner)
 
                     # print("max score is: " + str(self.getMaxScore()))
                     # print("Game is over and the winner is")
-
-            if self.checkIfOutOfRing() and self.player_circle['visible'] == True:
-                self.player_circle['visible'] = False
-                self.losers.append(str(self.peer.getPort())) # Add yourself as a loser
-                payload = "OUT_OF_RING " + str(self.peer.getPort())
-                self.peer.broadCast(payload)
-                print("Out of the circle")
-
-            if math.ceil(remaining_time) <= 5: # Shows different color depending how close the timer is to the end.
-                self.colorShrinkTimer = (255, 0, 0)
-            else:
-                self.colorShrinkTimer = (0,0,0)
-
 
             #print(self.suddenDeath)
 
