@@ -411,6 +411,14 @@ class PlayerArena:
 
             self.screen.blit(bg, (0, 0))
 
+            if len(self.peer.getConnections()) == 0:
+                print("You're the only plaeyr left thus the winner")
+                self.gameStateRun = False
+                self.gameState.setCurrentState('gameOver')
+                self.gameOver.setWinner(self.player.getName())
+                continue
+
+
             if len(self.losers) == len(self.suddenDeathCandidates)-1 and self.suddenDeath == True:
                 print("Game is over and the winner is")
                 if self.player_circle['visible'] == True:
