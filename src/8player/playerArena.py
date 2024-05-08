@@ -102,6 +102,19 @@ class PlayerArena:
         while True:
             data, addr = self.peer.getSocket().recvfrom(65535)
             data = data.decode()
+
+            if self.gameStateRun == False:
+                break
+
+            if "DELETE" in data:
+                peerID = data.split(" ")[1]
+                print("Deleting " + peerID)
+                for player in self.enemy_circles:
+                    if str(player['id']) == peerID:
+                        player['id'] = None
+                        player['visible'] = False
+                        self.peer.removeConnection(('127.0.0.1', int(peerID)))
+
             if "OUT_OF_RING" in data:
                 peerID = data.split(" ")[1]
                 print("A peer is out of the ring " + peerID)
@@ -138,7 +151,7 @@ class PlayerArena:
                 newPossition = newData['position']
 
                 for peer in self.enemy_circles: # TODO Maybe use hashmap for future update, increases performance
-                    if peer['id'] != None:
+                    if peer['id'] != None and peerId != None:
                         if int(peer['id']) == int(peerId):
                             peer['position'] =  newPossition #newPossition[0]
                             peer['score'] = newData['score']
@@ -454,7 +467,7 @@ class PlayerArena:
                     winner = []
 
                     #print(maxScore)
-                    if self.player_circle['score'] == maxScore:
+                    if self.player_circle['score'] == maxScore and self.player_circle['id'] != None:
                         # print("I got the score " + str(self.player_circle['score']))
                         winner.append((str(self.player_circle['id']), self.player_circle['name']))
                     else:
@@ -463,7 +476,7 @@ class PlayerArena:
                         # player
 
                     for player in self.enemy_circles:
-                        if player['score'] == maxScore:
+                        if player['score'] == maxScore and player['id'] != None:
                             winner.append((player['id'], player['name']))
 
                     if len(winner) == 1: # There is one winner in the game
@@ -478,7 +491,7 @@ class PlayerArena:
                         self.suddenDeathCandidates = winner
                         self.suddenDeath = True
                         self.newRound()
-                        #print(winner)
+                        print(winner)
                         if (str(self.peer.getPort()), self.player_circle['name']) not in winner:
                             print("Hide")
                             self.player_circle['visible'] = False
@@ -530,6 +543,13 @@ class PlayerArena:
                     pos = pygame.mouse.get_pos()
                     if leave.isOver(pos):
                         print("Ima head out") 
+                        self.gameStateRun = False
+                        self.player_circle['id'] = None
+                        self.player_circle['visible'] = False
+                        payload = "DELETE " + str(self.peer.getPort())
+                        self.peer.broadCast(payload)
+                        self.gameState.setCurrentState('start')
+
                       
 
             if self.rushing and self.player_circle is not None: 
@@ -583,6 +603,7 @@ class PlayerArena:
 
             #  # Sends data to client
             peerPositionJSON = json.dumps(self.player_circle)
+            # print(peerPositionJSON)
             payload = "UPDATE " + peerPositionJSON
             for enemyPlayer in self.enemy_circles:
                 if enemyPlayer['id'] != None:

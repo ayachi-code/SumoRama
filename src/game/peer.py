@@ -20,6 +20,9 @@ class Peer:
         for peer in self.connections:
             self.socket.sendto(message.encode(), peer)
 
+    def removeConnection(self, con):
+        self.connections.remove(con)
+
     def resetConnections(self):
         self.connections.clear()
 
