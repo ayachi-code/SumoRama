@@ -5,6 +5,8 @@ import math
 import time
 import json
 import random
+import math
+
 
 #TODO SPECIAL FEAUTERS: Spectator mode is shown to peer
 
@@ -326,6 +328,36 @@ class PlayerArena:
         self.round = 1 # Starts on round 1
         self.suddenDeath = False
 
+    def roundSwitchCountdown(self): 
+        print("showing round switch")
+        countdown_font = pygame.font.SysFont('Comic Sans MS', 150)
+        gameStartIn_font = pygame.font.SysFont('Comic Sans MS', 140)
+
+        bg = pygame.image.load("../assets/sumoBc/sumoFloor4.jpg").convert()
+        bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+        wave_gif = pygame.image.load("../assets/wave.gif") 
+        wave_height = 100 + 50 * self.round  
+        wave_gif = pygame.transform.scale(wave_gif, (SCREEN_WIDTH, wave_height))
+
+        clock = pygame.time.Clock()  # Create a clock object for controlling frame rate
+
+        for i in range(3, 0, -1):
+            self.screen.blit(bg, (0, 0))
+
+            gameScreen_surface = gameStartIn_font.render('Round  ' + str(self.round), True, (66, 99, 113))
+            gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3))
+            self.screen.blit(gameScreen_surface, gameScreen_rect)
+
+            countdown_text = countdown_font.render(str(i), True, (66, 99, 113))
+            text_rect = countdown_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.75))
+            self.screen.blit(countdown_text, text_rect)
+
+            self.screen.blit(wave_gif, (0, SCREEN_HEIGHT - wave_height))
+
+            pygame.display.update()
+            clock.tick(60)  
+            pygame.time.wait(1000)
 
     def run(self):
         self.gameStateRun = True
@@ -364,8 +396,6 @@ class PlayerArena:
             self.screen.blit(bg, (0, 0))
 
             
-
-
             if len(self.losers) == len(self.suddenDeathCandidates)-1 and self.suddenDeath == True:
                 print("Game is over and the winner is")
                 if self.player_circle['visible'] == True:
@@ -400,8 +430,6 @@ class PlayerArena:
                 if str(self.peer.getPort()) not in self.losers: # I am not a loser hehe, I am a winner! Thus give ne the point...
                     self.player_circle['score'] += 1 # Increases winners score with 1
 
-                self.newRound()
-                start_time = time.time() # resets countdown
                 self.round += 1 # Increases roudn counter
 
                 if self.round == MAX_ROUND and self.suddenDeath == False:
@@ -412,7 +440,8 @@ class PlayerArena:
                         if enemyPlayer['id'] != None:
                             self.peer.getSocket().sendto(payload.encode(), ('127.0.0.1', int(enemyPlayer['id'])))
                     
-                    time.sleep(0.1) # Perhaps add a 3 second count down
+
+                    # time.sleep(0.1) # Perhaps add a 3 second count down COMING SOON
 
 
                     maxScore = self.getMaxScore()
@@ -447,6 +476,10 @@ class PlayerArena:
                             print(str(self.peer.getPort()), self.player_circle['name'])
                         print(winner)
                         continue
+
+                self.roundSwitchCountdown()
+                self.newRound()
+                start_time = time.time() # resets countdown
                         #self.player_circle['score'] = 0
                         
                     #print(winner)
