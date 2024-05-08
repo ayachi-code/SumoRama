@@ -365,6 +365,7 @@ class LobbyArena:
                 self.gameState.setCurrentState('playerArena')
 
                 self.sock.sendto("RESET".encode(), (self.host_port))
+                print(myPeer.getConnections())
                 print("STARTING ARENA!!")
                 continue     
 

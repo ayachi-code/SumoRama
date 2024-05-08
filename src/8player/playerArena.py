@@ -12,11 +12,9 @@ import button
 #TODO SPECIAL FEAUTERS: Spectator mode is shown to peer
 
 
-#TODO 8 mei
-# Clean code a lot [x]
-# Fix init position bug [x]
-# Player can leave and it will work
-# Clean code [x]
+#TODO 9 mei
+# Clean code
+# Add cheat detection
 
 
 FPS = 60
@@ -203,6 +201,7 @@ class PlayerArena:
         while True:
             if self.playerPositionInit == True:
                 break
+            print(self.peer.getConnections())
             for peers in self.peer.getConnections():
                 self.peer.getSocket().sendto(data.encode(), peers)
             time.sleep(0.1)
@@ -379,6 +378,8 @@ class PlayerArena:
             pygame.time.wait(1000)
 
     def run(self):
+        self.resetStates()
+        print("arena?")
         self.gameStateRun = True
 
         self.player_circle['id'] = self.peer.getPort()
@@ -412,7 +413,8 @@ class PlayerArena:
             self.screen.blit(bg, (0, 0))
 
             if len(self.peer.getConnections()) == 0:
-                print("You're the only plaeyr left thus the winner")
+                print("You're the only player left thus the winner")
+                self.peer = None
                 self.gameStateRun = False
                 self.gameState.setCurrentState('gameOver')
                 self.gameOver.setWinner(self.player.getName())
@@ -563,7 +565,6 @@ class PlayerArena:
                         self.gameState.setCurrentState('start')
 
                       
-
             if self.rushing and self.player_circle is not None: 
                 current_time = pygame.time.get_ticks()
                 if current_time - self.rush_start_time < self.rush_duration * 1000:
