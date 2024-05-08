@@ -329,9 +329,12 @@ class PlayerArena:
         bg = pygame.image.load("../assets/sumoBc/sumoFloor4.jpg").convert()
         bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
-        wave_gif = pygame.image.load("../assets/wave.gif") 
+        wave_gif = pygame.image.load("../assets/wave.gif").convert()
         wave_height = 100 + 50 * self.round  
         wave_gif = pygame.transform.scale(wave_gif, (SCREEN_WIDTH, wave_height))
+
+        sun_image = pygame.image.load("../assets/sun.png")
+        sun_image = pygame.transform.scale(sun_image, (100, 100))  # Adjust the size as needed
 
         clock = pygame.time.Clock()  # Create a clock object for controlling frame rate
 
@@ -347,6 +350,8 @@ class PlayerArena:
             self.screen.blit(countdown_text, text_rect)
 
             self.screen.blit(wave_gif, (0, SCREEN_HEIGHT - wave_height))
+
+            self.screen.blit(sun_image, (0, 0))
 
             pygame.display.update()
             clock.tick(60)  
