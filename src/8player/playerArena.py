@@ -326,28 +326,48 @@ class PlayerArena:
         countdown_font = pygame.font.SysFont('Comic Sans MS', 150)
         gameStartIn_font = pygame.font.SysFont('Comic Sans MS', 140)
 
-        bg = pygame.image.load("../assets/sumoBc/sumoFloor4.jpg").convert()
-        bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        bg = None
+        sun_image = None
+
+        if self.suddenDeath == True:
+            bg = pygame.image.load("../assets/sumoBc/suddenDeath.jpg").convert()
+            bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+            sun_image = pygame.image.load("../assets/moon.png")
+            sun_image = pygame.transform.scale(sun_image, (100, 100))  # Adjust the size as needed
+        else:
+            bg = pygame.image.load("../assets/sumoBc/sumoFloor4.jpg").convert()
+            bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
+            
+            sun_image = pygame.image.load("../assets/sun.png")
+            sun_image = pygame.transform.scale(sun_image, (100, 100))  # Adjust the size as needed
 
         wave_gif = pygame.image.load("../assets/wave.gif").convert()
         wave_height = 100 + 50 * self.round  
         wave_gif = pygame.transform.scale(wave_gif, (SCREEN_WIDTH, wave_height))
-
-        sun_image = pygame.image.load("../assets/sun.png")
-        sun_image = pygame.transform.scale(sun_image, (100, 100))  # Adjust the size as needed
 
         clock = pygame.time.Clock()  # Create a clock object for controlling frame rate
 
         for i in range(3, 0, -1):
             self.screen.blit(bg, (0, 0))
 
-            gameScreen_surface = gameStartIn_font.render('Round  ' + str(self.round), True, (66, 99, 113))
-            gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3))
-            self.screen.blit(gameScreen_surface, gameScreen_rect)
 
-            countdown_text = countdown_font.render(str(i), True, (66, 99, 113))
-            text_rect = countdown_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.75))
-            self.screen.blit(countdown_text, text_rect)
+            if self.suddenDeath:
+                gameScreen_surface = gameStartIn_font.render('sudden death round!  ', True, (0, 0, 0))
+                gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3))
+                self.screen.blit(gameScreen_surface, gameScreen_rect)
+
+                countdown_text = countdown_font.render(str(i), True, (0, 0, 0))
+                text_rect = countdown_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.75))
+                self.screen.blit(countdown_text, text_rect)
+            else:
+                gameScreen_surface = gameStartIn_font.render('Round  ' + str(self.round), True, (66, 99, 113))
+                gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3))
+                self.screen.blit(gameScreen_surface, gameScreen_rect)
+
+                countdown_text = countdown_font.render(str(i), True, (66, 99, 113))
+                text_rect = countdown_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.75))
+                self.screen.blit(countdown_text, text_rect)
 
             self.screen.blit(wave_gif, (0, SCREEN_HEIGHT - wave_height))
 
