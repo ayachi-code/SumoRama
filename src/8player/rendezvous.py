@@ -99,7 +99,7 @@ while True:
         connectedPeers.pop(('127.0.0.1', int(peerId)), None)
         payload = "quit " + peerId
         notifyPeers(payload)
-        continue
+        # continue
 
     # if "ALIVE-OK" in data:
     #     acknowledgedPeersAlve.append(data.split(" ")[1])

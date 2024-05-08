@@ -148,6 +148,7 @@ class LobbyArena:
             
             if "quit" in data:
                 leavedID = data.split(" ")[1]
+                self.peersInLobby.remove(int(leavedID))
                 for box in self.playerBoxes:
                     if box.getId() == int(leavedID):
                         if box.getReadyUp() == True:
@@ -155,7 +156,7 @@ class LobbyArena:
                         box.reset()
                         break
             elif "PEERS" in data:
-                print("peers")
+                print(data)
                 connectionInfo = data.split(" ",1)[1].split(" ")[0]
                 playerinfo = data.split(" ",1)[1].split(" ")[1]
 
