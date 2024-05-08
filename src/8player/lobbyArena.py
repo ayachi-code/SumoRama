@@ -29,18 +29,6 @@ import peer
 SERVER_HOST = '127.0.0.1' # Rendezbvous server host
 SERVER_PORT = 5378 # Rendezvous server port
 
-# sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # SOCK_DGRAM for udp
-
-# random_number = random.uniform(6000, 10000) # Random port for udp
-
-# random_integer = round(random_number)
-
-# sock.bind((SERVER_HOST, random_integer))
-
-# host_port = (SERVER_HOST, SERVER_PORT)
-
-# print(random_integer)
-
 FPS = 60
 
 SCREEN_WIDTH = 1300
@@ -62,9 +50,6 @@ class PlayerBox:
         # Sizes of the box
         self.width = width
         self.height = height
-
-        #self.height = SCREEN_HEIGHT/3.33
-        #self.width = 300
 
     def getId(self):
         return self.id
@@ -120,6 +105,8 @@ class LobbyArena:
         self.notifierReadyUp = pygame.font.SysFont('Comic Sans MS', 40)
 
         self.player = player
+
+        self.sock = None
         
         self.screen = screen
         self.gameState = gameState
@@ -127,7 +114,6 @@ class LobbyArena:
         self.serverAck = False
         self.arena = arena
         self.error = error
-
 
         self.readyUpCounter = None
         self.readyUpState = False
@@ -240,7 +226,7 @@ class LobbyArena:
                 break
 
     def sendForAckStartUp(self):
-        upperBoundSend = 70000000
+        upperBoundSend = 7
         while True:
             if self.serverAck or self.gameStateRun == False:
                 print("Am i dead?")
@@ -257,17 +243,8 @@ class LobbyArena:
             self.sock.sendto(payload.encode(), self.host_port)
             time.sleep(0.1)
             upperBoundSend -= 1
-            
-    def run(self):
-        pygame.init()
-        pygame.font.init()
-        self.clock = pygame.time.Clock()    
-        self.fontOfTitle = pygame.font.SysFont('Comic Sans MS', 75)
 
-        self.fontOfTitlePlayerMain = pygame.font.SysFont('Comic Sans MS', 40)
-
-        self.notifierReadyUp = pygame.font.SysFont('Comic Sans MS', 40)
-
+    def initStates(self):
 
         self.gameStateRun = True
         self.serverAck = False
@@ -278,10 +255,7 @@ class LobbyArena:
 
         self.peersInLobby = []
         self.playerBoxes = [PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33), PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 )]
-
-        print("Startimg hello thread")
-
-
+        
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # SOCK_DGRAM for udp
 
         self.random_number = random.uniform(6000, 10000) # Random port for udp
@@ -292,7 +266,11 @@ class LobbyArena:
 
         self.host_port = (SERVER_HOST, SERVER_PORT)
 
-
+            
+    def run(self):
+       
+        self.initStates()
+        
         lister = threading.Thread(target=self.listeningForAckStartUp, daemon=True)
         lister.start()
 
@@ -366,7 +344,6 @@ class LobbyArena:
             readyUp.draw(self.screen, (0,0,0))
 
             # Status
-
             if self.readyUpCounter == None:
                 gameScreen_surfaceLobbyTitle = self.notifierReadyUp.render('No players :(', True, (255, 255, 255))
             else:
@@ -380,24 +357,14 @@ class LobbyArena:
                 self.gameStateRun = False
                 myPeer = peer.Peer('127.0.0.1',  self.random_integer) # Creates peer object
                 myPeer.setSocket(self.sock)
-                #myPeer.start() it is already binded
 
                 for port in self.peersInLobby:
                     myPeer.addCoonection(('127.0.0.1', port))
                 
-
                 self.arena.setPeer(myPeer)
                 self.gameState.setCurrentState('playerArena')
 
                 self.sock.sendto("RESET".encode(), (self.host_port))
-                # reset states
-                # self.readyUpCounter = None
-                # self.readyUpState = False
-                # self.readyUpColor = (226,221,220) 
-                # self.serverAck = False
-
-                # self.peersInLobby = []
-                # self.playerBoxes = [PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33), PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 )]
                 print("STARTING ARENA!!")
                 continue     
 
@@ -419,9 +386,3 @@ class LobbyArena:
 
             pygame.display.update()
             self.clock.tick(FPS)  # Limit to 60 FPS
-            
-
-# if __name__ == "__main__":
-#     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  # Set display resolution
-#     game = LobbyArena(screen, None, player.Player("Player69", "RED"))
-#     game.run()
