@@ -278,18 +278,11 @@ class PlayerArena:
 
         randomPointInRingPlayer = self.randomPointInCircle(self.sumo_ring_radius-(0.3 * self.sumo_ring_radius), self.sumo_ring_center[0], self.sumo_ring_center[1])
 
-        #self.newRoundState = True
-        
-        #self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True}
-
         self.player_circle = {"position": [randomPointInRingPlayer[0],randomPointInRingPlayer[1]], "velocity": [0,0], "radius": 40, "name": self.player.getName(), "score": self.player_circle["score"], "visible": True, "id": self.peer.getPort()}
         for enemy in self.enemy_circles: # Shows all players again
             if enemy['visible'] == False:
                 enemy['visible'] = True
 
-        #self.last_player_position = self.enemy_circle['position']
-
-        #self.shrink_timer = 0
         self.losers = [] # New round new chances, resets the loser list
         self.colorShrinkTimer = (0,0,0)
         self.start_time = time.time()
@@ -398,6 +391,8 @@ class PlayerArena:
             
             if len(self.losers) == len(self.suddenDeathCandidates)-1 and self.suddenDeath == True:
                 print("Game is over and the winner is")
+                print(self.losers)
+                print(self.suddenDeathCandidates)
                 if self.player_circle['visible'] == True:
                     winner = self.player_circle['name']
                 else:
@@ -435,13 +430,16 @@ class PlayerArena:
                 if self.round == MAX_ROUND and self.suddenDeath == False:
                     print("game over")
                     peerPositionJSON = json.dumps(self.player_circle)
+                    
                     payload = "UPDATE " + peerPositionJSON
                     for enemyPlayer in self.enemy_circles:
                         if enemyPlayer['id'] != None:
                             self.peer.getSocket().sendto(payload.encode(), ('127.0.0.1', int(enemyPlayer['id'])))
+                        
                     
-
-                    # time.sleep(0.1) # Perhaps add a 3 second count down COMING SOON
+                    #self.roundSwitchCountdown() # Special sudden death countdown...
+                    
+                    time.sleep(0.1) # Perhaps add a 3 second count down COMING SOON
 
 
                     maxScore = self.getMaxScore()
@@ -469,24 +467,17 @@ class PlayerArena:
                         self.suddenDeathCandidates = winner
                         self.suddenDeath = True
                         if (str(self.peer.getPort()), self.player_circle['name']) not in winner:
-                            print("Not in winner")
                             self.player_circle['visible'] = False
-                        else:
-                            print("in winner")
-                            print(str(self.peer.getPort()), self.player_circle['name'])
-                        print(winner)
+
+                        self.roundSwitchCountdown() # TODO Add special sudden death round coountdown
+                        self.newRound()
+                        start_time = time.time() # resets countdown
                         continue
 
                 self.roundSwitchCountdown()
                 self.newRound()
                 start_time = time.time() # resets countdown
-                        #self.player_circle['score'] = 0
-                        
-                    #print(winner)
-
-                    # print("max score is: " + str(self.getMaxScore()))
-                    # print("Game is over and the winner is")
-
+     
             #print(self.suddenDeath)
 
             if self.suddenDeath == True:
