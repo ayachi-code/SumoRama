@@ -13,7 +13,7 @@ import math
 
 #TODO 8 mei
 # Clean code a lot [x]
-# Fix init position bug
+# Fix init position bug [x]
 # Player can leave and it will work
 # Clean code [x]
 
@@ -427,9 +427,11 @@ class PlayerArena:
 
 
             if len(self.losers) == len(self.peer.getConnections()) and self.suddenDeath == False:
-                print("round over")     
+                print("round over")
+
                 if str(self.peer.getPort()) not in self.losers: # I am not a loser hehe, I am a winner! Thus give ne the point...
-                    self.player_circle['score'] += 1 # Increases winners score with 1
+                    #print("got a point")
+                    self.player_circle['score'] += 1 # Increases winners score with 1     
 
                 self.round += 1 # Increases roudn counter
 
@@ -447,12 +449,17 @@ class PlayerArena:
                     
                     time.sleep(0.1) # Perhaps add a 3 second count down COMING SOON
 
-
                     maxScore = self.getMaxScore()
                     winner = []
 
+                    #print(maxScore)
                     if self.player_circle['score'] == maxScore:
+                        # print("I got the score " + str(self.player_circle['score']))
                         winner.append((str(self.player_circle['id']), self.player_circle['name']))
+                    else:
+                        pass
+                        # print("I got the score " + str(self.player_circle['score']))
+                        # player
 
                     for player in self.enemy_circles:
                         if player['score'] == maxScore:
@@ -469,18 +476,23 @@ class PlayerArena:
                         print("Sudden death")
                         self.suddenDeathCandidates = winner
                         self.suddenDeath = True
-                        if (str(self.peer.getPort()), self.player_circle['name']) not in winner:
-                            self.player_circle['visible'] = False
-
-                        self.roundSwitchCountdown() # TODO Add special sudden death round coountdown
                         self.newRound()
-                        start_time = time.time() # resets countdown
-                        continue
+                        #print(winner)
+                        if (str(self.peer.getPort()), self.player_circle['name']) not in winner:
+                            print("Hide")
+                            self.player_circle['visible'] = False
+                else:
+                    self.newRound()
+
+                        # self.roundSwitchCountdown() # TODO Add special sudden death round coountdown
+                        # self.newRound()
+                        # start_time = time.time() # resets countdown
+                        # # continue
 
                 self.roundSwitchCountdown()
-                self.newRound()
                 start_time = time.time() # resets countdown
-     
+   
+  
             #print(self.suddenDeath)
 
             if self.suddenDeath == True:
