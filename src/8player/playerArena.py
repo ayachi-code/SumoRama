@@ -484,17 +484,9 @@ class PlayerArena:
                 else:
                     self.newRound()
 
-                        # self.roundSwitchCountdown() # TODO Add special sudden death round coountdown
-                        # self.newRound()
-                        # start_time = time.time() # resets countdown
-                        # # continue
-
                 self.roundSwitchCountdown()
                 start_time = time.time() # resets countdown
    
-  
-            #print(self.suddenDeath)
-
             if self.suddenDeath == True:
                 # Score displayed on screen
                 gameScreen_Score = self.gameFont.render('Sudden death round', True, (0,0,0))
@@ -505,7 +497,6 @@ class PlayerArena:
                 gameScreen_Score = self.gameFont.render('Round: ' + str(self.round), True, (0,0,0))
                 gameScreen_rect = gameScreen_Score.get_rect(center=(80, 20))
                 self.screen.blit(gameScreen_Score, gameScreen_rect)
-
 
             if self.suddenDeath == False:
                 # Score displayed on screen
