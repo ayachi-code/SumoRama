@@ -526,6 +526,11 @@ class PlayerArena:
                     if event.key == pygame.K_SPACE and not self.rushing and self.player_circle is not None and self.player_circle['visible']: # Rush state set
                         self.rushing = True
                         self.rush_start_time = pygame.time.get_ticks()
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    pos = pygame.mouse.get_pos()
+                    if leave.isOver(pos):
+                        print("Ima head out") 
+                      
 
             if self.rushing and self.player_circle is not None: 
                 current_time = pygame.time.get_ticks()
