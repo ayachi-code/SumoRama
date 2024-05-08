@@ -12,10 +12,10 @@ import math
 
 
 #TODO 8 mei
-# Clean code a lot
+# Clean code a lot [x]
 # Fix init position bug
 # Player can leave and it will work
-# Clean code
+# Clean code [x]
 
 
 FPS = 60
@@ -115,7 +115,7 @@ class PlayerArena:
                 if int(data.split(" ")[1]) not in self.confirmedPositions:
                     self.confirmedPositions.append(int(data.split(" ")[1]))
                 
-                if len(self.confirmedPositions) == len(self.peer.getConnections()):
+                if len(self.confirmedPositions) >= len(self.peer.getConnections()):
                     self.playerPositionInit = True
 
             if "INIT" in data:
@@ -127,7 +127,7 @@ class PlayerArena:
                 self.peer.getSocket().sendto(payload.encode(), addr) # Confirms position
                 
                 for enemy in self.enemy_circles:
-                    if enemy['id'] == None and int(data.split(" ")[3]) not in self.placedPositionsReciever: # Prevents using more circles than needed
+                    if enemy['id'] == None and int(data.split(" ")[3]) not in self.placedPositionsReciever: # Prevents using more circles than neededl Inits player
                         enemy['id'] = data.split(" ")[3]
                         enemy['position'] = [xPosition, yPosition]
                         self.placedPositionsReciever.append(int(data.split(" ")[3]))
@@ -137,23 +137,12 @@ class PlayerArena:
                 newPossition = newData['position']
 
                 for peer in self.enemy_circles: # TODO Maybe use hashmap for future update, increases performance
-                    # print(str(peer['id']) + "==" + str(peerId))
                     if peer['id'] != None:
                         if int(peer['id']) == int(peerId):
-                            # print("updating")
-                            #print(type(newPossition[0]))
                             peer['position'] =  newPossition #newPossition[0]
                             peer['score'] = newData['score']
                             peer['name'] = newData['name']
                             peer['visible'] = newData['visible']
-            
-
-                #print(newData)
-
-
-                # if int(data.split(" ")[3]) not in self.placedPositionsReciever:
-                #     self.placedPositionsReciever.append(int(data.split(" ")[3]))
-
 
     def displayCountdown(self): # Shows a counter before starting the game, preps player to be ready
         countdown_font = pygame.font.SysFont('Comic Sans MS', 150)
@@ -267,8 +256,6 @@ class PlayerArena:
             player_distance_to_center = math.sqrt((self.player_circle["position"][0] - self.sumo_ring_center[0])**2 + (self.player_circle["position"][1] - self.sumo_ring_center[1])**2)
                 
             if player_distance_to_center + self.player_circle["radius"] > self.sumo_ring_radius:
-                #self.peer.getSocket().sendto("OUT-OF-RING".encode(), list(self.peer.getConnections())[0])
-                #print("Out of ring")
                 return True
     
         return False
@@ -379,9 +366,6 @@ class PlayerArena:
 
     def run(self):
         self.gameStateRun = True
-        #self.displayCountdown() # Displays a countdown with some very usefull tips!
-
-        #print("My connection info " + str(self.peer.getPort()))
 
         self.player_circle['id'] = self.peer.getPort()
 
@@ -413,11 +397,8 @@ class PlayerArena:
 
             self.screen.blit(bg, (0, 0))
 
-            
             if len(self.losers) == len(self.suddenDeathCandidates)-1 and self.suddenDeath == True:
                 print("Game is over and the winner is")
-                print(self.losers)
-                print(self.suddenDeathCandidates)
                 if self.player_circle['visible'] == True:
                     winner = self.player_circle['name']
                 else:
@@ -468,9 +449,6 @@ class PlayerArena:
 
 
                     maxScore = self.getMaxScore()
-                    print(maxScore)
-                    print(self.enemy_circles)
-                    print(self.player_circle)
                     winner = []
 
                     if self.player_circle['score'] == maxScore:
@@ -570,7 +548,6 @@ class PlayerArena:
 
 
             self.realtiveSumoSize = self.circle_radius - len(self.peer.getConnections()) * 2.5
-            #print(len(self.peer.getConnections()))
 
             if self.player_circle['visible'] == True:
                 pygame.draw.circle(self.screen, (0,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize+5)
@@ -578,18 +555,14 @@ class PlayerArena:
 
 
             for playerEnemy in self.enemy_circles:
-                # print(player['id'])
                 if playerEnemy['id'] != None and playerEnemy['visible'] == True:
-                    # print((playerEnemy['position'][0]))
                     pygame.draw.circle(self.screen, (255,0,0), (int(playerEnemy['position'][0]),int(playerEnemy['position'][1])),self.realtiveSumoSize)
 
             
             if elapsed_time >= self.shrink_interval: # If timer exceeds threshold than make the circle smaller and reset timers.
                 self.sumo_ring_radius *= self.shrink_scale
                 start_time = time.time()  # Reset the timer
-                #self.shrink_timer = 0
-                #self.timerScreen = 10
-
+    
             pygame.draw.circle(self.screen, (255, 0, 0), self.sumo_ring_center, int(self.sumo_ring_radius), 30) # Draw the sumo ring
 
             #  # Sends data to client
@@ -602,5 +575,3 @@ class PlayerArena:
 
             pygame.display.update()
             self.clock.tick(FPS) # FPS locked
-
-
