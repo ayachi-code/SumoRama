@@ -6,6 +6,7 @@ import time
 import json
 import random
 import math
+import button
 
 
 #TODO SPECIAL FEAUTERS: Spectator mode is shown to peer
@@ -508,6 +509,13 @@ class PlayerArena:
             gameScreen_waveTimer = self.gameFont.render('0:' + str(remaining_time), True, self.colorShrinkTimer)
             gameScreen_rect = gameScreen_waveTimer.get_rect(center=(SCREEN_WIDTH - 30, 20))
             self.screen.blit(gameScreen_waveTimer, gameScreen_rect)
+
+
+            # Leave button
+            leave = button.Button((255,255,255) ,0,SCREEN_HEIGHT - 25,50,30,25,'Leave')
+
+            leave.draw(self.screen, (0,0,0))
+
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
