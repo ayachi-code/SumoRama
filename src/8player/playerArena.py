@@ -541,6 +541,10 @@ class PlayerArena:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.gameStateRun = False
+                    self.player_circle['id'] = None
+                    self.player_circle['visible'] = False
+                    payload = "DELETE " + str(self.peer.getPort())
+                    self.peer.broadCast(payload)
                     pygame.quit()
                     exit(0)
                 elif event.type == pygame.KEYDOWN:
