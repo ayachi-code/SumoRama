@@ -5,17 +5,6 @@ import threading
 import json
 import time
 
-#TODO: 1. Player joint dan ziet hij zich zelf in de grote box [x]
-#   2. Players worden gelaten zien op scherm wanneer joinen [x]
-#   3. Players kunnen ready up doen en wordt gelocked op client [x]
-#   3*. Game start sign als er 50% ready is en meer dan 4 players in de game [x]
-#   4. Meerder sessions als 1 vol is. --> Player kriijgt bericht als lobby vol is []
-#       Tip: Verstuur session id naar client bij handshake [-]
-#   5. Player kan leaven bij lobby en werkt [-]
-#   6. Gane start als 50 % ready up heeft gedaan [x]
-#   7. Acks toevoegen [-]
-
-
 import sys
 
 sys.path.append("../game") # Debug
@@ -127,16 +116,6 @@ class LobbyArena:
             if box.getId() == True:
                 return True
         return False 
-    
-    # def iAmAlive(self):
-    #     while True:
-    #         data, addr = sock.recvfrom(65535)
-    #         data = data.decode()
-
-    #         if "ALIVE" == data:
-    #             payload = "ALIVE-OK " + str(self.random_integer)
-    #             sock.sendto(payload.encode(), host_port)
-    #             #print("server wants know if im alive")
     
     def listener(self):
         while True:
@@ -285,16 +264,6 @@ class LobbyArena:
 
         lister = threading.Thread(target=self.listener,args=(), daemon=True)
         lister.start()
-
-        # iamAlive = threading.Thread(target=self.iAmAlive,args=(), daemon=True)
-        # iamAlive.start()
-
-
-        #payload = "HELLO-FROM " + self.player.getName() + " " + self.player.getColor()       
-        
-        #sock.sendto(payload.encode(), host_port)
- 
-        #player = PlayerBox("a", None, self.screen,300, SCREEN_HEIGHT/3.33)
 
         while self.gameStateRun:
             self.screen.fill((153,0,17))

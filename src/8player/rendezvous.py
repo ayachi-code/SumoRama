@@ -15,56 +15,16 @@ sock.bind((SERVER_ADDRESS, SERVER_PORT))
 
 connectedPeers = {} # 'Session1: ['peers']'
 
-# allSessions = ['session1']
-
-# currentSession = 'session1' # Start session
-
 print("Rendezvous server is online")
-
-
-# acknowledgedPeersAlve = []
-
-# acknowledgedPeersReady = []
 
 peersStatus = [] # Keeps track the counter used to track if a peer did not response
 
-
-# def isPeerAlive():
-#     while True:
-#         for session in allSessions: # Sends alive to all peers
-#             for peer in connectedPeers[session]:
-#                 sock.sendto("ALIVE".encode(), peer[0])
-
-#         time.sleep(0.1)
-#         # If not ack decrease with 1
-
-#         #print(acknowledgedPeers)
-
-#         AcknowledgedPeers = [] # Reset it
-
-
-# sendAlive = threading.Thread(target=isPeerAlive, daemon=True)
-# sendAlive.start()
-
-
-# def isPeerAliveReciever():
-#     while True:
-#         data, client_socket = sock.recvfrom(4096)
-#         data = data.decode()
-#         #print(data)
-
-#         if "ALIVE-OK" in data:
-#             acknowledgedPeersAlve.append(data.split(" ")[1])
 
 
 
 def sendReadyUp(self, payload):
     while True:
         sock.sendto(payload.encode())
-
-
-#sendAliveReciever = threading.Thread(target=isPeerAliveReciever, daemon=True)
-#sendAliveReciever.start()
 
 stat = 0
 
@@ -78,20 +38,12 @@ def notifyPeers(message):
                 otherPeersKey.append(targetPeers)
                 otherPeersValue.append(connectedPeers[targetPeers])
 
-        #print(connectedPeers[peer])
-        #payload = "PEERS " + json.dumps(otherPeersKey,separators=(',', ':')) + " " + json.dumps(otherPeersValue,separators=(',', ':'))
-
         sock.sendto(message.encode(),peer) # Sends all active peers to the peer
-
-
-
 
 while True:
     data, client_socket = sock.recvfrom(4096)
     
     data = data.decode()
-    #print(data)
-
 
     if "quit" in data:
         print("Player is quiting")
@@ -99,10 +51,7 @@ while True:
         connectedPeers.pop(('127.0.0.1', int(peerId)), None)
         payload = "quit " + peerId
         notifyPeers(payload)
-        # continue
 
-    # if "ALIVE-OK" in data:
-    #     acknowledgedPeersAlve.append(data.split(" ")[1])
     if "HELLO-FROM" in data:
         print("Got a connection :)")
         #print(len(connectedPeers))
@@ -112,11 +61,9 @@ while True:
             continue
         else:
             connectedPeers[client_socket] = [data.split(" ")[1], data.split(" ")[2], False]
-            #connectedPeers.append(client_socket: {data.split(" ")[1],data.split(" ")[2],False} ) # Appends client socket to the session
             print("Sending hello-ok")
             print(client_socket)
             sock.sendto("HELLO-OK".encode(), client_socket)
-            #print(connectedPeers)
             if len(connectedPeers) == 1:
                 continue
 
@@ -155,7 +102,6 @@ while True:
                     otherPeersKey.append(targetPeers)
                     otherPeersValue.append(connectedPeers[targetPeers])
 
-            #print(connectedPeers[peer])
             payload = "PEERS " + json.dumps(otherPeersKey,separators=(',', ':')) + " " + json.dumps(otherPeersValue,separators=(',', ':'))
 
             sock.sendto(payload.encode(),peer) # Sends all active peers to the peer

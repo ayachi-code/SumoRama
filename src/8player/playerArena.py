@@ -13,12 +13,6 @@ import pdb
 
 #TODO SPECIAL FEAUTERS: Spectator mode is shown to peer
 
-
-#TODO 9 mei
-# Clean code
-# Add cheat detection
-
-
 FPS = 60
 
 SCREEN_WIDTH = 1300
