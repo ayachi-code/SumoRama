@@ -113,7 +113,7 @@ class PlayerArena:
                             self.suddenDeathCandidates.remove((peerID, player['name']))
                         if peerID in self.losers:
                             self.losers.remove(peerID)
-                            
+
                         player['id'] = None
                         player['visible'] = False
                         player['score'] = 0
@@ -395,8 +395,8 @@ class PlayerArena:
     def cheatDetection(self):
         
         for enemy in self.enemy_circles:
-            #if enemy['id'] != None:
-                #print(enemy)
+            # if enemy['id'] != None:
+            #     print(enemy)
             if enemy['id'] != None  and enemy['visible'] == True and self.inSumoRing(self.sumo_ring_center[0], self.sumo_ring_center[1], self.sumo_ring_radius+40, enemy['position'][0], enemy['position'][1]) == False:
                 payload = "DELETE " + str(enemy['id']) # A player was cheating kicking the player out of the game
                 self.peer.broadCast(payload)
@@ -404,7 +404,8 @@ class PlayerArena:
                 enemy['id'] = None
                 enemy['visible'] = False
                 print("The other player is not in circle")
-                return
+                print(enemy['position'][0], enemy['position'][1])
+                continue
             if enemy['score'] > 5 and enemy['id'] != None:
                 payload = "DELETE " + str(enemy['id']) # A player was cheating kicking the player out of the game
                 self.peer.broadCast(payload)
@@ -555,13 +556,22 @@ class PlayerArena:
                 gameScreen_Score = self.gameFont.render('Sudden death round', True, (0,0,0))
                 gameScreen_rect = gameScreen_Score.get_rect(center=(140, 20))
                 self.screen.blit(gameScreen_Score, gameScreen_rect)
+
+                if self.player_circle['visible'] == False:
+                    print("showing spec mode")
+                    gameScreen = self.gameFont.render('Spectating mode', True, (0,0,0))
+                    gameScreen_rect = gameScreen.get_rect(center=(SCREEN_WIDTH - SCREEN_WIDTH/7, 20))
+                    self.screen.blit(gameScreen, gameScreen_rect)
+
+
+
             else:
                 # Score displayed on screen
                 gameScreen_Score = self.gameFont.render('Round: ' + str(self.round), True, (0,0,0))
                 gameScreen_rect = gameScreen_Score.get_rect(center=(75, 20))
                 self.screen.blit(gameScreen_Score, gameScreen_rect)
 
-            if self.player_circle['visible'] == False:
+            if self.player_circle['visible'] == False and self.suddenDeath == False:
                 gameScreen = self.gameFont.render('Spectating mode', True, (0,0,0))
                 gameScreen_rect = gameScreen.get_rect(center=(260, 20))
                 self.screen.blit(gameScreen, gameScreen_rect)
