@@ -7,6 +7,8 @@ import json
 import random
 import math
 import button
+import pdb
+
 
 
 #TODO SPECIAL FEAUTERS: Spectator mode is shown to peer
@@ -77,7 +79,7 @@ class PlayerArena:
         # Shrink variables
         self.shrink_timer = 0
         self.timerScreen = 10
-        self.shrink_interval = 10
+        self.shrink_interval = 10000
         self.shrink_scale = 0.90
         self.colorShrinkTimer = (0,0,0)
 
@@ -107,6 +109,13 @@ class PlayerArena:
             if "DELETE" in data:
                 peerID = data.split(" ")[1]
                 print("Deleting " + peerID)
+                if peerID == str(self.peer.getPort()): # Im getting kicked
+                    self.gameStateRun = False
+                    self.player_circle['id'] = None
+                    self.player_circle['visible'] = False
+                    self.gameState.setCurrentState('start')
+                    #pygame.quit()
+                    #exit(0)
                 for player in self.enemy_circles:
                     if str(player['id']) == peerID:
                         player['id'] = None
@@ -144,6 +153,7 @@ class PlayerArena:
                         enemy['position'] = [xPosition, yPosition]
                         self.placedPositionsReciever.append(int(data.split(" ")[3]))
             elif "UPDATE" in data:
+                #print(data)
                 newData = json.loads(data.split(" ",1)[1])
                 peerId = newData['id']
                 newPossition = newData['position']
@@ -377,9 +387,31 @@ class PlayerArena:
             clock.tick(60)  
             pygame.time.wait(1000)
 
+    def inSumoRing(self, circle_x, circle_y, rad, x, y): # Method for checking if a point is in a circle, used to check if sumo is in ring.
+        if ((x - circle_x) * (x - circle_x) + (y - circle_y) * (y - circle_y) <= rad * rad):
+            return True;
+        else:
+            return False;
+    
+    def cheatDetection(self):
+        
+        for enemy in self.enemy_circles:
+            #if enemy['id'] != None:
+                #print(enemy)
+            if enemy['id'] != None and self.inSumoRing(self.sumo_ring_center[0], self.sumo_ring_center[1], self.sumo_ring_radius+30, enemy['position'][0], enemy['position'][1]) == False:
+                payload = "DELETE " + str(enemy['id']) # A player was cheating kicking the player out of the game
+                #print(self.peer.getConnections())
+                self.peer.broadCast(payload)
+                self.peer.removeConnection(('127.0.0.1',int(enemy['id'])))
+                enemy['id'] = None
+                enemy['visible'] = False
+                print("The other player is not in circle")
+                return
+
     def run(self):
         self.resetStates()
         print("arena?")
+        print(self.peer.getPort())
         self.gameStateRun = True
 
         self.player_circle['id'] = self.peer.getPort()
@@ -622,6 +654,7 @@ class PlayerArena:
                 if enemyPlayer['id'] != None:
                     self.peer.getSocket().sendto(payload.encode(), ('127.0.0.1', int(enemyPlayer['id'])))
 
+            self.cheatDetection()
 
             pygame.display.update()
             self.clock.tick(FPS) # FPS locked
