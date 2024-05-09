@@ -79,7 +79,7 @@ class PlayerArena:
         # Shrink variables
         self.shrink_timer = 0
         self.timerScreen = 10
-        self.shrink_interval = 10000
+        self.shrink_interval = 3
         self.shrink_scale = 0.90
         self.colorShrinkTimer = (0,0,0)
 
@@ -120,8 +120,9 @@ class PlayerArena:
                     if str(player['id']) == peerID:
                         player['id'] = None
                         player['visible'] = False
+                        player['score'] = 0
                         self.peer.removeConnection(('127.0.0.1', int(peerID)))
-
+                        
             if "OUT_OF_RING" in data:
                 peerID = data.split(" ")[1]
                 print("A peer is out of the ring " + peerID)
@@ -398,9 +399,8 @@ class PlayerArena:
         for enemy in self.enemy_circles:
             #if enemy['id'] != None:
                 #print(enemy)
-            if enemy['id'] != None and self.inSumoRing(self.sumo_ring_center[0], self.sumo_ring_center[1], self.sumo_ring_radius+30, enemy['position'][0], enemy['position'][1]) == False:
+            if enemy['id'] != None  and enemy['visible'] == True and self.inSumoRing(self.sumo_ring_center[0], self.sumo_ring_center[1], self.sumo_ring_radius+40, enemy['position'][0], enemy['position'][1]) == False:
                 payload = "DELETE " + str(enemy['id']) # A player was cheating kicking the player out of the game
-                #print(self.peer.getConnections())
                 self.peer.broadCast(payload)
                 self.peer.removeConnection(('127.0.0.1',int(enemy['id'])))
                 enemy['id'] = None
@@ -412,6 +412,9 @@ class PlayerArena:
         self.resetStates()
         print("arena?")
         print(self.peer.getPort())
+        print("player name: " + self.player.getName())
+
+
         self.gameStateRun = True
 
         self.player_circle['id'] = self.peer.getPort()
@@ -454,12 +457,13 @@ class PlayerArena:
 
 
             if len(self.losers) == len(self.suddenDeathCandidates)-1 and self.suddenDeath == True:
+                print(self.enemy_circles)
                 print("Game is over and the winner is")
-                if self.player_circle['visible'] == True:
+                if self.player_circle['visible'] == True and self.player_circle['id'] != None:
                     winner = self.player_circle['name']
                 else:
                     for player in self.enemy_circles:
-                        if player['visible'] == True:
+                        if player['visible'] == True and player['id'] != None:
                             winner = player['name']
                             break
                     
@@ -474,7 +478,6 @@ class PlayerArena:
                 self.losers.append(str(self.peer.getPort())) # Add yourself as a loser
                 payload = "OUT_OF_RING " + str(self.peer.getPort())
                 self.peer.broadCast(payload)
-                print("Out of the circle")
 
             if math.ceil(remaining_time) <= 5: # Shows different color depending how close the timer is to the end.
                 self.colorShrinkTimer = (255, 0, 0)
@@ -508,15 +511,10 @@ class PlayerArena:
                     maxScore = self.getMaxScore()
                     winner = []
 
-                    #print(maxScore)
+                    print(maxScore)
                     if self.player_circle['score'] == maxScore and self.player_circle['id'] != None:
-                        # print("I got the score " + str(self.player_circle['score']))
                         winner.append((str(self.player_circle['id']), self.player_circle['name']))
-                    else:
-                        pass
-                        # print("I got the score " + str(self.player_circle['score']))
-                        # player
-
+             
                     for player in self.enemy_circles:
                         if player['score'] == maxScore and player['id'] != None:
                             winner.append((player['id'], player['name']))
@@ -577,6 +575,7 @@ class PlayerArena:
                     self.gameStateRun = False
                     self.player_circle['id'] = None
                     self.player_circle['visible'] = False
+                    self.player_circle['score'] = 0
                     payload = "DELETE " + str(self.peer.getPort())
                     self.peer.broadCast(payload)
                     pygame.quit()
@@ -592,10 +591,11 @@ class PlayerArena:
                         self.gameStateRun = False
                         self.player_circle['id'] = None
                         self.player_circle['visible'] = False
+                        self.player_circle['score'] = 0
                         payload = "DELETE " + str(self.peer.getPort())
                         self.peer.broadCast(payload)
                         self.gameState.setCurrentState('start')
-
+                        
                       
             if self.rushing and self.player_circle is not None: 
                 current_time = pygame.time.get_ticks()
