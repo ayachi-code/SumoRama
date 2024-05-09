@@ -8,7 +8,6 @@ SERVER_PORT = 5378
 
 MAX_PLAYER_LOBBY = 9
 
-
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 sock.bind((SERVER_ADDRESS, SERVER_PORT))
@@ -18,9 +17,6 @@ connectedPeers = {} # 'Session1: ['peers']'
 print("Rendezvous server is online")
 
 peersStatus = [] # Keeps track the counter used to track if a peer did not response
-
-
-
 
 def sendReadyUp(self, payload):
     while True:

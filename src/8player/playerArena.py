@@ -9,8 +9,6 @@ import math
 import button
 import pdb
 
-
-
 #TODO SPECIAL FEAUTERS: Spectator mode is shown to peer
 
 FPS = 60
@@ -113,6 +111,9 @@ class PlayerArena:
                     if str(player['id']) == peerID:
                         if (peerID, player['name']) in self.suddenDeathCandidates:
                             self.suddenDeathCandidates.remove((peerID, player['name']))
+                        if peerID in self.losers:
+                            self.losers.remove(peerID)
+                            
                         player['id'] = None
                         player['visible'] = False
                         player['score'] = 0
@@ -493,6 +494,8 @@ class PlayerArena:
 
             if len(self.losers) == len(self.peer.getConnections()) and self.suddenDeath == False:
                 print("round over")
+                print(self.losers)
+                print(self.peer.getConnections())
 
                 if str(self.peer.getPort()) not in self.losers: # I am not a loser hehe, I am a winner! Thus give ne the point...
                     #print("got a point")
@@ -555,8 +558,14 @@ class PlayerArena:
             else:
                 # Score displayed on screen
                 gameScreen_Score = self.gameFont.render('Round: ' + str(self.round), True, (0,0,0))
-                gameScreen_rect = gameScreen_Score.get_rect(center=(80, 20))
+                gameScreen_rect = gameScreen_Score.get_rect(center=(75, 20))
                 self.screen.blit(gameScreen_Score, gameScreen_rect)
+
+            if self.player_circle['visible'] == False:
+                gameScreen = self.gameFont.render('Spectating mode', True, (0,0,0))
+                gameScreen_rect = gameScreen.get_rect(center=(260, 20))
+                self.screen.blit(gameScreen, gameScreen_rect)
+
 
             if self.suddenDeath == False:
                 # Score displayed on screen
