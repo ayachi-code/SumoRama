@@ -9,7 +9,11 @@ import math
 import button
 import pdb
 
-#TODO SPECIAL FEAUTERS: Spectator mode is shown to peer
+#TODO
+# Clean code(game over reusable class e.g) add comments
+# Add back buttons no death end. 1v1 for example
+# Add change name, change color feauture
+# Laatste test en code herhalen
 
 FPS = 60
 
@@ -71,7 +75,7 @@ class PlayerArena:
         # Shrink variables
         self.shrink_timer = 0
         self.timerScreen = 10
-        self.shrink_interval = 10
+        self.shrink_interval = 1000
         self.shrink_scale = 0.90
         self.colorShrinkTimer = (0,0,0)
 

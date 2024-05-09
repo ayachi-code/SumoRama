@@ -18,4 +18,4 @@ Position cheat
 echo 'UPDATE {"position": [10,10], "velocity": [10, 10], "radius": 40, "name": "Player224", "score": 100, "visible": true, "id": 7657}' | nc -u -w1 127.0.0.1 7460
 
 
-echo 'UPDATE {"position": [10,10], "velocity": [10, 10], "radius": 40, "name": "Player224", "score": 100, "visible": true, "id": 7513}' | nc -u -w1 127.0.0.1 7693
+echo 'UPDATE {"position": [20,32], "velocity": [10, 10], "radius": 40, "name": "Player224", "score": 100, "visible": true, "id": 7525}' | nc -u -w1 127.0.0.1 9948
