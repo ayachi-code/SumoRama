@@ -159,16 +159,3 @@ while True:
             payload = "PEERS " + json.dumps(otherPeersKey,separators=(',', ':')) + " " + json.dumps(otherPeersValue,separators=(',', ':'))
 
             sock.sendto(payload.encode(),peer) # Sends all active peers to the peer
-
-
-
-
-
-
-
-
-
-
-
-
-
