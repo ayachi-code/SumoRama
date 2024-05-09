@@ -79,7 +79,7 @@ class PlayerArena:
         # Shrink variables
         self.shrink_timer = 0
         self.timerScreen = 10
-        self.shrink_interval = 3
+        self.shrink_interval = 1000
         self.shrink_scale = 0.90
         self.colorShrinkTimer = (0,0,0)
 
