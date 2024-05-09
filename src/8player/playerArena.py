@@ -115,8 +115,6 @@ class PlayerArena:
                     self.player_circle['visible'] = False
                     self.gameState.setCurrentState('start')
        
-                    #pygame.quit()
-                    #exit(0)
                 for player in self.enemy_circles:
                     if str(player['id']) == peerID:
                         if (peerID, player['name']) in self.suddenDeathCandidates:
