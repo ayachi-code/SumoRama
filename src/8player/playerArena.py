@@ -79,7 +79,7 @@ class PlayerArena:
         # Shrink variables
         self.shrink_timer = 0
         self.timerScreen = 10
-        self.shrink_interval = 1000
+        self.shrink_interval = 10
         self.shrink_scale = 0.90
         self.colorShrinkTimer = (0,0,0)
 
@@ -114,18 +114,23 @@ class PlayerArena:
                     self.player_circle['id'] = None
                     self.player_circle['visible'] = False
                     self.gameState.setCurrentState('start')
+       
                     #pygame.quit()
                     #exit(0)
                 for player in self.enemy_circles:
                     if str(player['id']) == peerID:
+                        if (peerID, player['name']) in self.suddenDeathCandidates:
+                            self.suddenDeathCandidates.remove((peerID, player['name']))
                         player['id'] = None
                         player['visible'] = False
                         player['score'] = 0
                         self.peer.removeConnection(('127.0.0.1', int(peerID)))
+
                         
             if "OUT_OF_RING" in data:
                 peerID = data.split(" ")[1]
                 print("A peer is out of the ring " + peerID)
+                # print(self.losers)
                 for player in self.enemy_circles:
                     if player['id'] == peerID:
                         player['visible'] = False
@@ -526,7 +531,7 @@ class PlayerArena:
              
                     for player in self.enemy_circles:
                         if player['score'] == maxScore and player['id'] != None:
-                            winner.append((player['id'], player['name']))
+                            winner.append((str(player['id']), player['name']))
 
                     if len(winner) == 1: # There is one winner in the game
                         self.gameStateRun = False
