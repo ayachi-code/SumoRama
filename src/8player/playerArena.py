@@ -10,11 +10,11 @@ import button
 import pdb
 
 #TODO
-# Clean code(game over reusable class e.g) add comments
+# Clean code(game over reusable class e.g) add comments [x]
 # Add back buttons no death end. 1v1 for example
+
+
 # Add change name, change color feauture
-
-
 # Add 8 player round change feautre to 1v1
 # Laatste test en code herhalen
 
@@ -66,18 +66,16 @@ class PlayerArena:
         self.rushing = False
         self.rush_start_time = 0
         
-        self.confirmedPositions = []
-        self.placedPositionsReciever = []
+        self.confirmedPositions = [] # Positions that are ack by other peers
+        self.placedPositionsReciever = [] # Prevents using more circles than neededl Inits player
 
-        self.playerPositionInit = None
-
+        self.playerPositionInit = None # state
 
         # Sumo variables
         self.sumo_ring_radius = 450
         self.sumo_ring_center = [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]
         self.circle_radius = 40
         self.realtiveSumoSize = self.circle_radius
-
 
         # Shrink variables
         self.shrink_timer = 0
@@ -267,9 +265,9 @@ class PlayerArena:
             
             collision_length = math.sqrt(collision_direction[0]**2 + collision_direction[1]**2)
 
-            if collision_length > 0:
+            if collision_length > 0: # There is a collision if > 0
                 collision_direction = [collision_direction[0] / collision_length,
-                                    collision_direction[1] / collision_length]
+                                    collision_direction[1] / collision_length] # Direction of collision
                 move_distance = overlap / 2
 
                 circle1["position"][0] -= float(move_distance * collision_direction[0])
@@ -279,9 +277,9 @@ class PlayerArena:
 
     def checkIfOutOfRing(self): # Checks if the game is over, if so than make other peer know.
         if self.player_circle is not None:
-            player_distance_to_center = math.sqrt((self.player_circle["position"][0] - self.sumo_ring_center[0])**2 + (self.player_circle["position"][1] - self.sumo_ring_center[1])**2)
+            player_distance_to_center = math.sqrt((self.player_circle["position"][0] - self.sumo_ring_center[0])**2 + (self.player_circle["position"][1] - self.sumo_ring_center[1])**2) # Distane from player to circle
                 
-            if player_distance_to_center + self.player_circle["radius"] > self.sumo_ring_radius:
+            if player_distance_to_center + self.player_circle["radius"] > self.sumo_ring_radius: # Definition used for when a point is out of a crice
                 return True
     
         return False
@@ -484,7 +482,6 @@ class PlayerArena:
                 self.colorShrinkTimer = (255, 0, 0)
             else:
                 self.colorShrinkTimer = (0,0,0)
-
 
             if len(self.losers) == len(self.peer.getConnections()) and self.suddenDeath == False: # round is over check.
                 print("round over")
