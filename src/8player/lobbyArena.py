@@ -23,10 +23,10 @@ FPS = 60
 SCREEN_WIDTH = 1300
 SCREEN_HEIGHT = 800
 
-MAX_READY_UP = 1
+MAX_READY_UP = 1 # Number of players that haev to readt up to start a game
 
 
-class PlayerBox:
+class PlayerBox: # The box in the lobby
     def __init__(self, name, screen, width, height):
         self.name = name
         self.screen = screen
@@ -63,11 +63,12 @@ class PlayerBox:
         self.readyUp = False
         self.id = None
 
-    def draw(self, x,y):
+    def draw(self, x,y): 
         pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(x, y, self.width, self.height),  2)
         pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(x, (y+self.height)-50, self.width, 50),  2)
         
         if self.name != None:
+            # Draws the box with the info e.g name, player
             gameScreen_surfaceLobbyTitle = self.fontOfTitle.render(self.name, True, (255, 255, 255))
             gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(x+self.width/2,(y+self.height)-25))
             self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
@@ -110,12 +111,6 @@ class LobbyArena:
 
         self.peersInLobby = []
         self.playerBoxes = [PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33), PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 )]
-
-    def _isPlayerInLobby(self):
-        for box in self.playerBoxes:
-            if box.getId() == True:
-                return True
-        return False 
     
     def listener(self):
         while True:
@@ -125,17 +120,16 @@ class LobbyArena:
             if self.gameStateRun == False:
                 break
             
-            if "quit" in data:
+            if "quit" in data: # handeling quits
                 leavedID = data.split(" ")[1]
-                self.peersInLobby.remove(int(leavedID))
-                for box in self.playerBoxes:
+                self.peersInLobby.remove(int(leavedID)) # removes it from peer list
+                for box in self.playerBoxes: # removes it from the box
                     if box.getId() == int(leavedID):
                         if box.getReadyUp() == True:
                             self.readyUpCounter -= 1 # Player was ready however, no not because they left
                         box.reset()
                         break
-            elif "PEERS" in data:
-                print(data)
+            elif "PEERS" in data: # Peers response with info about all other peers
                 connectionInfo = data.split(" ",1)[1].split(" ")[0]
                 playerinfo = data.split(" ",1)[1].split(" ")[1]
 
@@ -150,7 +144,7 @@ class LobbyArena:
 
                 counter = 0
 
-                for peer in connectionInfo:
+                for peer in connectionInfo: # Sets the peer in the box
                     if peer[1] not in self.peersInLobby:
                         self.peersInLobby.append(peer[1])
                         for box in self.playerBoxes:
@@ -162,7 +156,6 @@ class LobbyArena:
                                             
                     counter += 1
                     
-
             if "READY" in data:
                 print("Got ready up from " + data.split(" ")[1])
                 readyId = int(data.split(" ")[1])
@@ -188,7 +181,6 @@ class LobbyArena:
         while True:
             data, client_socket = self.sock.recvfrom(4096)
             data = data.decode()
-            print(data)
         
             if self.gameStateRun == False:
                 break
@@ -209,7 +201,6 @@ class LobbyArena:
         upperBoundSend = 7
         while True:
             if self.serverAck or self.gameStateRun == False:
-                print("Am i dead?")
                 break
             if upperBoundSend == 0:
                 self.gameStateRun = False
@@ -218,7 +209,6 @@ class LobbyArena:
                 self.gameState.setCurrentState('error')
                 break
             
-            print("tst")
             payload = "HELLO-FROM " + self.player.getName() + " " + self.player.getColor()        
             self.sock.sendto(payload.encode(), self.host_port)
             time.sleep(0.1)
@@ -256,7 +246,6 @@ class LobbyArena:
 
         sender = threading.Thread(target=self.sendForAckStartUp, daemon=True)
         sender.start()
-        # sender.join()
 
         while True:    
             if self.serverAck or self.gameStateRun == False:
@@ -310,14 +299,15 @@ class LobbyArena:
                 self.readyUpColor = (128,128,128)
                 
             readyUp = button.Button(self.readyUpColor ,0,SCREEN_HEIGHT/10 + 575 ,400,150,60,'Ready up')
-
             readyUp.draw(self.screen, (0,0,0))
 
             # Status
             if self.readyUpCounter == None:
                 gameScreen_surfaceLobbyTitle = self.notifierReadyUp.render('No players :(', True, (255, 255, 255))
+                self.readyUpColor = (128,128,128)
             else:
                 gameScreen_surfaceLobbyTitle = self.notifierReadyUp.render('Ready up: ' + str((4-self.readyUpCounter))  +' left', True, (255, 255, 255))
+                self.readyUpColor = (226,221,220) 
 
 
             gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(150, SCREEN_HEIGHT/10 + 450))
