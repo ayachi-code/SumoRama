@@ -69,6 +69,8 @@ class PlayerArena:
 
         self.playerPositionInit = None
 
+
+        # Sumo variables
         self.sumo_ring_radius = 450
         self.sumo_ring_center = [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]
         self.circle_radius = 40
@@ -216,7 +218,6 @@ class PlayerArena:
                 self.peer.getSocket().sendto(data.encode(), peers)
             time.sleep(0.1)
 
-    
     def randomPointInCircle(self, radius, centerX, centerY): # Uses circle formula to generate random point on circle, the circle here is the sumo ring.
         alpha = 2 * math.pi * random.random()
         r = radius * math.sqrt(random.random())
@@ -565,7 +566,6 @@ class PlayerArena:
             gameScreen_rect = gameScreen_waveTimer.get_rect(center=(SCREEN_WIDTH - 30, 20))
             self.screen.blit(gameScreen_waveTimer, gameScreen_rect)
 
-
             # Leave button
             leave = button.Button((255,255,255) ,0,SCREEN_HEIGHT - 25,50,30,25,'Leave')
             leave.draw(self.screen, (0,0,0))
@@ -595,7 +595,6 @@ class PlayerArena:
                         self.peer.broadCast(payload)
                         self.gameState.setCurrentState('start')
                         
-                      
             if self.rushing and self.player_circle is not None: 
                 current_time = pygame.time.get_ticks()
                 if current_time - self.rush_start_time < self.rush_duration * 1000:
@@ -603,7 +602,6 @@ class PlayerArena:
                 else:
                     self.rushing = False
                     self.player_circle["velocity"] = [0, 0]
-
 
             if self.player_circle['visible'] == True: # Prevents ghost players
                 keys = pygame.key.get_pressed()
@@ -625,7 +623,6 @@ class PlayerArena:
             if self.player_circle is not None: # Changes position depending on the speed
                 self.player_circle["position"][0] += self.player_circle["velocity"][0] * self.clock.get_time() / 1000
                 self.player_circle["position"][1] += self.player_circle["velocity"][1] * self.clock.get_time() / 1000
-
 
             self.realtiveSumoSize = self.circle_radius - len(self.peer.getConnections()) * 2.5 # Calculates sumo size relative to number oi players
 
