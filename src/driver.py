@@ -15,7 +15,6 @@ import versusLobby
 import player
 import random
 import versusArena
-import gameOverVersus
 import lobbyArena
 import playerArena
 import error
