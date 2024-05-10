@@ -20,6 +20,10 @@ class MainMenu:
 
         self.sumoImg = pygame.image.load("../assets/sumoMenu.png").convert_alpha() # Load image transparent
         self.sumoImg = pygame.transform.scale(self.sumoImg, (200,200)) # Rescales imaeg
+
+        self.settingsImg = pygame.image.load("../assets/settings.png").convert_alpha() # Load image transparent
+        self.settingsImg = pygame.transform.scale(self.settingsImg, (100,100)) # Rescales imaeg
+
         
         self.buttonColor8 = (226,221,220) 
         self.buttonColorVersus = (226,221,220) 
@@ -89,6 +93,13 @@ class MainMenu:
 
             self.screen.blit(self.sumoImg, (w/13, 20))
             self.screen.blit(self.sumoImg, (w/1.21, 20))
+
+
+
+            self.screen.blit(self.settingsImg, (0, h/1.15))
+
+            #Settings
+
 
             pygame.display.update()
             self.clock.tick(FPS)  # Limit to 60 FPS
