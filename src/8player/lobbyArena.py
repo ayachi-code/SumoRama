@@ -60,8 +60,8 @@ class PlayerBox: # The box in the lobby
 
     def reset(self):
         self.name = None
-        self.readyUp = False
         self.id = None
+        self.readyUp = False
 
     def draw(self, x,y): 
         pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(x, y, self.width, self.height),  2)
