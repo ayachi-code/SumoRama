@@ -208,7 +208,6 @@ class VersusLobby:
             
             if self.peerName != "": # Show player circle if connected
                 #VS Text
-
                 versusFont = pygame.font.SysFont('Comic Sans MS', 130)
 
                 gameScreen_surfaceLobbyTitle = versusFont.render('VS', True, (255, 255, 255))

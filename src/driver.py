@@ -49,9 +49,9 @@ class Game:
         self.versusMenu = versusMenu.VersusMenu(self.screen, self.gameStateManager, self.player)
         self.gameOver = gameOver.GameOver(self.screen, self.gameStateManager)
 
-        self.gameOverVersus = gameOverVersus.GameOverVersus(self.screen, self.gameStateManager)
+        #self.gameOverVersus = gameOverVersus.GameOverVersus(self.screen, self.gameStateManager)
 
-        self.versusArena = versusArena.VersusArena(self.screen, self.gameStateManager, self.player, None, self.gameOverVersus)
+        self.versusArena = versusArena.VersusArena(self.screen, self.gameStateManager, self.player, None, self.gameOver)
         self.lobbyVersus = versusLobby.VersusLobby(self.screen, self.gameStateManager, None, self.player, self.versusArena, self.error)
         self.joinMenu = joinMenu.JoinMenu(self.screen, self.gameStateManager, self.lobbyVersus, self.error)
 
@@ -59,7 +59,7 @@ class Game:
         self.gameArena = playerArena.PlayerArena(self.screen, self.gameStateManager, self.player, self.gameOver)
         self.lobbyArena = lobbyArena.LobbyArena(self.screen, self.gameStateManager, self.player, self.gameArena, self.error)
 
-        self.states = {'gameOver': self.gameOver,'start': self.start, '1v1Menu': self.versusMenu, 'joinMenu': self.joinMenu, 'lobby1v1': self.lobbyVersus, 'versusArena': self.versusArena, '1v1GameOver': self.gameOverVersus, 'lobbyArena': self.lobbyArena, 'playerArena': self.gameArena, 'error': self.error}
+        self.states = {'gameOver': self.gameOver,'start': self.start, '1v1Menu': self.versusMenu, 'joinMenu': self.joinMenu, 'lobby1v1': self.lobbyVersus, 'versusArena': self.versusArena, 'lobbyArena': self.lobbyArena, 'playerArena': self.gameArena, 'error': self.error}
 
         self.gameStateRun = True
     def run(self):

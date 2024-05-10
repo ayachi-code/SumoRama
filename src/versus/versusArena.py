@@ -372,7 +372,7 @@ class VersusArena:
                     self.winnerOfTheGame = self.player_circle["name"]
 
                 self.gameStateRun = False
-                self.gameState.setCurrentState('1v1GameOver')
+                self.gameState.setCurrentState('gameOver')
                 self.gameOver.setWinner(self.winnerOfTheGame)
 
             if math.ceil(self.timerScreen - self.shrink_timer) <= 5: # Shows different color depending how close the timer is to the end.
