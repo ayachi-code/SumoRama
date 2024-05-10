@@ -191,12 +191,11 @@ class VersusLobby:
 
             
 
-            leave = button.Button((255,255,255),5,45,75,30,40,'Leave') # Ready up button is shown gray if there is no player joined
+            leave = button.Button((255,255,255),5,45,80,30,40,'Leave') # The leave button
             leave.draw(self.screen, (0,0,0))
 
 
 #           morePlayerMode = button.Button(self.buttonColor8,SCREEN_WIDTH/7.5,SCREEN_HIGHT/3.5,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'8 player')
-
 
             gameScreen_surfaceLobbyTitle = self.fontOfTitle.render('Lobby', True, (255, 255, 255))
             gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/17))
@@ -267,6 +266,11 @@ class VersusLobby:
                         if addressOfPeer != None:
                             self.readyUp.append(self.peer.getPort()) # Appends players unique port to ready up
                             self.peer.getSocket().sendto("READY".encode(), addressOfPeer) # Sends ready to peer, MUST BE ACKNOWLEDGED
+                    elif leave.isOver(pos): # Leave button is pressed
+                        self.gameStateRun = False
+                        self.gameState.setCurrentState('1v1Menu')
+                        self.playerQuit = True
+                        self.peerIP = None
 
             pygame.display.update()
             self.clock.tick(FPS)  # Limits FPS
