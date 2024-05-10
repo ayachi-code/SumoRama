@@ -106,7 +106,6 @@ class PlayerArena:
 
             if "DELETE" in data:
                 peerID = data.split(" ")[1]
-                print("Deleting " + peerID)
                 if peerID == str(self.peer.getPort()): # Im getting kicked
                     self.gameStateRun = False
                     self.player_circle['id'] = None
@@ -128,8 +127,6 @@ class PlayerArena:
                         
             if "OUT_OF_RING" in data:
                 peerID = data.split(" ")[1]
-                print("A peer is out of the ring " + peerID)
-                # print(self.losers)
                 for player in self.enemy_circles:
                     if player['id'] == peerID:
                         player['visible'] = False
@@ -145,7 +142,7 @@ class PlayerArena:
                     self.playerPositionInit = True
 
             if "INIT" in data:
-                print("Got init of positions from " + data.split(" ")[3] + " DATA " + data)
+                #print("Got init of positions from " + data.split(" ")[3] + " DATA " + data)
                 payload = "CONFIRM " + str(self.peer.getPort())
                 xPosition = data.split(" ")[1]
                 yPosition = data.split(" ")[2]
@@ -158,7 +155,6 @@ class PlayerArena:
                         enemy['position'] = [xPosition, yPosition]
                         self.placedPositionsReciever.append(int(data.split(" ")[3]))
             elif "UPDATE" in data:
-                #print(data)
                 newData = json.loads(data.split(" ",1)[1])
                 peerId = newData['id']
                 newPossition = newData['position']
@@ -216,7 +212,6 @@ class PlayerArena:
         while True:
             if self.playerPositionInit == True:
                 break
-            print(self.peer.getConnections())
             for peers in self.peer.getConnections():
                 self.peer.getSocket().sendto(data.encode(), peers)
             time.sleep(0.1)
@@ -337,7 +332,6 @@ class PlayerArena:
         self.suddenDeath = False
 
     def roundSwitchCountdown(self):  # Countdown that is shown when switching rounds.
-        print("showing round switch")
         countdown_font = pygame.font.SysFont('Comic Sans MS', 150)
         gameStartIn_font = pygame.font.SysFont('Comic Sans MS', 140)
 
@@ -456,7 +450,6 @@ class PlayerArena:
             self.screen.blit(bg, (0, 0))
 
             if len(self.peer.getConnections()) == 0: # Case where all player connections are gone.
-                print("You're the only player left thus the winner")
                 self.peer = None
                 self.gameStateRun = False
                 self.gameState.setCurrentState('gameOver')
@@ -594,7 +587,6 @@ class PlayerArena:
                 elif event.type == pygame.MOUSEBUTTONUP:
                     pos = pygame.mouse.get_pos()
                     if leave.isOver(pos):
-                        print("Ima head out") 
                         self.gameStateRun = False
                         self.player_circle['id'] = None
                         self.player_circle['visible'] = False
@@ -654,7 +646,6 @@ class PlayerArena:
 
             #  # Sends data to client
             peerPositionJSON = json.dumps(self.player_circle)
-            # print(peerPositionJSON)
             payload = "UPDATE " + peerPositionJSON
             for enemyPlayer in self.enemy_circles:
                 if enemyPlayer['id'] != None:
