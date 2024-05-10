@@ -1,5 +1,6 @@
 import pygame
 import button
+import input
 
 FPS = 60
 
@@ -23,8 +24,12 @@ class Settings:
 
         self.gameStateRun = True
         self.buttonColor = (226,221,220)
+        self.buttonColorName = (226,221,220)
         
         self.gameFont = pygame.font.SysFont('Comic Sans MS', 90)
+
+        self.username = input.InputBox(SCREEN_WIDTH/4, 50 + 90 + 90 + 90 + 90, SCREEN_WIDTH/2, 50, 60)
+
 
     def run(self):
         self.gameStateRun = True
@@ -36,7 +41,30 @@ class Settings:
             gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH/2, 50))
             self.screen.blit(gameScreen_surface, gameScreen_rect)
 
-      
+
+            gameScreen_surface = self.gameFont.render('Game version: 1.0.0 ', True, (255, 255, 255))
+            gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH/2, 50 + 90))
+            self.screen.blit(gameScreen_surface, gameScreen_rect)
+
+
+
+            gameScreen_surface = self.gameFont.render('Current name: ' + self.player.getName(), True, (255, 255, 255))
+            gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH/2, 50 + 90 + 90))
+            self.screen.blit(gameScreen_surface, gameScreen_rect)
+
+
+            gameScreen_surface = self.gameFont.render('Change name: ', True, (255, 255, 255))
+            gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH/2, 50 + 90 + 90 + 90))
+            self.screen.blit(gameScreen_surface, gameScreen_rect)
+            self.username.draw(self.screen)
+
+           
+           
+            # Submit name button
+            name = button.Button(self.buttonColorName,SCREEN_WIDTH/2 -75, 50 + 90 + 90 + 90 + 90 + 100,150,70,60,'Submit')
+            name.draw(self.screen, (0,0,0))
+
+    
             # Return button
             goBackButton = button.Button(self.buttonColor,SCREEN_WIDTH/2 - BUTTONWIDTH/2,SCREEN_HEIGHT/1.15,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Return')
             goBackButton.draw(self.screen, (0,0,0))
@@ -44,9 +72,14 @@ class Settings:
             # Hover effect for button
             pos = pygame.mouse.get_pos()
             if goBackButton.isOver(pos):
-                self.buttonColor = (183,179,183) 
+                self.buttonColor = (183,179,183)
+            elif name.isOver(pos):
+                self.buttonColorName = (183,179,183) 
             else:
                 self.buttonColor = (226,221,220) 
+                self.buttonColorName = (226,221,220) 
+
+            
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -59,6 +92,9 @@ class Settings:
                         print("Returning to mainMenu")
                         self.gameState.setCurrentState('start')
                         self.gameStateRun = False
+                    elif name.isOver(pos):
+                        self.player.setName(self.username.getText())
+                self.username.handle_event(event)
 
             pygame.display.update()
             self.clock.tick(FPS)  # Limit to 60 FPS

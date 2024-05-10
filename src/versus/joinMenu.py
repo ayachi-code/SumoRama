@@ -38,7 +38,7 @@ class JoinMenu:
         self.error = error
 
         self.ip_input = '127.0.0.1' # input.InputBox(SCREEN_WIDTH/7.5,SCREEN_HIGHT/2.335, 700, 32)
-        self.ip_port = input.InputBox(SCREEN_WIDTH/1.45,SCREEN_HIGHT/2.335, 140, 32)
+        self.ip_port = input.InputBox(SCREEN_WIDTH/1.45,SCREEN_HIGHT/2.335, 140, 32,32)
         self.input_boxes = [self.ip_port] # [self.ip_input, self.ip_port]
 
         self.hostAck = None

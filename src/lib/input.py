@@ -4,15 +4,16 @@ pg.init()
 
 COLOR_INACTIVE = pg.Color('black')
 COLOR_ACTIVE = pg.Color('white')
-FONT = pg.font.Font(None, 32)
 
 
 class InputBox: #Source https://stackoverflow.com/questions/46390231/how-can-i-create-a-text-input-box-with-pygame , (Minor adjustements have been made to the class to make it appealing for me to use)
-    def __init__(self, x, y, w, h, text=''):
+    def __init__(self, x, y, w, h, fontSize, text=''):
         self.rect = pg.Rect(x, y, w, h)
         self.color = COLOR_INACTIVE
         self.text = text
-        self.txt_surface = FONT.render(text, True, self.color)
+        self.textSize = fontSize
+        self.FONT = pg.font.Font(None, self.textSize)
+        self.txt_surface = self.FONT.render(text, True, self.color)
         self.active = False
 
     def getText(self):
@@ -38,7 +39,7 @@ class InputBox: #Source https://stackoverflow.com/questions/46390231/how-can-i-c
                 else:
                     self.text += event.unicode
                 # Re-render the text.
-                self.txt_surface = FONT.render(self.text, True, self.color)
+                self.txt_surface = self.FONT.render(self.text, True, self.color)
 
     def update(self):
         # Resize the box if the text is too long.
