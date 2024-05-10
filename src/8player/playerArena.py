@@ -43,6 +43,8 @@ class PlayerArena:
 
         self.gameStateRun = True
 
+
+        # Player and enemy data structures
         self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True}
         self.enemy_circles = [ # All possie enemy circles
             
@@ -93,7 +95,6 @@ class PlayerArena:
 
     def setPeer(self, newPeer):
         self.peer = newPeer
-
 
     def listenData(self):
         while True:
@@ -200,7 +201,7 @@ class PlayerArena:
 
             pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - (SCREEN_HEIGHT/4)),  4)
 
-            if nextTip % 2 == 0:
+            if nextTip % 2 == 0: # Checks if tip counter is 2, so we know a next tip must be shown
                 currentTip = random.choice(tips)
 
             countdown_text = tip_font.render("Tip: " + currentTip, True, (255, 255, 255))
@@ -229,7 +230,7 @@ class PlayerArena:
         y = r * math.sin(alpha) + centerY
         return (x,y)
 
-    def initPosition(self):
+    def initPosition(self): # Inits players positions
         randomPointInRing = self.randomPointInCircle(self.sumo_ring_radius-(0.3 * self.sumo_ring_radius), self.sumo_ring_center[0], self.sumo_ring_center[1])
         self.player_circle['position'] = [math.ceil(randomPointInRing[0]),math.ceil(randomPointInRing[1])]
 
@@ -287,7 +288,7 @@ class PlayerArena:
     
         return False
     
-    def newRound(self):
+    def newRound(self): # Prepeates for new rounds, e.g resets the ring to previous state.
         self.sumo_ring_radius = 450
 
         randomPointInRingPlayer = self.randomPointInCircle(self.sumo_ring_radius-(0.3 * self.sumo_ring_radius), self.sumo_ring_center[0], self.sumo_ring_center[1])
@@ -301,7 +302,7 @@ class PlayerArena:
         self.colorShrinkTimer = (0,0,0)
         self.start_time = time.time()
 
-    def getMaxScore(self):
+    def getMaxScore(self): # Helper function to find max score of players
         max_score = self.player_circle['score']  # Start with the player's score
 
         for enemy_circle in self.enemy_circles:
@@ -335,7 +336,7 @@ class PlayerArena:
         self.round = 1 # Starts on round 1
         self.suddenDeath = False
 
-    def roundSwitchCountdown(self): 
+    def roundSwitchCountdown(self):  # Countdown that is shown when switching rounds.
         print("showing round switch")
         countdown_font = pygame.font.SysFont('Comic Sans MS', 150)
         gameStartIn_font = pygame.font.SysFont('Comic Sans MS', 140)
@@ -364,8 +365,7 @@ class PlayerArena:
 
         for i in range(3, 0, -1):
             self.screen.blit(bg, (0, 0))
-
-
+            
             if self.suddenDeath:
                 gameScreen_surface = gameStartIn_font.render('sudden death round!  ', True, (0, 0, 0))
                 gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3))
@@ -400,8 +400,6 @@ class PlayerArena:
     def cheatDetection(self):
         
         for enemy in self.enemy_circles:
-            # if enemy['id'] != None:
-            #     print(enemy)
             if enemy['id'] != None  and enemy['visible'] == True and self.inSumoRing(self.sumo_ring_center[0], self.sumo_ring_center[1], self.sumo_ring_radius+40, enemy['position'][0], enemy['position'][1]) == False:
                 payload = "DELETE " + str(enemy['id']) # A player was cheating kicking the player out of the game
                 self.peer.broadCast(payload)
@@ -427,7 +425,6 @@ class PlayerArena:
         print(self.peer.getPort())
         print("player name: " + self.player.getName())
 
-
         self.gameStateRun = True
 
         self.player_circle['id'] = self.peer.getPort()
@@ -445,7 +442,6 @@ class PlayerArena:
         bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
         while self.gameStateRun:
-
             current_time = time.time()
             elapsed_time = current_time - start_time
 
@@ -455,12 +451,11 @@ class PlayerArena:
             self.last_tick_time = current_time
 
             if self.lockstep_enabled and delta_time < self.game_tick_rate: # Assures that the game is synced per frame
-                time.sleep(self.game_tick_rate - delta_time)
-
+                time.sleep(self.game_tick_rate - delta_time) # Makes sure games are in synced.
 
             self.screen.blit(bg, (0, 0))
 
-            if len(self.peer.getConnections()) == 0:
+            if len(self.peer.getConnections()) == 0: # Case where all player connections are gone.
                 print("You're the only player left thus the winner")
                 self.peer = None
                 self.gameStateRun = False
@@ -468,10 +463,7 @@ class PlayerArena:
                 self.gameOver.setWinner(self.player.getName())
                 continue
 
-
-            if len(self.losers) == len(self.suddenDeathCandidates)-1 and self.suddenDeath == True:
-                print(self.enemy_circles)
-                print("Game is over and the winner is")
+            if len(self.losers) == len(self.suddenDeathCandidates)-1 and self.suddenDeath == True: # Game over the last player is left.
                 if self.player_circle['visible'] == True and self.player_circle['id'] != None:
                     winner = self.player_circle['name']
                 else:
@@ -486,10 +478,10 @@ class PlayerArena:
                 self.resetStates()
                 continue
 
-            if self.checkIfOutOfRing() and self.player_circle['visible'] == True:
+            if self.checkIfOutOfRing() and self.player_circle['visible'] == True: # Check if players is out of ring.
                 self.player_circle['visible'] = False
                 self.losers.append(str(self.peer.getPort())) # Add yourself as a loser
-                payload = "OUT_OF_RING " + str(self.peer.getPort())
+                payload = "OUT_OF_RING " + str(self.peer.getPort()) # Notify all peers
                 self.peer.broadCast(payload)
 
             if math.ceil(remaining_time) <= 5: # Shows different color depending how close the timer is to the end.
@@ -498,13 +490,10 @@ class PlayerArena:
                 self.colorShrinkTimer = (0,0,0)
 
 
-            if len(self.losers) == len(self.peer.getConnections()) and self.suddenDeath == False:
+            if len(self.losers) == len(self.peer.getConnections()) and self.suddenDeath == False: # round is over check.
                 print("round over")
-                print(self.losers)
-                print(self.peer.getConnections())
 
                 if str(self.peer.getPort()) not in self.losers: # I am not a loser hehe, I am a winner! Thus give ne the point...
-                    #print("got a point")
                     self.player_circle['score'] += 1 # Increases winners score with 1     
 
                 self.round += 1 # Increases roudn counter
@@ -518,15 +507,11 @@ class PlayerArena:
                         if enemyPlayer['id'] != None:
                             self.peer.getSocket().sendto(payload.encode(), ('127.0.0.1', int(enemyPlayer['id'])))
                         
-                    
-                    #self.roundSwitchCountdown() # Special sudden death countdown...
-                    
-                    time.sleep(0.1) # Perhaps add a 3 second count down COMING SOON
+                    time.sleep(0.1)
 
                     maxScore = self.getMaxScore()
                     winner = []
 
-                    print(maxScore)
                     if self.player_circle['score'] == maxScore and self.player_circle['id'] != None:
                         winner.append((str(self.player_circle['id']), self.player_circle['name']))
              
@@ -537,7 +522,6 @@ class PlayerArena:
                     if len(winner) == 1: # There is one winner in the game
                         self.gameStateRun = False
                         self.gameState.setCurrentState('gameOver')
-                        # print(winner)
                         self.gameOver.setWinner(winner[0][1])
                         self.resetStates()
                         continue
@@ -546,9 +530,7 @@ class PlayerArena:
                         self.suddenDeathCandidates = winner
                         self.suddenDeath = True
                         self.newRound()
-                        print(winner)
                         if (str(self.peer.getPort()), self.player_circle['name']) not in winner:
-                            print("Hide")
                             self.player_circle['visible'] = False
                 else:
                     self.newRound()
@@ -567,20 +549,17 @@ class PlayerArena:
                     gameScreen = self.gameFont.render('Spectating mode', True, (0,0,0))
                     gameScreen_rect = gameScreen.get_rect(center=(SCREEN_WIDTH - SCREEN_WIDTH/7, 20))
                     self.screen.blit(gameScreen, gameScreen_rect)
-
-
-
             else:
                 # Score displayed on screen
                 gameScreen_Score = self.gameFont.render('Round: ' + str(self.round), True, (0,0,0))
                 gameScreen_rect = gameScreen_Score.get_rect(center=(75, 20))
                 self.screen.blit(gameScreen_Score, gameScreen_rect)
 
+            # Show spectating on screen
             if self.player_circle['visible'] == False and self.suddenDeath == False:
                 gameScreen = self.gameFont.render('Spectating mode', True, (0,0,0))
                 gameScreen_rect = gameScreen.get_rect(center=(260, 20))
                 self.screen.blit(gameScreen, gameScreen_rect)
-
 
             if self.suddenDeath == False:
                 # Score displayed on screen
@@ -596,9 +575,7 @@ class PlayerArena:
 
             # Leave button
             leave = button.Button((255,255,255) ,0,SCREEN_HEIGHT - 25,50,30,25,'Leave')
-
             leave.draw(self.screen, (0,0,0))
-
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -658,18 +635,17 @@ class PlayerArena:
                 self.player_circle["position"][1] += self.player_circle["velocity"][1] * self.clock.get_time() / 1000
 
 
-            self.realtiveSumoSize = self.circle_radius - len(self.peer.getConnections()) * 2.5
+            self.realtiveSumoSize = self.circle_radius - len(self.peer.getConnections()) * 2.5 # Calculates sumo size relative to number oi players
 
             if self.player_circle['visible'] == True:
                 pygame.draw.circle(self.screen, (0,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize+5)
                 pygame.draw.circle(self.screen, (255,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize)
 
 
-            for playerEnemy in self.enemy_circles:
+            for playerEnemy in self.enemy_circles: # Draws the player
                 if playerEnemy['id'] != None and playerEnemy['visible'] == True:
                     pygame.draw.circle(self.screen, (255,0,0), (int(playerEnemy['position'][0]),int(playerEnemy['position'][1])),self.realtiveSumoSize)
 
-            
             if elapsed_time >= self.shrink_interval: # If timer exceeds threshold than make the circle smaller and reset timers.
                 self.sumo_ring_radius *= self.shrink_scale
                 start_time = time.time()  # Reset the timer
