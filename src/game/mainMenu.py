@@ -17,7 +17,6 @@ class MainMenu:
         self.clock = pygame.time.Clock()
 
         self.screen = screen  # Set display resolution
-        # pygame.display.set_caption('Main menu')
 
         self.sumoImg = pygame.image.load("../assets/sumoMenu.png").convert_alpha() # Load image transparent
         self.sumoImg = pygame.transform.scale(self.sumoImg, (200,200)) # Rescales imaeg
@@ -52,6 +51,7 @@ class MainMenu:
             morePlayerMode.draw(self.screen, (0,0,0))
             quitTheGame.draw(self.screen, (0,0,0))
 
+            # Hover effect on the buttons
             pos = pygame.mouse.get_pos()
             if singleMode.isOver(pos):
                 self.buttonColorVersus = (183,179,183) 
@@ -65,7 +65,8 @@ class MainMenu:
                 self.buttonColorQuit = (183,179,183)
                 self.buttonColorVersus = (226,221,220)
                 self.buttonColor8 = (226,221,220)
-                
+            
+            # Event handeling
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.gameStateRun = False

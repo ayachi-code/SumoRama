@@ -1,5 +1,4 @@
 import socket
-import threading
 import random
 
 class Peer:
@@ -7,12 +6,10 @@ class Peer:
         self.host = host
         self.port = port
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.connections = set()  # Set to keep track of connected peers (no duplicates)
+        self.connections = set()  # Set to keep track of connected peers
         self.sequenceNumber = random.randint(1000,9000) # Generetats sequence number
 
     def start(self):
-        # Bind the UDP socket to the host and port
-        #print(self.port)
         self.socket.bind((self.host, self.port))
         print(f"Peer {self.host}:{self.port} is listening for incoming messages...")
 

@@ -54,7 +54,7 @@ class Error:
             back.draw(self.screen, (0,0,0))
 
             pos = pygame.mouse.get_pos()
-            if back.isOver(pos):
+            if back.isOver(pos): # Hover effect on back button
                 self.buttonColorBack = (183,179,183) 
             else:
                 self.buttonColorBack = (226,221,220) 
@@ -66,7 +66,7 @@ class Error:
                     exit(0)
                 if event.type == pygame.MOUSEBUTTONUP:
                     pos = pygame.mouse.get_pos()
-                    if back.isOver(pos): # Backout to join/host menu
+                    if back.isOver(pos):
                         self.gameState.setCurrentState(self.backButtonDestination)
                         self.gameStateRun = False
              
