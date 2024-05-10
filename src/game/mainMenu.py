@@ -70,6 +70,15 @@ class MainMenu:
                 self.buttonColorVersus = (226,221,220)
                 self.buttonColor8 = (226,221,220)
             
+
+
+            self.screen.blit(self.sumoImg, (w/13, 20))
+            self.screen.blit(self.sumoImg, (w/1.21, 20))
+
+
+
+            self.screen.blit(self.settingsImg, (0, h/1.15))
+
             # Event handeling
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -86,19 +95,10 @@ class MainMenu:
                         print("Starting 8 player mode")
                         self.gameState.setCurrentState('lobbyArena')
                         self.gameStateRun = False
-                    elif quitTheGame.isOver(pos):
-                        print("Player quit the game")
-                        pygame.quit()
-                        exit(0)
-
-            self.screen.blit(self.sumoImg, (w/13, 20))
-            self.screen.blit(self.sumoImg, (w/1.21, 20))
-
-
-
-            self.screen.blit(self.settingsImg, (0, h/1.15))
-
-            #Settings
+                    elif pos[0] < self.settingsImg.get_width() and pos[1] > SCREEN_HIGHT - self.settingsImg.get_height():
+                        print("opening settings")
+                        self.gameState.setCurrentState('settings')
+                        self.gameStateRun = False
 
 
             pygame.display.update()
