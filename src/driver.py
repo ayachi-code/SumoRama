@@ -40,6 +40,8 @@ class Game: # Main driver class
         randomNumber = random.randint(0, 420)
         userName = "Player" + str(randomNumber)
 
+        # create instances of the game scenes e.g error, main menu etc.
+
         self.player = player.Player(userName, "red") # Creates player
         self.error = error.Error(self.screen, self.gameStateManager, None, None)
 

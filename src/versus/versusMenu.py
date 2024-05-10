@@ -51,6 +51,8 @@ class VersusMenu:
             join.draw(self.screen, (0,0,0))
             back.draw(self.screen, (0,0,0))
 
+
+            # Hover effect on button
             pos = pygame.mouse.get_pos()
             if host.isOver(pos):
                 self.buttonColorHost = (183,179,183) 
