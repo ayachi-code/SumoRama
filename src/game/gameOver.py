@@ -40,13 +40,6 @@ class GameOver:
 
     def run(self):
         self.gameStateRun = True
-
-
-        if self.winner == None:
-            self.winner = "You cheater!!"
-            self.gameOverMessage = ""
-        else:
-            self.gameOverMessage = " won the game"
             
         while self.gameStateRun:
             self.screen.fill((153,0,17)) # Red screen
