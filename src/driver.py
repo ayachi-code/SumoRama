@@ -20,6 +20,7 @@ import lobbyArena
 import playerArena
 import error
 import gameOver
+import settings
 
 SCREEN_WIDTH = 1300
 SCREEN_HEIGHT = 800
@@ -57,7 +58,9 @@ class Game: # Main driver class
         self.gameArena = playerArena.PlayerArena(self.screen, self.gameStateManager, self.player, self.gameOver)
         self.lobbyArena = lobbyArena.LobbyArena(self.screen, self.gameStateManager, self.player, self.gameArena, self.error)
 
-        self.states = {'gameOver': self.gameOver,'start': self.start, '1v1Menu': self.versusMenu, 'joinMenu': self.joinMenu, 'lobby1v1': self.lobbyVersus, 'versusArena': self.versusArena, 'lobbyArena': self.lobbyArena, 'playerArena': self.gameArena, 'error': self.error} # game states
+        self.settings = settings.Settings(self.screen, self.gameStateManager, self.player)
+
+        self.states = {'gameOver': self.gameOver,'start': self.start, '1v1Menu': self.versusMenu, 'joinMenu': self.joinMenu, 'lobby1v1': self.lobbyVersus, 'versusArena': self.versusArena, 'lobbyArena': self.lobbyArena, 'playerArena': self.gameArena, 'error': self.error, 'settings': self.settings} # game states
 
         self.gameStateRun = True
     def run(self):
