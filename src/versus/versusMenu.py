@@ -21,7 +21,6 @@ class VersusMenu:
         self.clock = pygame.time.Clock()
 
         self.screen = screen
-        # pygame.display.set_caption('1v1 menu')
         
         self.buttonColorHost = (226,221,220) 
         self.buttonColorJoin = (226,221,220) 
@@ -37,7 +36,7 @@ class VersusMenu:
     def run(self):
         self.gameStateRun = True
         while self.gameStateRun:
-            w,h = pygame.display.get_surface().get_size()
+            # Creates instance of button class for join hhost back
             host = button.Button(self.buttonColorHost,SCREEN_WIDTH/7.5,SCREEN_HIGHT/3.5,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Host')
             join = button.Button(self.buttonColorJoin,SCREEN_WIDTH/7.5,SCREEN_HIGHT/2,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Join')
             back = button.Button(self.buttonColorBack,SCREEN_WIDTH/7.5,SCREEN_HIGHT/1.4,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Back')

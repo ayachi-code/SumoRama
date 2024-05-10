@@ -6,8 +6,6 @@ import versusLobby
 import socket
 import threading
 import time
-import pickle
-
 
 SCREEN_WIDTH = 1300
 SCREEN_HIGHT = 800
@@ -58,9 +56,6 @@ class JoinMenu:
                     self.hostAck = False
                     break
                 self.socketCon.sendto(handshakeMessage.encode(), ('127.0.0.1', int(self.ip_port.getText())))
-                #self.socketCon.sendto(handshakeMessage.encode(), (self.ip_input.getText(), int(self.ip_port.getText())))
-                #print("Sending request to host")
-                #print(self.hostAck)
                 time.sleep(0.1)
                 maxRequestSend -= 1
         except Exception as e:
@@ -69,8 +64,6 @@ class JoinMenu:
             self.error.setErrorMessage('could not join peer')
             self.error.setBackButtonDest('joinMenu')
             self.gameState.setCurrentState('error')
-            # self.gameState.setCurrentState('errorJoin')
-
 
     def listenToHost(self):
         while True:
@@ -93,7 +86,7 @@ class JoinMenu:
 
             for box in self.input_boxes:
                 box.draw(self.screen)
-            # Sumo rama welcome
+            # Draw text
             gameScreen_surface = self.gameScreen.render('Join game', True, (255, 255, 255))
             gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH/1.9, 140))
             self.screen.blit(gameScreen_surface, gameScreen_rect)
@@ -109,6 +102,7 @@ class JoinMenu:
             Join.draw(self.screen, (0,0,0))
             back.draw(self.screen, (0,0,0))
 
+            # Hover effect
             pos = pygame.mouse.get_pos()
             if Join.isOver(pos):
                 self.buttonColorJoin = (183,179,183) 
@@ -124,13 +118,8 @@ class JoinMenu:
                     exit(0)
                 if event.type == pygame.MOUSEBUTTONUP:
                     pos = pygame.mouse.get_pos()
-                    if Join.isOver(pos): # Connect to client
+                    if Join.isOver(pos): # Connect to client (Join event listener)
                         print("Joining game")
-                        #print(self.ip_input.getText())
-                        # TODO: Connect to given ip and port,
-                            # If ip and port not exist show pop up with cannot connect to client, with back button to joinMenu
-                            # If ip and port are good, bring client to a lobby screen, where both players are present, lobby has a ready up button. If both clients ready up than the both clients get to see the game scene
-                            # Game scene has logic of shrink.py but 2 players, also lockstepping added.
                         try:
                             # Check does Host exist ??????
                             send_thread = threading.Thread(target=self.sendHostRequest, daemon=True)
@@ -148,12 +137,10 @@ class JoinMenu:
                             self.lobbyVersus.setPeerPort(int(self.ip_port.getText()))
 
                             self.gameState.setCurrentState('lobby1v1')
-                            #self.gameState.setPlayerType('client')
                             self.gameStateRun = False
                         except Exception as e: # Show error screen
                             print(e)
                             self.gameStateRun = False
-                            # self.gameState.setCurrentState('errorJoin')
                             self.error.setErrorMessage('could not join peer')
                             self.error.setBackButtonDest('joinMenu')
                             self.gameState.setCurrentState('error')

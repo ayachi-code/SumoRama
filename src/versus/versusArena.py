@@ -172,8 +172,6 @@ class VersusArena:
             player_distance_to_center = math.sqrt((self.player_circle["position"][0] - self.sumo_ring_center[0])**2 + (self.player_circle["position"][1] - self.sumo_ring_center[1])**2)
                 
             if player_distance_to_center + self.player_circle["radius"] > self.sumo_ring_radius:
-                    #self.winnerOfTheGame = self.enemy_circle['name']
-                    #self.enemy_circle["score"] += 1
                     return
 
             distance_to_center = math.sqrt((self.enemy_circle["position"][0] - self.sumo_ring_center[0])**2 + (self.enemy_circle["position"][1] - self.sumo_ring_center[1])**2)
@@ -282,17 +280,10 @@ class VersusArena:
                 return
 
             if self.enemy_circle['score'] > 4: # Score cheat
-                #print(self.enemy_circle['score'])
-                #print("Player is using score cheats")
                 self.score = 3 # Make not cheating player win
                 self.player_circle['score'] = 3
                 self.winnerOfTheGame = self.player_circle['name']
                 return
-
-            if distance_moved > MAX_MOVE_DISTANCE_PER_TICK:
-                print("There was a movemnt weirdness")
-                print(self.newRoundState)
-                #self.newRoundState = False
 
             if distance_moved > MAX_MOVE_DISTANCE_PER_TICK and self.newRoundState == True: # Cheat detection False positive, random spawn in ring is detected as teleporting
                 print("Cheat detection detects new round teleportng" + str(distance_moved))
@@ -330,7 +321,6 @@ class VersusArena:
             time.sleep(0.1)
 
             if self.aliveAck != True:
-                #print("Yooo so many left " + str(isNotAliveCounter))
                 isNotAliveCounter += 1
             else:
                 self.aliveAck = False # Resets alive ack for new ack
@@ -364,8 +354,6 @@ class VersusArena:
 
             if self.player_circle["score"] >= 3 or self.enemy_circle["score"] >= 3:
                 print("Game over")
-                print(self.player_circle["score"])
-                print(self.enemy_circle["score"])
                 if self.enemy_circle["score"] > self.player_circle["score"]:
                     self.winnerOfTheGame = self.enemy_circle["name"]
                 elif self.player_circle["score"] > self.enemy_circle["score"]:

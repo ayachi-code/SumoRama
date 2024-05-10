@@ -1,4 +1,5 @@
 import sys
+# Path to files in other directory
 
 sys.path.append("game")
 sys.path.append("lib")
@@ -20,14 +21,12 @@ import playerArena
 import error
 import gameOver
 
-# Path to files in other directory
-
 SCREEN_WIDTH = 1300
 SCREEN_HEIGHT = 800
 
 FPS = 60
 
-class Game:
+class Game: # Main driver class
     def __init__(self):
         pygame.init()
         pygame.font.init()
@@ -48,8 +47,6 @@ class Game:
         self.versusMenu = versusMenu.VersusMenu(self.screen, self.gameStateManager, self.player)
         self.gameOver = gameOver.GameOver(self.screen, self.gameStateManager)
 
-        #self.gameOverVersus = gameOverVersus.GameOverVersus(self.screen, self.gameStateManager)
-
         self.versusArena = versusArena.VersusArena(self.screen, self.gameStateManager, self.player, None, self.gameOver)
         self.lobbyVersus = versusLobby.VersusLobby(self.screen, self.gameStateManager, None, self.player, self.versusArena, self.error)
         self.joinMenu = joinMenu.JoinMenu(self.screen, self.gameStateManager, self.lobbyVersus, self.error)
@@ -58,7 +55,7 @@ class Game:
         self.gameArena = playerArena.PlayerArena(self.screen, self.gameStateManager, self.player, self.gameOver)
         self.lobbyArena = lobbyArena.LobbyArena(self.screen, self.gameStateManager, self.player, self.gameArena, self.error)
 
-        self.states = {'gameOver': self.gameOver,'start': self.start, '1v1Menu': self.versusMenu, 'joinMenu': self.joinMenu, 'lobby1v1': self.lobbyVersus, 'versusArena': self.versusArena, 'lobbyArena': self.lobbyArena, 'playerArena': self.gameArena, 'error': self.error}
+        self.states = {'gameOver': self.gameOver,'start': self.start, '1v1Menu': self.versusMenu, 'joinMenu': self.joinMenu, 'lobby1v1': self.lobbyVersus, 'versusArena': self.versusArena, 'lobbyArena': self.lobbyArena, 'playerArena': self.gameArena, 'error': self.error} # game states
 
         self.gameStateRun = True
     def run(self):
