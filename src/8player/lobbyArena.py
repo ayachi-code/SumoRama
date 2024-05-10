@@ -310,6 +310,10 @@ class LobbyArena:
                 self.readyUpColor = (226,221,220) 
 
 
+            leave = button.Button((255,255,255),5,45,80,30,40,'Leave') # The leave button
+            leave.draw(self.screen, (0,0,0))
+
+
             gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(150, SCREEN_HEIGHT/10 + 450))
             self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
 
@@ -339,11 +343,19 @@ class LobbyArena:
                 if event.type == pygame.MOUSEBUTTONUP:
                     pos = pygame.mouse.get_pos()
                     if readyUp.isOver(pos) and self.readyUpState != True and self.readyUpCounter != None:
-                        print("Ready up") 
                         self.readyUpState = True
                         self.readyUpCounter += 1
                         payload = "READY-UP " + str(self.random_integer) 
                         self.sock.sendto(payload.encode(), (self.host_port))
+                    elif leave.isOver(pos):
+                        self.gameStateRun = False
+                        payload = "quit " + str(self.random_integer) 
+                        self.sock.sendto(payload.encode(), (self.host_port))
+                        self.gameState.setCurrentState('start')
+
+
+
+    
 
             pygame.display.update()
             self.clock.tick(FPS)  # Limit to 60 FPS
