@@ -27,7 +27,7 @@ class GameOver:
 
         self.winner = "" # Stores the winner
 
-        self.gameOverMessage = ""
+        self.gameOverMessage = " won the game"
 
     def setWinner(self, winner):
         self.winner = winner
@@ -40,7 +40,7 @@ class GameOver:
 
     def run(self):
         self.gameStateRun = True
-            
+
         while self.gameStateRun:
             self.screen.fill((153,0,17)) # Red screen
 
