@@ -46,6 +46,16 @@ class VersusLobby:
 
         self.polAck = False
 
+        self.selectorImg = pygame.image.load("../assets/selector.png").convert_alpha() # Load image transparent
+        self.selectorImg = pygame.transform.scale(self.selectorImg, (100,100)) # Rescales imaeg
+
+
+        
+        self.selectorImgFlipped = pygame.image.load("../assets/selectorFlipped.png").convert_alpha() # Load image transparent
+        self.selectorImgFlipped = pygame.transform.scale(self.selectorImgFlipped, (100,100)) # Rescales imaeg
+
+
+
     def setPeerIP(self, ip):
         self.peerIP = ip
     def setPeerPort(self, port):
@@ -211,6 +221,13 @@ class VersusLobby:
 
             # Player color
             pygame.draw.circle(self.screen, self.player.getColor(), (SCREEN_WIDTH/4, SCREEN_HEIGHT/2),100)
+
+
+            #Color Selector
+            self.screen.blit(self.selectorImg, (SCREEN_WIDTH/4 + 100, SCREEN_HEIGHT/2 - 45)) # Right
+            self.screen.blit(self.selectorImgFlipped, (SCREEN_WIDTH/6 - 90, SCREEN_HEIGHT/2 - 45)) # Left
+
+
             
             if self.peerName != "": # Show player circle if connected
                 #VS Text
