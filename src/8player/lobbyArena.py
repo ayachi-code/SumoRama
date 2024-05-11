@@ -121,17 +121,21 @@ class LobbyArena:
         self.selectorImgFlipped = pygame.image.load("../assets/selectorFlipped.png").convert_alpha() # Load image transparent
         self.selectorImgFlipped = pygame.transform.scale(self.selectorImgFlipped, (100,100)) # Rescales imaeg
 
+        self.colors = ["RED","BLUE","GREEN","YELLOW", "BLACK"]
+        self.currentColor = 0 # Points to the index of the current color that the user is using
+        self.confirmedColor = 0
 
-    def rightSelectorClicked(self, pos):
-        selector_x = SCREEN_WIDTH / 4 + 100
-        selector_y = SCREEN_HEIGHT / 2 - 45
+
+    def rightSelectorClicked(self, pos): #            self.screen.blit(self.selectorImg, (275, (450/2 - 40))) # Right 
+        selector_x = 275
+        selector_y = (450/2) - 40
         selector_width = self.selectorImg.get_width()
         selector_height = self.selectorImg.get_height()
         return selector_x <= pos[0] <= selector_x + selector_width and selector_y <= pos[1] <= selector_y + selector_height
-    
-    def leftSelectorClicked(self, pos):
-        selector_x = SCREEN_WIDTH / 6 - 90
-        selector_y = SCREEN_HEIGHT / 2 - 45
+
+    def leftSelectorClicked(self, pos): #            self.screen.blit(self.selectorImgFlipped, (25, (450/2 - 40))) # Left
+        selector_x = 25
+        selector_y = (450/2 - 40)
         selector_width = self.selectorImgFlipped.get_width()
         selector_height = self.selectorImgFlipped.get_height()
         return selector_x <= pos[0] <= selector_x + selector_width and selector_y <= pos[1] <= selector_y + selector_height
@@ -189,19 +193,7 @@ class LobbyArena:
                         print("Readying up")
                         peer.setReadyUp(True)
                         self.readyUpCounter += 1
-                
-    def _convertStringToColor(self, color): #Helper function that converts string color to rgb tuple HELPER function 
-        if color == "red": 
-            return (255,0,0)
-        elif color == "BLACK":
-            return (255,255,255)
-        elif color == "GREEN":
-            return (0,255,0)
-        elif color == "BLUE":
-            return (0,0,255)
-        else:
-            return (0,0,0) # Default white character
-        
+                        
     def listeningForAckStartUp(self):
         while True:
             data, client_socket = self.sock.recvfrom(4096)
@@ -261,7 +253,20 @@ class LobbyArena:
 
         self.host_port = (SERVER_HOST, SERVER_PORT)
 
-            
+    def convertStringToColor(self, color):         # Helper function that converts string color to rgb tuple
+        if color == "RED":
+            return (255, 0, 0)
+        elif color == "BLACK":
+            return (0, 0, 0)
+        elif color == "GREEN":
+            return (0, 255, 0)
+        elif color == "BLUE":
+            return (0, 0, 255)
+        elif color == "YELLOW":
+            return (255, 255, 0)
+        else:
+            return (255, 255, 255)  # Default white characte
+
     def run(self):
        
         self.initStates()
@@ -297,7 +302,7 @@ class LobbyArena:
             self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
             
             # The player
-            pygame.draw.circle(self.screen, self._convertStringToColor(self.player.getColor()),(400/2, +(450/2)),70)
+            pygame.draw.circle(self.screen, self.convertStringToColor(self.colors[self.currentColor]),(400/2, +(450/2)),70)
 
             if self.readyUpState == True:
                 pygame.draw.rect(self.screen, (0,255,0), pygame.Rect(0, SCREEN_HEIGHT/10, 350/4, 50))
@@ -384,10 +389,15 @@ class LobbyArena:
                         payload = "quit " + str(self.random_integer) 
                         self.sock.sendto(payload.encode(), (self.host_port))
                         self.gameState.setCurrentState('start')
+                    elif self.rightSelectorClicked(pos):
+                            self.currentColor += 1
+                            self.currentColor = self.currentColor % 5 # Makes sure we do not get out of index range
+                            self.colors[self.currentColor]
+                    elif self.leftSelectorClicked(pos):
+                            self.currentColor -= 1
+                            self.currentColor = self.currentColor % 5
+                            self.colors[self.currentColor]
 
-
-
-    
 
             pygame.display.update()
             self.clock.tick(FPS)  # Limit to 60 FPS
