@@ -91,7 +91,7 @@ class VersusArena:
         elif color == "YELLOW":
             return (255, 255, 0)
         else:
-            return (255, 255, 255)  # Default white characte
+            return (255, 0, 0)  # Default red characte
 
     def listenForData(self): # Listens for incoming data from other peer
         while True:
