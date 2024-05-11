@@ -10,10 +10,8 @@ import button
 import pdb
 
 #TODO
-# Clean code(game over reusable class e.g) add comments [x]
-# Add back buttons no death end. 1v1 for example [x]
-
-# Add change name, change color feauture
+# Add username under player
+# change color feauture
 # Add 8 player round change feautre to 1v1
 # Laatste test en code herhalen
 
