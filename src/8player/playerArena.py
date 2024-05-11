@@ -10,10 +10,12 @@ import button
 import pdb
 
 #TODO
+# change color feauture 8 player
 # Add username under player
-# change color feauture
 # Add 8 player round change feautre to 1v1
+# Player met meeste punten krijgt goude circle om zich heen
 # Laatste test en code herhalen
+
 
 FPS = 60
 

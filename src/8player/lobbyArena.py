@@ -112,6 +112,31 @@ class LobbyArena:
         self.peersInLobby = []
         self.playerBoxes = [PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33), PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 ) , PlayerBox(None, self.screen,300, SCREEN_HEIGHT/3.33 )]
     
+
+        self.selectorImg = pygame.image.load("../assets/selector.png").convert_alpha() # Load image transparent
+        self.selectorImg = pygame.transform.scale(self.selectorImg, (100,100)) # Rescales imaeg
+
+
+        
+        self.selectorImgFlipped = pygame.image.load("../assets/selectorFlipped.png").convert_alpha() # Load image transparent
+        self.selectorImgFlipped = pygame.transform.scale(self.selectorImgFlipped, (100,100)) # Rescales imaeg
+
+
+    def rightSelectorClicked(self, pos):
+        selector_x = SCREEN_WIDTH / 4 + 100
+        selector_y = SCREEN_HEIGHT / 2 - 45
+        selector_width = self.selectorImg.get_width()
+        selector_height = self.selectorImg.get_height()
+        return selector_x <= pos[0] <= selector_x + selector_width and selector_y <= pos[1] <= selector_y + selector_height
+    
+    def leftSelectorClicked(self, pos):
+        selector_x = SCREEN_WIDTH / 6 - 90
+        selector_y = SCREEN_HEIGHT / 2 - 45
+        selector_width = self.selectorImgFlipped.get_width()
+        selector_height = self.selectorImgFlipped.get_height()
+        return selector_x <= pos[0] <= selector_x + selector_width and selector_y <= pos[1] <= selector_y + selector_height
+
+
     def listener(self):
         while True:
             data, addr = self.sock.recvfrom(65535)
@@ -271,6 +296,7 @@ class LobbyArena:
             gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(400/2,SCREEN_HEIGHT/10 + 325))
             self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
             
+            # The player
             pygame.draw.circle(self.screen, self._convertStringToColor(self.player.getColor()),(400/2, +(450/2)),70)
 
             if self.readyUpState == True:
@@ -300,6 +326,12 @@ class LobbyArena:
                 
             readyUp = button.Button(self.readyUpColor ,0,SCREEN_HEIGHT/10 + 575 ,400,150,60,'Ready up')
             readyUp.draw(self.screen, (0,0,0))
+
+
+
+            #Color Selector
+            self.screen.blit(self.selectorImg, (275, (450/2 - 40))) # Right
+            self.screen.blit(self.selectorImgFlipped, (25, (450/2 - 40))) # Left
 
             # Status
             if self.readyUpCounter == None:
