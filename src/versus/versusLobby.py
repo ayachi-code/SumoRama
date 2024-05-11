@@ -220,12 +220,9 @@ class VersusLobby:
                 self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
 
             
-
             leave = button.Button((255,255,255),5,45,80,30,40,'Leave') # The leave button
             leave.draw(self.screen, (0,0,0))
 
-
-#           morePlayerMode = button.Button(self.buttonColor8,SCREEN_WIDTH/7.5,SCREEN_HIGHT/3.5,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'8 player')
 
             gameScreen_surfaceLobbyTitle = self.fontOfTitle.render('Lobby', True, (255, 255, 255))
             gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/17))
@@ -248,7 +245,11 @@ class VersusLobby:
             self.screen.blit(self.selectorImgFlipped, (SCREEN_WIDTH/6 - 90, SCREEN_HEIGHT/2 - 45)) # Left
 
 
-            
+            # Confirm color
+            confirm = button.Button((255,255,255),SCREEN_WIDTH/4 - 55,SCREEN_HEIGHT/2 + 150,120,30,40,'Confirm') # The leave button
+            confirm.draw(self.screen, (0,0,0))
+
+
             if self.peerName != "": # Show player circle if connected
                 #VS Text
                 versusFont = pygame.font.SysFont('Comic Sans MS', 130)
@@ -312,12 +313,12 @@ class VersusLobby:
                         self.currentColor += 1
                         self.currentColor = self.currentColor % 5 # Makes sure we do not get out of index range
                         self.colors[self.currentColor]
-                        print(self.colors[self.currentColor])
                     elif self.leftSelectorClicked(pos):
                         self.currentColor -= 1
                         self.currentColor = self.currentColor % 5
                         self.colors[self.currentColor]
-                        print(self.colors[self.currentColor])
+                    elif confirm.isOver(pos):
+                        print("color confirmed")
 
 
             pygame.display.update()
