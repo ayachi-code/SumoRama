@@ -4,6 +4,7 @@ import threading
 import time
 import json
 import math
+import button
 
 #TODO: ROADMAP: Possible FEAUTRES for update: Color selector, name change
 
@@ -449,6 +450,13 @@ class VersusArena:
                     if event.key == pygame.K_SPACE and not self.rushing and self.player_circle is not None: # Rush state set
                         self.rushing = True
                         self.rush_start_time = pygame.time.get_ticks()
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    pos = pygame.mouse.get_pos()
+                    if leave.isOver(pos):
+                        self.gameStateRun = False
+                        pygame.quit()
+                        exit(0)
+
 
             if self.rushing and self.player_circle is not None: 
                 current_time = pygame.time.get_ticks()
@@ -475,6 +483,11 @@ class VersusArena:
             gameScreen_Score = self.gameFont.render('Round: ' + str(self.round), True, (0,0,0))
             gameScreen_rect = gameScreen_Score.get_rect(center=(75, 20))
             self.screen.blit(gameScreen_Score, gameScreen_rect)
+
+
+            # Leave button
+            leave = button.Button((255,255,255) ,0,SCREEN_HEIGHT - 25,50,30,25,'Leave')
+            leave.draw(self.screen, (0,0,0))
 
 
             # Movement for player wasd
