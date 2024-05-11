@@ -56,7 +56,7 @@ class VersusLobby:
 
         self.colors = ["RED","BLIUE","GREEN","YELLOW","PURPLE", "BLACK"]
         
-        self.currentColor = self.colors[0] # Points to the current color that the user is using
+        self.currentColor = 0 # Points to the index of the current color that the user is using
 
 
     def setPeerIP(self, ip):
@@ -307,9 +307,13 @@ class VersusLobby:
                         self.playerQuit = True
                         self.peerIP = None
                     elif self.rightSelectorClicked(pos):
-                        print("right selector is clicked")
+                        self.currentColor += 1
+                        self.currentColor = self.currentColor % 6 # Makes sure we do not get out of index range
+                        print(self.currentColor)
                     elif self.leftSelectorClicked(pos):
-                        print("Left selector is clicked")
+                        self.currentColor -= 1
+                        self.currentColor = self.currentColor % 6
+                        print(self.currentColor)
      
         
 
