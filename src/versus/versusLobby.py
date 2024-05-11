@@ -55,8 +55,8 @@ class VersusLobby:
         self.selectorImgFlipped = pygame.transform.scale(self.selectorImgFlipped, (100,100)) # Rescales imaeg
 
         self.colors = ["RED","BLUE","GREEN","YELLOW", "BLACK"]
-        
         self.currentColor = 0 # Points to the index of the current color that the user is using
+        self.confirmedColor = 0
 
 
     def setPeerIP(self, ip):
@@ -240,6 +240,10 @@ class VersusLobby:
             pygame.draw.circle(self.screen, self.convertStringToColor(self.colors[self.currentColor]), (SCREEN_WIDTH/4, SCREEN_HEIGHT/2),100)
 
 
+            # Color indicator
+            pygame.draw.circle(self.screen, self.convertStringToColor(self.colors[self.confirmedColor]), (40, 220),30)
+
+
             #Color Selector
             self.screen.blit(self.selectorImg, (SCREEN_WIDTH/4 + 100, SCREEN_HEIGHT/2 - 45)) # Right
             self.screen.blit(self.selectorImgFlipped, (SCREEN_WIDTH/6 - 90, SCREEN_HEIGHT/2 - 45)) # Left
@@ -319,6 +323,7 @@ class VersusLobby:
                         self.colors[self.currentColor]
                     elif confirm.isOver(pos):
                         print("color confirmed")
+                        self.confirmedColor = self.currentColor
 
 
             pygame.display.update()
