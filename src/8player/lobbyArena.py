@@ -358,6 +358,9 @@ class LobbyArena:
             confirm = button.Button((255,255,255),138,(450/2) + 100,120,30,40,'Confirm') # The leave button
             confirm.draw(self.screen, (0,0,0))
 
+            # Color indicator
+            pygame.draw.circle(self.screen, self.convertStringToColor(self.colors[self.confirmedColor]), (360, 117),30)
+
 
             # Status
             if self.readyUpCounter == None:
