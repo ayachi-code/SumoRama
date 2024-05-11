@@ -43,7 +43,7 @@ class Game: # Main driver class
 
         # create instances of the game scenes e.g error, main menu etc.
 
-        self.player = player.Player(userName, "red") # Creates player
+        self.player = player.Player(userName, "RED") # Creates player
         self.error = error.Error(self.screen, self.gameStateManager, None, None)
 
         self.start = mainMenu.MainMenu(self.screen, self.gameStateManager, self.player)

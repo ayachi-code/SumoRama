@@ -44,18 +44,17 @@ class PlayerArena:
 
         self.gameStateRun = True
 
-
         # Player and enemy data structures
-        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True}
+        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True, "color": self.convertStringToColor(self.player.getColor())}
         self.enemy_circles = [ # All possie enemy circles
             
-            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
-            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
-            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
-            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
-            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
-            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
-            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True}
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True, "color": (255,0,0)},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True, "color": (255,0,0)},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True, "color": (255,0,0)},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True, "color": (255,0,0)},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True, "color": (255,0,0)},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True, "color": (255,0,0)},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True, "color": (255,0,0)}
         ]
 
 
@@ -93,6 +92,20 @@ class PlayerArena:
 
         self.round = 1 # Starts on round 1
         self.suddenDeath = False
+
+    def convertStringToColor(self, color):         # Helper function that converts string color to rgb tuple
+        if color == "RED":
+            return (255, 0, 0)
+        elif color == "BLACK":
+            return (0, 0, 0)
+        elif color == "GREEN":
+            return (0, 255, 0)
+        elif color == "BLUE":
+            return (0, 0, 255)
+        elif color == "YELLOW":
+            return (255, 255, 0)
+        else:
+            return (255, 255, 255)  # Default white characte
 
     def setPeer(self, newPeer):
         self.peer = newPeer
@@ -167,6 +180,7 @@ class PlayerArena:
                             peer['score'] = newData['score']
                             peer['name'] = newData['name']
                             peer['visible'] = newData['visible']
+                            peer['color'] = newData['color']
 
     def displayCountdown(self): # Shows a counter before starting the game, preps player to be ready
         countdown_font = pygame.font.SysFont('Comic Sans MS', 150)
@@ -288,7 +302,7 @@ class PlayerArena:
 
         randomPointInRingPlayer = self.randomPointInCircle(self.sumo_ring_radius-(0.3 * self.sumo_ring_radius), self.sumo_ring_center[0], self.sumo_ring_center[1])
 
-        self.player_circle = {"position": [randomPointInRingPlayer[0],randomPointInRingPlayer[1]], "velocity": [0,0], "radius": 40, "name": self.player.getName(), "score": self.player_circle["score"], "visible": True, "id": self.peer.getPort()}
+        self.player_circle = {"position": [randomPointInRingPlayer[0],randomPointInRingPlayer[1]], "velocity": [0,0], "radius": 40, "name": self.player.getName(), "score": self.player_circle["score"], "visible": True, "id": self.peer.getPort(), "color": self.player.getColor()}
         for enemy in self.enemy_circles: # Shows all players again
             if enemy['visible'] == False:
                 enemy['visible'] = True
@@ -307,16 +321,17 @@ class PlayerArena:
         return max_score
     
     def resetStates(self): # reset states for new game
-        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": self.player.getName(),"score": 0, "visible": True}
-        self.enemy_circles = [ # All possie enemy circles
-            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
-            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
-            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
-            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
-            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
-            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True},
-            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True}
+        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True, "color": self.convertStringToColor(self.player.getColor())}
+        self.enemy_circles = [ # All possie enemy circles   
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True, "color": (255,0,0)},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True, "color": (255,0,0)},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True, "color": (255,0,0)},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True, "color": (255,0,0)},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True, "color": (255,0,0)},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True, "color": (255,0,0)},
+            {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True, "color": (255,0,0)}
         ]
+
         self.sumo_ring_radius = 450
         self.losers = []
           
@@ -626,12 +641,12 @@ class PlayerArena:
 
             if self.player_circle['visible'] == True:
                 pygame.draw.circle(self.screen, (0,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize+5)
-                pygame.draw.circle(self.screen, (255,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize)
+                pygame.draw.circle(self.screen, self.player.getColor(), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize)
 
 
             for playerEnemy in self.enemy_circles: # Draws the player
                 if playerEnemy['id'] != None and playerEnemy['visible'] == True:
-                    pygame.draw.circle(self.screen, (255,0,0), (int(playerEnemy['position'][0]),int(playerEnemy['position'][1])),self.realtiveSumoSize)
+                    pygame.draw.circle(self.screen, playerEnemy['color'], (int(playerEnemy['position'][0]),int(playerEnemy['position'][1])),self.realtiveSumoSize)
 
             if elapsed_time >= self.shrink_interval: # If timer exceeds threshold than make the circle smaller and reset timers.
                 self.sumo_ring_radius *= self.shrink_scale

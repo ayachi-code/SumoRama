@@ -174,6 +174,7 @@ class LobbyArena:
                         box.reset()
                         break
             elif "PEERS" in data: # Peers response with info about all other peers
+                # Send updated color to all peers
                 connectionInfo = data.split(" ",1)[1].split(" ")[0]
                 playerinfo = data.split(" ",1)[1].split(" ")[1]
 
@@ -199,6 +200,12 @@ class LobbyArena:
                                 break
                                             
                     counter += 1
+                
+                # send color to all peers
+                for player in self.peersInLobby:
+                    payload = "COLOR " + self.player.getColor() +  " " + str(self.random_integer)
+                    print(payload)
+                    self.sock.sendto(payload.encode(), ('127.0.0.1', int(player)))
                     
             if "READY" in data:
                 print("Got ready up from " + data.split(" ")[1])
