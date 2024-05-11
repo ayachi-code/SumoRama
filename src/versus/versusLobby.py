@@ -94,6 +94,12 @@ class VersusLobby:
                 self.polAck = True
             elif data == "READY-YES":
                 self.readyUpAcknowledged = True
+            
+            if data.split(" ")[0] == "COLOR":
+                color = data.split(" ")[1]
+                print(data)
+                self.peerColor = self.convertStringToColor(color)
+
       
     def sendReadyUpToPeer(self, destination):
         maxSendToPeer = 20
@@ -322,8 +328,11 @@ class VersusLobby:
                         self.currentColor = self.currentColor % 5
                         self.colors[self.currentColor]
                     elif confirm.isOver(pos):
-                        print("color confirmed")
                         self.confirmedColor = self.currentColor
+                        self.player.setColor(self.colors[self.currentColor])
+                        payload = "COLOR " + self.colors[self.currentColor]
+                        print(payload)
+                        self.peer.broadCast(payload)
 
 
             pygame.display.update()
