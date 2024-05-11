@@ -54,7 +54,7 @@ class VersusLobby:
         self.selectorImgFlipped = pygame.image.load("../assets/selectorFlipped.png").convert_alpha() # Load image transparent
         self.selectorImgFlipped = pygame.transform.scale(self.selectorImgFlipped, (100,100)) # Rescales imaeg
 
-        self.colors = ["RED","BLIUE","GREEN","YELLOW","PURPLE", "BLACK"]
+        self.colors = ["RED","BLUE","GREEN","YELLOW", "BLACK"]
         
         self.currentColor = 0 # Points to the index of the current color that the user is using
 
@@ -109,17 +109,19 @@ class VersusLobby:
             time.sleep(0.1)
             maxSendToPeer -= 1
 
-    def convertStringToColor(self, color): #Helper function that converts string color to rgb tuple
-        if color == "RED": 
-            return (255,0,0)
+    def convertStringToColor(self, color):         # Helper function that converts string color to rgb tuple
+        if color == "RED":
+            return (255, 0, 0)
         elif color == "BLACK":
-            return (255,255,255)
+            return (0, 0, 0)
         elif color == "GREEN":
-            return (0,255,0)
+            return (0, 255, 0)
         elif color == "BLUE":
-            return (0,0,255)
+            return (0, 0, 255)
+        elif color == "YELLOW":
+            return (255, 255, 0)
         else:
-            return (0,0,0) # Default white character
+            return (255, 255, 255)  # Default white characte
         
     def resetStates(self):
         self.peerName = ""
@@ -238,7 +240,7 @@ class VersusLobby:
             pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(SCREEN_WIDTH/2, SCREEN_HEIGHT - (SCREEN_HEIGHT*0.2), SCREEN_WIDTH/2, SCREEN_HEIGHT/5),  2) #  box for Ready up Host
 
             # Player color
-            pygame.draw.circle(self.screen, self.currentColor, (SCREEN_WIDTH/4, SCREEN_HEIGHT/2),100)
+            pygame.draw.circle(self.screen, self.convertStringToColor(self.colors[self.currentColor]), (SCREEN_WIDTH/4, SCREEN_HEIGHT/2),100)
 
 
             #Color Selector
@@ -308,14 +310,15 @@ class VersusLobby:
                         self.peerIP = None
                     elif self.rightSelectorClicked(pos):
                         self.currentColor += 1
-                        self.currentColor = self.currentColor % 6 # Makes sure we do not get out of index range
-                        print(self.currentColor)
+                        self.currentColor = self.currentColor % 5 # Makes sure we do not get out of index range
+                        self.colors[self.currentColor]
+                        print(self.colors[self.currentColor])
                     elif self.leftSelectorClicked(pos):
                         self.currentColor -= 1
-                        self.currentColor = self.currentColor % 6
-                        print(self.currentColor)
-     
-        
+                        self.currentColor = self.currentColor % 5
+                        self.colors[self.currentColor]
+                        print(self.colors[self.currentColor])
+
 
             pygame.display.update()
             self.clock.tick(FPS)  # Limits FPS
