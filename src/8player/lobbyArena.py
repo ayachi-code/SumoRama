@@ -30,6 +30,8 @@ class PlayerBox: # The box in the lobby
     def __init__(self, name, screen, width, height):
         self.name = name
         self.screen = screen
+
+        self.color = (255,0,0)
         
         self.fontOfTitle = pygame.font.SysFont('Comic Sans MS', 30)
 
@@ -52,6 +54,10 @@ class PlayerBox: # The box in the lobby
     def setName(self, newName):
         self.name = newName
 
+
+    def setColor(self, color):
+        self.color = color
+
     def setReadyUp(self, state):
         self.readyUp = state
 
@@ -73,7 +79,7 @@ class PlayerBox: # The box in the lobby
             gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(x+self.width/2,(y+self.height)-25))
             self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
 
-            pygame.draw.circle(self.screen, (255,0,0),(x+self.width/2, y+(self.height/2)),40)
+            pygame.draw.circle(self.screen, self.color,(x+self.width/2, y+(self.height/2)),40)
 
             if self.readyUp == False:
                 pygame.draw.rect(self.screen, (255,0,0), pygame.Rect(x, y, self.width/4, 50))
@@ -148,6 +154,15 @@ class LobbyArena:
 
             if self.gameStateRun == False:
                 break
+
+
+            if data.split(" ")[0] == "COLOR":
+                color = data.split(" ")[1]
+                peerID = data.split(" ")[2]
+                for player in self.playerBoxes:
+                    if str(player.getId()) == str(peerID):
+                        player.setColor(self.convertStringToColor(color))
+
             
             if "quit" in data: # handeling quits
                 leavedID = data.split(" ")[1]
@@ -338,6 +353,12 @@ class LobbyArena:
             self.screen.blit(self.selectorImg, (275, (450/2 - 40))) # Right
             self.screen.blit(self.selectorImgFlipped, (25, (450/2 - 40))) # Left
 
+            
+            # Confirm color
+            confirm = button.Button((255,255,255),138,(450/2) + 100,120,30,40,'Confirm') # The leave button
+            confirm.draw(self.screen, (0,0,0))
+
+
             # Status
             if self.readyUpCounter == None:
                 gameScreen_surfaceLobbyTitle = self.notifierReadyUp.render('No players :(', True, (255, 255, 255))
@@ -397,6 +418,12 @@ class LobbyArena:
                             self.currentColor -= 1
                             self.currentColor = self.currentColor % 5
                             self.colors[self.currentColor]
+                    elif confirm.isOver(pos):
+                        self.confirmedColor = self.currentColor
+                        self.player.setColor(self.colors[self.currentColor])
+                        payload = "COLOR " + self.colors[self.currentColor] + " " + str(self.random_integer)
+                        for player in self.peersInLobby:
+                            self.sock.sendto(payload.encode(), ('127.0.0.1', int(player)))
 
 
             pygame.display.update()
