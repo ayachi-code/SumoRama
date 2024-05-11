@@ -11,9 +11,10 @@ import pdb
 
 #TODO
 # change color feauture 8 player [x]
-# Add username under player
-# Add 8 player round change feautre to 1v1
+# Add username under player [x]
+# Add 8 player round change feautre to 1v1 
 # Player met meeste punten krijgt goude circle om zich heen
+# Make black skin unloackabe afte 1 win
 # Laatste test en code herhalen
 
 
@@ -553,7 +554,6 @@ class PlayerArena:
                 self.screen.blit(gameScreen_Score, gameScreen_rect)
 
                 if self.player_circle['visible'] == False:
-                    print("showing spec mode")
                     gameScreen = self.gameFont.render('Spectating mode', True, (0,0,0))
                     gameScreen_rect = gameScreen.get_rect(center=(SCREEN_WIDTH - SCREEN_WIDTH/7, 20))
                     self.screen.blit(gameScreen, gameScreen_rect)

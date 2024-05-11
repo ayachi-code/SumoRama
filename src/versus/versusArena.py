@@ -76,6 +76,8 @@ class VersusArena:
 
         self.peerColor = (255,0,0) # default color set
 
+        self.round = 1
+
     def setPeer(self, peer): # Setter for peer variable
         self.peer = peer
 
@@ -219,6 +221,7 @@ class VersusArena:
         self.winnerOfTheGame = None
         self.sumo_ring_radius = 450
         self.score = 0
+        self.round = 1
         self.last_player_position = None
         self.aliveAck = None
 
@@ -344,6 +347,47 @@ class VersusArena:
                 self.aliveAck = False # Resets alive ack for new ack
                 isNotAliveCounter = 0
 
+    def roundSwitchCountdown(self):  # Countdown that is shown when switching rounds.
+        countdown_font = pygame.font.SysFont('Comic Sans MS', 150)
+        gameStartIn_font = pygame.font.SysFont('Comic Sans MS', 140)
+
+        bg = None
+        sun_image = None
+
+
+        bg = pygame.image.load("../assets/sumoBc/sumoFloor4.jpg").convert()
+        bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
+            
+        sun_image = pygame.image.load("../assets/sun.png")
+        sun_image = pygame.transform.scale(sun_image, (100, 100))  # Adjust the size as needed
+
+        wave_gif = pygame.image.load("../assets/wave.gif").convert()
+        wave_height = 100 + 50 * self.round  
+        wave_gif = pygame.transform.scale(wave_gif, (SCREEN_WIDTH, wave_height))
+
+        clock = pygame.time.Clock()  # Create a clock object for controlling frame rate
+
+        for i in range(3, 0, -1):
+            self.screen.blit(bg, (0, 0))
+            
+
+            gameScreen_surface = gameStartIn_font.render('Round  ' + str(self.round), True, (66, 99, 113))
+            gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3))
+            self.screen.blit(gameScreen_surface, gameScreen_rect)
+
+            countdown_text = countdown_font.render(str(i), True, (66, 99, 113))
+            text_rect = countdown_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.75))
+            self.screen.blit(countdown_text, text_rect)
+
+            self.screen.blit(wave_gif, (0, SCREEN_HEIGHT - wave_height))
+
+            self.screen.blit(sun_image, (0, 0))
+
+            pygame.display.update()
+            clock.tick(60)  
+            pygame.time.wait(1000)
+
+
     def run(self):
         self.resetStates()
 
@@ -426,6 +470,13 @@ class VersusArena:
 
             pygame.draw.circle(self.screen, self.peerColor, (self.enemy_circle['position'][0],self.enemy_circle['position'][1]),40)
 
+
+            # Score displayed on screen
+            gameScreen_Score = self.gameFont.render('Round: ' + str(self.round), True, (0,0,0))
+            gameScreen_rect = gameScreen_Score.get_rect(center=(75, 20))
+            self.screen.blit(gameScreen_Score, gameScreen_rect)
+
+
             # Movement for player wasd
             keys = pygame.key.get_pressed()
             if keys[pygame.K_a]:
@@ -467,7 +518,32 @@ class VersusArena:
             if self.checkIfGameOver() == True and self.gameStateRun != False or self.gameDonePeer == True:
                 self.gameDonePeer = False
                 print("Round over")
+                self.round += 1
+            
                 self.giveRightPlayerPoints()
+
+                peerPositionJSON = json.dumps(self.player_circle)
+                payload = "UPDATE " + peerPositionJSON
+                self.peer.getSocket().sendto(payload.encode(), list(self.peer.getConnections())[0])
+
+                time.sleep(0.1)
+
+
+                print(self.enemy_circle["score"])
+                if self.player_circle["score"] >= 3 or self.enemy_circle["score"] >= 3:
+                    print("Game over")
+                    if self.enemy_circle["score"] > self.player_circle["score"]:
+                        self.winnerOfTheGame = self.enemy_circle["name"]
+                    elif self.player_circle["score"] > self.enemy_circle["score"]:
+                        self.winnerOfTheGame = self.player_circle["name"]
+
+                    self.gameStateRun = False
+                    self.gameState.setCurrentState('gameOver')
+                    self.gameOver.setWinner(self.winnerOfTheGame)
+                    continue
+
+
+                self.roundSwitchCountdown()
                 self.newRound()
 
             pygame.display.update()
