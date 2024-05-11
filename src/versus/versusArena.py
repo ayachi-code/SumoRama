@@ -415,7 +415,11 @@ class VersusArena:
                     self.player_circle["velocity"] = [0, 0]
 
             # Draw players on the screen
-            pygame.draw.circle(self.screen, (0,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),45)
+            if self.player.getColor() == "BLACK":
+                pygame.draw.circle(self.screen, (255,255,255), (self.player_circle['position'][0],self.player_circle['position'][1]),45)
+            else:
+                pygame.draw.circle(self.screen, (0,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),45)
+    
             pygame.draw.circle(self.screen, self.player.getColor(), (self.player_circle['position'][0],self.player_circle['position'][1]),40)
 
 
@@ -447,6 +451,7 @@ class VersusArena:
                 self.sumo_ring_radius *= self.shrink_scale
                 self.shrink_timer = 0
                 self.timerScreen = 10
+
 
             pygame.draw.circle(self.screen, (255, 0, 0), self.sumo_ring_center, int(self.sumo_ring_radius), 30) # Draw the sumo ring
 

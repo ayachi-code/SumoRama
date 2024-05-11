@@ -95,6 +95,10 @@ class MainMenu:
                         print("Starting 8 player mode")
                         self.gameState.setCurrentState('lobbyArena')
                         self.gameStateRun = False
+                    elif quitTheGame.isOver(pos):
+                        self.gameStateRun = False
+                        pygame.quit()
+                        exit(0)
                     elif pos[0] < self.settingsImg.get_width() and pos[1] > SCREEN_HIGHT - self.settingsImg.get_height():
                         print("opening settings")
                         self.gameState.setCurrentState('settings')
