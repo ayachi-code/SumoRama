@@ -10,7 +10,7 @@ import button
 import pdb
 
 #TODO
-# change color feauture 8 player
+# change color feauture 8 player [x]
 # Add username under player
 # Add 8 player round change feautre to 1v1
 # Player met meeste punten krijgt goude circle om zich heen
@@ -45,7 +45,7 @@ class PlayerArena:
         self.gameStateRun = True
 
         # Player and enemy data structures
-        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True, "color": self.convertStringToColor(self.player.getColor())}
+        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": self.player.getName(),"score": 0, "id": None, "visible": True, "color": self.convertStringToColor(self.player.getColor())}
         self.enemy_circles = [ # All possie enemy circles
             
             {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True, "color": (255,0,0)},
@@ -321,8 +321,8 @@ class PlayerArena:
         return max_score
     
     def resetStates(self): # reset states for new game
-        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True, "color": self.convertStringToColor(self.player.getColor())}
-        self.enemy_circles = [ # All possie enemy circles   
+        self.player_circle = {"position": [0,0], "velocity": [0,0], "radius": 40, "name": self.player.getName(),"score": 0, "id": None, "visible": True, "color": self.convertStringToColor(self.player.getColor())}
+        self.enemy_circles = [ # All possie enemy circles
             {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True, "color": (255,0,0)},
             {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True, "color": (255,0,0)},
             {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True, "color": (255,0,0)},
@@ -331,6 +331,7 @@ class PlayerArena:
             {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True, "color": (255,0,0)},
             {"position": [0,0], "velocity": [0,0], "radius": 40, "name": "a","score": 0, "id": None, "visible": True, "color": (255,0,0)}
         ]
+
 
         self.sumo_ring_radius = 450
         self.losers = []
@@ -642,11 +643,19 @@ class PlayerArena:
             if self.player_circle['visible'] == True:
                 pygame.draw.circle(self.screen, (0,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize+5)
                 pygame.draw.circle(self.screen, self.player.getColor(), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize)
+                # Shows player name
+                gameScreen_Score = self.gameFont.render(self.player.getName(), True, (0,0,0))
+                gameScreen_rect = gameScreen_Score.get_rect(center=(self.player_circle['position'][0],self.player_circle['position'][1] + self.realtiveSumoSize + 15))
+                self.screen.blit(gameScreen_Score, gameScreen_rect)
 
 
             for playerEnemy in self.enemy_circles: # Draws the player
                 if playerEnemy['id'] != None and playerEnemy['visible'] == True:
                     pygame.draw.circle(self.screen, playerEnemy['color'], (int(playerEnemy['position'][0]),int(playerEnemy['position'][1])),self.realtiveSumoSize)
+                    
+                    gameScreen_Score = self.gameFont.render(playerEnemy['name'], True, (0,0,0))
+                    gameScreen_rect = gameScreen_Score.get_rect(center=(playerEnemy['position'][0],playerEnemy['position'][1] + self.realtiveSumoSize + 15))
+                    self.screen.blit(gameScreen_Score, gameScreen_rect)
 
             if elapsed_time >= self.shrink_interval: # If timer exceeds threshold than make the circle smaller and reset timers.
                 self.sumo_ring_radius *= self.shrink_scale
