@@ -54,6 +54,9 @@ class VersusLobby:
         self.selectorImgFlipped = pygame.image.load("../assets/selectorFlipped.png").convert_alpha() # Load image transparent
         self.selectorImgFlipped = pygame.transform.scale(self.selectorImgFlipped, (100,100)) # Rescales imaeg
 
+        self.colors = ["RED","BLIUE","GREEN","YELLOW","PURPLE", "BLACK"]
+        
+        self.currentColor = self.colors[0] # Points to the current color that the user is using
 
 
     def setPeerIP(self, ip):
@@ -163,6 +166,21 @@ class VersusLobby:
             time.sleep(0.1) # Polling speed
             maxTimeOut -= 1
 
+    def rightSelectorClicked(self, pos):
+        selector_x = SCREEN_WIDTH / 4 + 100
+        selector_y = SCREEN_HEIGHT / 2 - 45
+        selector_width = self.selectorImg.get_width()
+        selector_height = self.selectorImg.get_height()
+        return selector_x <= pos[0] <= selector_x + selector_width and selector_y <= pos[1] <= selector_y + selector_height
+    
+    def leftSelectorClicked(self, pos):
+        selector_x = SCREEN_WIDTH / 6 - 90
+        selector_y = SCREEN_HEIGHT / 2 - 45
+        selector_width = self.selectorImgFlipped.get_width()
+        selector_height = self.selectorImgFlipped.get_height()
+        return selector_x <= pos[0] <= selector_x + selector_width and selector_y <= pos[1] <= selector_y + selector_height
+
+
     def run(self):
         #reset states from previous game
         self.resetStates()
@@ -220,7 +238,7 @@ class VersusLobby:
             pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(SCREEN_WIDTH/2, SCREEN_HEIGHT - (SCREEN_HEIGHT*0.2), SCREEN_WIDTH/2, SCREEN_HEIGHT/5),  2) #  box for Ready up Host
 
             # Player color
-            pygame.draw.circle(self.screen, self.player.getColor(), (SCREEN_WIDTH/4, SCREEN_HEIGHT/2),100)
+            pygame.draw.circle(self.screen, self.currentColor, (SCREEN_WIDTH/4, SCREEN_HEIGHT/2),100)
 
 
             #Color Selector
@@ -276,7 +294,7 @@ class VersusLobby:
                     pygame.quit()
                     exit(0)
                 if event.type == pygame.MOUSEBUTTONUP:
-                    pos = pygame.mouse.get_pos()
+                    pos = pygame.mouse.get_pos()      
                     if readyUpHost.isOver(pos) and self.peerName != "" and self.pressedReadyUpButton == False: # If ready up button is clicked AND there is a user joined 
                         self.pressedReadyUpButton = True
                         addressOfPeer = list(self.peer.getConnections())[0]
@@ -288,6 +306,12 @@ class VersusLobby:
                         self.gameState.setCurrentState('1v1Menu')
                         self.playerQuit = True
                         self.peerIP = None
+                    elif self.rightSelectorClicked(pos):
+                        print("right selector is clicked")
+                    elif self.leftSelectorClicked(pos):
+                        print("Left selector is clicked")
+     
+        
 
             pygame.display.update()
             self.clock.tick(FPS)  # Limits FPS
