@@ -97,7 +97,6 @@ class VersusLobby:
             
             if data.split(" ")[0] == "COLOR":
                 color = data.split(" ")[1]
-                print(data)
                 self.peerColor = self.convertStringToColor(color)
 
       

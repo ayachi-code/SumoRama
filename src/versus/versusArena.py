@@ -74,8 +74,24 @@ class VersusArena:
         self.aliveAck = None
         self.gameDonePeer = False
 
+        self.peerColor = (255,0,0) # default color set
+
     def setPeer(self, peer): # Setter for peer variable
         self.peer = peer
+
+    def convertStringToColor(self, color):  # Helper function that converts string color to rgb tuple
+        if color == "RED":
+            return (255, 0, 0)
+        elif color == "BLACK":
+            return (0, 0, 0)
+        elif color == "GREEN":
+            return (0, 255, 0)
+        elif color == "BLUE":
+            return (0, 0, 255)
+        elif color == "YELLOW":
+            return (255, 255, 0)
+        else:
+            return (255, 255, 255)  # Default white characte
 
     def listenForData(self): # Listens for incoming data from other peer
         while True:
@@ -83,7 +99,6 @@ class VersusArena:
             data = data.decode()
 
             if data == "ALIVE-OK": # We recieved ack from peer
-                #print("Yo my bro is alive" + str(self.peer.getSequenceNumber()))
                 self.aliveAck = True     
                 self.peer.increaseSequenceNumber()
             elif "ALIVE" in data:
@@ -99,6 +114,9 @@ class VersusArena:
             elif "INIT" in data:
                 self.enemy_circle['position'] = [int(data.split(" ")[1]), int(data.split(" ")[2])]
                 self.enemy_circle['name'] = data.split(" ")[3]
+
+                self.peerColor = self.convertStringToColor(data.split(" ")[4])
+
                 self.last_player_position = self.enemy_circle['position'] # Locks in posityion
                 self.peer.getSocket().sendto("INIT-OK".encode(), addr)
             elif "UPDATE" in data:
@@ -118,7 +136,7 @@ class VersusArena:
         randomPointInRing = self.randomPointInCircle(self.sumo_ring_radius-(0.3 * self.sumo_ring_radius), self.sumo_ring_center[0], self.sumo_ring_center[1])
         self.player_circle['position'] = [math.ceil(randomPointInRing[0]),math.ceil(randomPointInRing[1])]
 
-        payload = "INIT " + str(math.ceil(randomPointInRing[0])) + " " + str(math.ceil(randomPointInRing[1])) + " " + self.player.getName()
+        payload = "INIT " + str(math.ceil(randomPointInRing[0])) + " " + str(math.ceil(randomPointInRing[1])) + " " + self.player.getName() + " " + self.player.getColor()
 
         sendInit_thread = threading.Thread(target=self.sendInitPositions,args=(payload,), daemon=True)
         sendInit_thread.start()
@@ -400,7 +418,9 @@ class VersusArena:
             pygame.draw.circle(self.screen, (0,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),45)
             pygame.draw.circle(self.screen, self.player.getColor(), (self.player_circle['position'][0],self.player_circle['position'][1]),40)
 
-            pygame.draw.circle(self.screen, self.player.getColor(), (self.enemy_circle['position'][0],self.enemy_circle['position'][1]),40)
+
+
+            pygame.draw.circle(self.screen, self.peerColor, (self.enemy_circle['position'][0],self.enemy_circle['position'][1]),40)
 
             # Movement for player wasd
             keys = pygame.key.get_pressed()
