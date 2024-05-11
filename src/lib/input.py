@@ -18,7 +18,7 @@ class InputBox: #Source https://stackoverflow.com/questions/46390231/how-can-i-c
 
     def getText(self):
         return self.text
-
+    
     def handle_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN:
             # If the user clicked on the input_box rect.

@@ -27,12 +27,16 @@ class Settings:
         self.buttonColorName = (226,221,220)
         
         self.gameFont = pygame.font.SysFont('Comic Sans MS', 90)
+        self.errorFont = pygame.font.SysFont('Comic Sans MS', 45)
 
         self.username = input.InputBox(SCREEN_WIDTH/4, 50 + 90 + 90 + 90 + 90, SCREEN_WIDTH/2, 50, 60)
+        self.errorUserName = False
 
 
     def run(self):
+        # reset states
         self.gameStateRun = True
+        # self.errorUserName = False
 
         while self.gameStateRun:
             self.screen.fill((153,0,17)) # Red screen
@@ -54,14 +58,20 @@ class Settings:
 
 
             gameScreen_surface = self.gameFont.render('Change name: ', True, (255, 255, 255))
-            gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH/2, 50 + 90 + 90 + 90))
+            gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH/2, 50 + 90 + 90 + 90 + 25))
             self.screen.blit(gameScreen_surface, gameScreen_rect)
             self.username.draw(self.screen)
 
            
-           
+            # Error message
+            if self.errorUserName == True:
+                gameScreen_surface = self.errorFont.render('Error: username is not accepted!', True, (255, 255, 255))
+                gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH/2, 50 + 90 + 90 + 90 + 90 + 90))
+                self.screen.blit(gameScreen_surface, gameScreen_rect)
+
+        
             # Submit name button
-            name = button.Button(self.buttonColorName,SCREEN_WIDTH/2 -75, 50 + 90 + 90 + 90 + 90 + 100,150,70,60,'Submit')
+            name = button.Button(self.buttonColorName,SCREEN_WIDTH/2 - 85, 50 + 90 + 90 + 90 + 90 + 125,150,70,60,'Submit')
             name.draw(self.screen, (0,0,0))
 
     
@@ -80,7 +90,6 @@ class Settings:
                 self.buttonColorName = (226,221,220) 
 
             
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.gameStateRun = False
@@ -92,8 +101,18 @@ class Settings:
                         print("Returning to mainMenu")
                         self.gameState.setCurrentState('start')
                         self.gameStateRun = False
+                        
                     elif name.isOver(pos):
-                        self.player.setName(self.username.getText())
+                        usernameChosen = self.username.getText()
+                        if len(usernameChosen) >= 10:
+                            self.errorUserName = True
+                        elif " " in usernameChosen:
+                            self.errorUserName = True
+                        elif usernameChosen == "":
+                            self.errorUserName = True
+                        else:
+                            self.player.setName(self.username.getText())
+                            self.errorUserName = False
                 self.username.handle_event(event)
 
             pygame.display.update()
