@@ -14,9 +14,10 @@ import pdb
 # Add username under player [x]
 # Add 8 player round change feautre to 1v1 [x]
 # Player met meeste punten krijgt goude circle om zich heen [x]
-# Make black skin unloackabe afte 1 win
+# Make black skin unloackabe afte 1 win [x]
 
 
+# Add wins in settings
 # Laatste test en code herhalen
 
 
