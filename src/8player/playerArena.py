@@ -15,9 +15,8 @@ import pdb
 # Add 8 player round change feautre to 1v1 [x]
 # Player met meeste punten krijgt goude circle om zich heen [x]
 # Make black skin unloackabe afte 1 win [x]
+# Add wins in settings [x]
 
-
-# Add wins in settings
 # Laatste test en code herhalen
 
 
@@ -478,18 +477,21 @@ class PlayerArena:
                 self.gameOver.setWinner(self.player.getName())
                 continue
 
-            if len(self.losers) == len(self.suddenDeathCandidates)-1 and self.suddenDeath == True: # Game over the last player is left.
+            if len(self.losers) == len(self.suddenDeathCandidates)-1 and self.suddenDeath == True: # Game over the last player is left.                
                 if self.player_circle['visible'] == True and self.player_circle['id'] != None:
+                    print(self.player_circle)
                     winner = self.player_circle['name']
                     self.winnerID = self.player_circle['id'] 
                 else:
                     for player in self.enemy_circles:
                         if player['visible'] == True and player['id'] != None:
+                            print(player)
                             winner = player['name']
-                            self.winnerID = self.player_circle['id'] 
+                            self.winnerID = player['id'] 
                             break
-                
+                                
                 if int(self.peer.getPort()) == int(self.winnerID): # You got a win and you will get the win point
+                    print("awarded a point")
                     self.player.addWin()
 
                 self.gameStateRun = False
@@ -548,6 +550,7 @@ class PlayerArena:
                         self.gameOver.setWinner(winner[0][1])
 
                         if int(self.peer.getPort()) == int(winnerID): # You got a win and you will get the win point
+                            # print("awarded a point")
                             self.player.addWin()
 
                         self.resetStates()
