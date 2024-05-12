@@ -6,16 +6,22 @@ echo 'UPDATE {"position": [700,800], "velocity": [0, 0], "radius": 40, "name": "
 movement cheat
 
 
-demo 1v1
-echo 'UPDATE {"position": [400,400], "velocity": [10, 10], "radius": 40, "name": "Player224", "score": 0}' | nc -u -w1 127.0.0.1 6089
+demo 1v1 Movement HACK
+echo 'UPDATE {"position": [400,400], "velocity": [10, 10], "radius": 40, "name": "Player224", "score": 0, "color": "RED"}' | nc -u -w1 127.0.0.1 7937
+
+demo1 1v1 position hack
+echo 'UPDATE {"position": [12,21], "velocity": [10, 10], "radius": 40, "name": "Player224", "score": 0, "color": "RED"}' | nc -u -w1 127.0.0.1 7937
+
 
 
 demo 8players
 
-{"position": [0,0], "velocity": [0,0], "radius": 40, "name": "Player224", "score": 0, "id": None, "visible": True},
+{"position": [0,0], "velocity": [0,0], "radius": 40, "name": "Player224", "score": 0, "id": None, "visible": True, "color": "RED"},
+
 
 Position cheat
 echo 'UPDATE {"position": [10,10], "velocity": [10, 10], "radius": 40, "name": "Player224", "score": 100, "visible": true, "id": 7657}' | nc -u -w1 127.0.0.1 7460
 
 
-echo 'UPDATE {"position": [20,32], "velocity": [10, 10], "radius": 40, "name": "Player224", "score": 100, "visible": true, "id": 7525}' | nc -u -w1 127.0.0.1 9948
+Score cheat
+echo 'UPDATE {"position": [400,400], "velocity": [10, 10], "radius": 40, "name": "Player224", "score": 100, "visible": true, "id": 6045, "color": "RED"}' | nc -u -w1 127.0.0.1 9438
