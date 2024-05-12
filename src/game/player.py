@@ -4,6 +4,13 @@ class Player:
     def __init__(self, name, color):
         self.name = name
         self.color = color
+        self.wins = 0
+
+    def getWins(self):
+        return self.wins
+    
+    def addWin(self):
+        self.wins += 1
 
     def getName(self):
         return self.name

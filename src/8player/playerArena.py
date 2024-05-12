@@ -13,7 +13,7 @@ import pdb
 # change color feauture 8 player [x]
 # Add username under player [x]
 # Add 8 player round change feautre to 1v1 [x]
-# Player met meeste punten krijgt goude circle om zich heen
+# Player met meeste punten krijgt goude circle om zich heen [x]
 # Make black skin unloackabe afte 1 win
 
 
@@ -95,6 +95,7 @@ class PlayerArena:
 
         self.round = 1 # Starts on round 1
         self.suddenDeath = False
+        self.winnerID = None
 
     def convertStringToColor(self, color):         # Helper function that converts string color to rgb tuple
         if color == "RED":
@@ -478,12 +479,17 @@ class PlayerArena:
             if len(self.losers) == len(self.suddenDeathCandidates)-1 and self.suddenDeath == True: # Game over the last player is left.
                 if self.player_circle['visible'] == True and self.player_circle['id'] != None:
                     winner = self.player_circle['name']
+                    self.winnerID = self.player_circle['id'] 
                 else:
                     for player in self.enemy_circles:
                         if player['visible'] == True and player['id'] != None:
                             winner = player['name']
+                            self.winnerID = self.player_circle['id'] 
                             break
-                    
+                
+                if int(self.peer.getPort()) == int(self.winnerID): # You got a win and you will get the win point
+                    self.player.addWin()
+
                 self.gameStateRun = False
                 self.gameState.setCurrentState('gameOver')
                 self.gameOver.setWinner(winner)
@@ -534,6 +540,7 @@ class PlayerArena:
                         self.gameStateRun = False
                         self.gameState.setCurrentState('gameOver')
                         self.gameOver.setWinner(winner[0][1])
+                        self.player.addWin()
                         self.resetStates()
                         continue
                     else: # suddend death round
@@ -645,6 +652,8 @@ class PlayerArena:
             if self.player_circle['visible'] == True:
                 if self.player_circle['score'] == self.getMaxScore() and self.getMaxScore() != 0:
                     pygame.draw.circle(self.screen, (255,215,0), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize+5)
+                elif self.player.getColor() == "BLACK": # Show white ring instead of black for black sumo character
+                    pygame.draw.circle(self.screen, (255,255,255), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize+5)
                 else:
                     pygame.draw.circle(self.screen, (0,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize+5)
                 pygame.draw.circle(self.screen, self.player.getColor(), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize)
