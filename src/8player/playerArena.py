@@ -12,9 +12,11 @@ import pdb
 #TODO
 # change color feauture 8 player [x]
 # Add username under player [x]
-# Add 8 player round change feautre to 1v1 
+# Add 8 player round change feautre to 1v1 [x]
 # Player met meeste punten krijgt goude circle om zich heen
 # Make black skin unloackabe afte 1 win
+
+
 # Laatste test en code herhalen
 
 
@@ -641,7 +643,10 @@ class PlayerArena:
             self.realtiveSumoSize = self.circle_radius - len(self.peer.getConnections()) * 2.5 # Calculates sumo size relative to number oi players
 
             if self.player_circle['visible'] == True:
-                pygame.draw.circle(self.screen, (0,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize+5)
+                if self.player_circle['score'] == self.getMaxScore() and self.getMaxScore() != 0:
+                    pygame.draw.circle(self.screen, (255,215,0), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize+5)
+                else:
+                    pygame.draw.circle(self.screen, (0,0,0), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize+5)
                 pygame.draw.circle(self.screen, self.player.getColor(), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize)
                 # Shows player name
                 gameScreen_Score = self.gameFont.render(self.player.getName(), True, (0,0,0))
@@ -649,10 +654,14 @@ class PlayerArena:
                 self.screen.blit(gameScreen_Score, gameScreen_rect)
 
 
-            for playerEnemy in self.enemy_circles: # Draws the player
+            for playerEnemy in self.enemy_circles: # Draws the enemy players
                 if playerEnemy['id'] != None and playerEnemy['visible'] == True:
+                    if playerEnemy['score'] == self.getMaxScore() and self.getMaxScore() != 0:
+                        pygame.draw.circle(self.screen, (255,215,0), (playerEnemy['position'][0],playerEnemy['position'][1]),self.realtiveSumoSize+5)
+
                     pygame.draw.circle(self.screen, playerEnemy['color'], (int(playerEnemy['position'][0]),int(playerEnemy['position'][1])),self.realtiveSumoSize)
                     
+                    # Name text under the player
                     gameScreen_Score = self.gameFont.render(playerEnemy['name'], True, (0,0,0))
                     gameScreen_rect = gameScreen_Score.get_rect(center=(playerEnemy['position'][0],playerEnemy['position'][1] + self.realtiveSumoSize + 15))
                     self.screen.blit(gameScreen_Score, gameScreen_rect)
