@@ -306,6 +306,9 @@ class LobbyArena:
         lister = threading.Thread(target=self.listener,args=(), daemon=True)
         lister.start()
 
+        self.currentColor = self.colors.index(self.player.getColor())
+        self.confirmedColor = self.colors.index(self.player.getColor())
+
         while self.gameStateRun:
             self.screen.fill((153,0,17))
 

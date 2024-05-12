@@ -201,6 +201,9 @@ class VersusLobby:
         receive_thread = threading.Thread(target=self.listenForConnections, daemon=True)
         receive_thread.start()
 
+        self.currentColor = self.colors.index(self.player.getColor())
+        self.confirmedColor = self.colors.index(self.player.getColor())
+
         if self.peerIP != None: # Joiner
             payload = "CONNECT " + self.player.getName() + " " + self.player.getColor()
             self.peer.getSocket().sendto(payload.encode(), (self.peerIP, self.port)) # Joiner wants to introduce them self to host
