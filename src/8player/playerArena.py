@@ -529,19 +529,26 @@ class PlayerArena:
 
                     maxScore = self.getMaxScore()
                     winner = []
+                    winnerID = None
 
                     if self.player_circle['score'] == maxScore and self.player_circle['id'] != None:
                         winner.append((str(self.player_circle['id']), self.player_circle['name']))
+                        winnerID = self.player_circle['id']
              
                     for player in self.enemy_circles:
                         if player['score'] == maxScore and player['id'] != None:
                             winner.append((str(player['id']), player['name']))
+                            winnerID = player['id']
+
 
                     if len(winner) == 1: # There is one winner in the game
                         self.gameStateRun = False
                         self.gameState.setCurrentState('gameOver')
                         self.gameOver.setWinner(winner[0][1])
-                        self.player.addWin()
+
+                        if int(self.peer.getPort()) == int(winnerID): # You got a win and you will get the win point
+                            self.player.addWin()
+
                         self.resetStates()
                         continue
                     else: # suddend death round

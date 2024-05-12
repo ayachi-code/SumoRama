@@ -321,10 +321,17 @@ class VersusLobby:
                     elif self.rightSelectorClicked(pos):
                         self.currentColor += 1
                         self.currentColor = self.currentColor % 5 # Makes sure we do not get out of index range
+                        if self.colors[self.currentColor] == "BLACK" and self.player.getWins() <= 3: # Player needs 4 wins to unlock the secret skin
+                            self.currentColor += 1
+                            self.currentColor = self.currentColor % 5
+
                         self.colors[self.currentColor]
                     elif self.leftSelectorClicked(pos):
                         self.currentColor -= 1
                         self.currentColor = self.currentColor % 5
+                        if self.colors[self.currentColor] == "BLACK" and self.player.getWins() <= 3:
+                            self.currentColor -= 1
+                            self.currentColor = self.currentColor % 5
                         self.colors[self.currentColor]
                     elif confirm.isOver(pos):
                         self.confirmedColor = self.currentColor
