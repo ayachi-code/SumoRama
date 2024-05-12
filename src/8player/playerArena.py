@@ -440,6 +440,7 @@ class PlayerArena:
         print("player name: " + self.player.getName())
 
         self.gameStateRun = True
+        self.winnerID = None
 
         self.player_circle['id'] = self.peer.getPort()
 
