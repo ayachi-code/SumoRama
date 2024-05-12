@@ -315,6 +315,11 @@ class LobbyArena:
             gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/17))
             self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
 
+            # player wins
+            gameScreen_surfaceLobbyTitle = self.fontOfTitlePlayerMain.render('Wins: ' + str(self.player.getWins()), True, (255, 255, 255))
+            gameScreen_rectLobbyTitle = gameScreen_surfaceLobbyTitle.get_rect(center=(400/2,SCREEN_HEIGHT/10 + 30))
+            self.screen.blit(gameScreen_surfaceLobbyTitle, gameScreen_rectLobbyTitle)
+
             # The player bigger box
             pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(0, SCREEN_HEIGHT/10, 400, 350),  2)
             pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(0, (SCREEN_HEIGHT/10+350)-50, 400, 50),  2)
