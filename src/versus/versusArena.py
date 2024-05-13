@@ -101,10 +101,15 @@ class VersusArena:
             data, addr = self.peer.getSocket().recvfrom(65535)
             data = data.decode()
 
+            if self.gameStateRun == False:
+                break
+
+            # print(data)
             if data == "ALIVE-OK": # We recieved ack from peer
                 self.aliveAck = True     
                 self.peer.increaseSequenceNumber()
             elif "ALIVE" in data:
+                # print(data)
                 self.peer.getSocket().sendto("ALIVE-OK".encode(), addr)
 
             if data == "OUT-OF-RING": # ASSURES SYNC OF Circle collision!!
@@ -399,6 +404,8 @@ class VersusArena:
 
         self.displayCountdown()
 
+        pygame.event.clear() # Removes cache events 
+
         send_thread = threading.Thread(target=self.isPeerAliveSender, daemon=True)
         send_thread.start()
 
@@ -454,8 +461,9 @@ class VersusArena:
                     pos = pygame.mouse.get_pos()
                     if leave.isOver(pos):
                         self.gameStateRun = False
-                        pygame.quit()
-                        exit(0)
+                        self.gameState.setCurrentState('1v1Menu')
+                        # pygame.quit()
+                        # exit(0)
 
 
             if self.rushing and self.player_circle is not None: 
