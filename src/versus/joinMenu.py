@@ -68,7 +68,7 @@ class JoinMenu:
     def listenToHost(self):
         while True:
             data, addr = self.socketCon.recvfrom(1024)
-            print(data)
+            #print(data)
             if "Hi" in data.decode():
                 print("Host does excist")
                 self.hostAck = True
@@ -78,7 +78,6 @@ class JoinMenu:
         self.gameStateRun = True
         self.hostAck = None
         while self.gameStateRun:
-            w,h = pygame.display.get_surface().get_size()
             Join = button.Button(self.buttonColorJoin,SCREEN_WIDTH/7.5,SCREEN_HIGHT/2,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Join')
             back = button.Button(self.buttonColorBack,SCREEN_WIDTH/7.5,SCREEN_HIGHT/1.4,BUTTONWIDTH,BUTTONHEIGHT,BUTTONSIZETEXT,'Back')
 
@@ -86,6 +85,7 @@ class JoinMenu:
 
             for box in self.input_boxes:
                 box.draw(self.screen)
+
             # Draw text
             gameScreen_surface = self.gameScreen.render('Join game', True, (255, 255, 255))
             gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH/1.9, 140))
@@ -121,7 +121,7 @@ class JoinMenu:
                     if Join.isOver(pos): # Connect to client (Join event listener)
                         print("Joining game")
                         try:
-                            # Check does Host exist ??????
+                            # Check does Host exist
                             send_thread = threading.Thread(target=self.sendHostRequest, daemon=True)
                             send_thread.start()
                             recv_thread = threading.Thread(target=self.listenToHost, daemon=True)

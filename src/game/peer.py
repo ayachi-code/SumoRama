@@ -30,7 +30,7 @@ class Peer:
         self.sequenceNumber += 1
         return self.sequenceNumber
  
-    def addCoonection(self, peer):
+    def addCoonection(self, peer): # Peer e.g ('127.0.0.1', 5569)
         self.connections.add(peer) # Adds tuple with connection information
 
     def getConnections(self):

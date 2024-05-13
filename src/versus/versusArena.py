@@ -104,12 +104,10 @@ class VersusArena:
             if self.gameStateRun == False:
                 break
 
-            # print(data)
             if data == "ALIVE-OK": # We recieved ack from peer
                 self.aliveAck = True     
                 self.peer.increaseSequenceNumber()
             elif "ALIVE" in data:
-                # print(data)
                 self.peer.getSocket().sendto("ALIVE-OK".encode(), addr)
 
             if data == "OUT-OF-RING": # ASSURES SYNC OF Circle collision!!
@@ -128,10 +126,8 @@ class VersusArena:
                 self.last_player_position = self.enemy_circle['position'] # Locks in posityion
                 self.peer.getSocket().sendto("INIT-OK".encode(), addr)
             elif "UPDATE" in data:
-                #print(data)
                 newData = json.loads(data.split(" ",1)[1])
                 self.enemy_circle = newData
-                #self.last_player_position = self.enemy_circle['position']
 
     def sendInitPositions(self, data): # Send init positions to other peer, at the start of the game
         while True:
@@ -515,7 +511,7 @@ class VersusArena:
                 self.player_circle["position"][1] += self.player_circle["velocity"][1] * self.clock.get_time() / 1000
 
             # Shrink timer updated
-            self.shrink_timer += self.clock.get_time() / 1000
+            self.shrink_timer += self.clock.get_time() / 1000 # Convert to seconds
 
             if self.shrink_timer >= self.shrink_interval: # If timer exceeds threshold than make the circle smaller and reset timers.
                 self.sumo_ring_radius *= self.shrink_scale
@@ -547,7 +543,6 @@ class VersusArena:
 
                 time.sleep(0.1)
 
-
                 print(self.enemy_circle["score"])
                 if self.player_circle["score"] >= 3 or self.enemy_circle["score"] >= 3:
                     print("Game over")
@@ -560,7 +555,6 @@ class VersusArena:
                     self.gameState.setCurrentState('gameOver')
                     self.gameOver.setWinner(self.winnerOfTheGame)
                     continue
-
 
                 self.roundSwitchCountdown()
                 self.newRound()

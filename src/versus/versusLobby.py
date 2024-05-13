@@ -49,15 +49,12 @@ class VersusLobby:
         self.selectorImg = pygame.image.load("../assets/selector.png").convert_alpha() # Load image transparent
         self.selectorImg = pygame.transform.scale(self.selectorImg, (100,100)) # Rescales imaeg
 
-
-        
         self.selectorImgFlipped = pygame.image.load("../assets/selectorFlipped.png").convert_alpha() # Load image transparent
         self.selectorImgFlipped = pygame.transform.scale(self.selectorImgFlipped, (100,100)) # Rescales imaeg
 
         self.colors = ["RED","BLUE","GREEN","YELLOW", "BLACK"]
         self.currentColor = 0 # Points to the index of the current color that the user is using
         self.confirmedColor = 0
-
 
     def setPeerIP(self, ip):
         self.peerIP = ip
@@ -148,7 +145,6 @@ class VersusLobby:
                 if self.peerIP != None: # Joiner
                     print("HOST LEFT OHHHHH")
                     self.gameStateRun = False
-                    # self.gameState.setCurrentState('errorJoin')
                     self.error.setErrorMessage('Host left')
                     self.error.setBackButtonDest('joinMenu')
                     self.gameState.setCurrentState('error')
@@ -174,19 +170,18 @@ class VersusLobby:
             maxTimeOut -= 1
 
     def rightSelectorClicked(self, pos):
-        selector_x = SCREEN_WIDTH / 4 + 100
-        selector_y = SCREEN_HEIGHT / 2 - 45
-        selector_width = self.selectorImg.get_width()
-        selector_height = self.selectorImg.get_height()
-        return selector_x <= pos[0] <= selector_x + selector_width and selector_y <= pos[1] <= selector_y + selector_height
+        selectorX = SCREEN_WIDTH / 4 + 100
+        selectorY = SCREEN_HEIGHT / 2 - 45
+        selectorWidth = self.selectorImg.get_width()
+        selectorHeight = self.selectorImg.get_height()
+        return selectorX <= pos[0] <= selectorX + selectorWidth and selectorY <= pos[1] <= selectorY + selectorHeight
     
     def leftSelectorClicked(self, pos):
-        selector_x = SCREEN_WIDTH / 6 - 90
-        selector_y = SCREEN_HEIGHT / 2 - 45
-        selector_width = self.selectorImgFlipped.get_width()
-        selector_height = self.selectorImgFlipped.get_height()
-        return selector_x <= pos[0] <= selector_x + selector_width and selector_y <= pos[1] <= selector_y + selector_height
-
+        selectorX = SCREEN_WIDTH / 6 - 90
+        selectorY = SCREEN_HEIGHT / 2 - 45
+        selectorWidth = self.selectorImgFlipped.get_width()
+        selectorHeight = self.selectorImgFlipped.get_height()
+        return selectorX <= pos[0] <= selectorX + selectorWidth and selectorY <= pos[1] <= selectorY + selectorHeight
 
     def run(self):
         #reset states from previous game
@@ -260,7 +255,6 @@ class VersusLobby:
             # Confirm color
             confirm = button.Button((255,255,255),SCREEN_WIDTH/4 - 55,SCREEN_HEIGHT/2 + 150,120,30,40,'Confirm') # The leave button
             confirm.draw(self.screen, (0,0,0))
-
 
             if self.peerName != "": # Show player circle if connected
                 #VS Text
@@ -340,9 +334,7 @@ class VersusLobby:
                         self.confirmedColor = self.currentColor
                         self.player.setColor(self.colors[self.currentColor])
                         payload = "COLOR " + self.colors[self.currentColor]
-                        print(payload)
                         self.peer.broadCast(payload)
-
 
             pygame.display.update()
             self.clock.tick(FPS)  # Limits FPS
