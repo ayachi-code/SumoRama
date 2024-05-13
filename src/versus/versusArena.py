@@ -162,29 +162,30 @@ class VersusArena:
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
         if self.player_circle is not None:
-            direction = [mouse_x - self.player_circle["position"][0], mouse_y - self.player_circle["position"][1]]
-            length = math.sqrt(direction[0]**2 + direction[1]**2)
+            direction = [mouse_x - self.player_circle["position"][0], mouse_y - self.player_circle["position"][1]] # Contains x,y vector components to cursor
+            
+            length = math.sqrt(direction[0]**2 + direction[1]**2) # The length to the cursor using pythagoras.
 
-            if length > 0:
-                direction = [direction[0] / length, direction[1] / length]
-                self.player_circle["velocity"][0] = direction[0] * self.rush_speed
-                self.player_circle["velocity"][1] = direction[1] * self.rush_speed
+            if length > 0: # Makes sure no / 0 error
+                direction = [direction[0] / length, direction[1] / length] # This normalizes the vector components
+
+                self.player_circle["velocity"][0] = direction[0] * self.rush_speed # Sets x component of speed vector
+                self.player_circle["velocity"][1] = direction[1] * self.rush_speed # Sets y component of speed vector
 
     def handle_collision(self, circle1, circle2): # Collision between 2 circles
-        distance = math.sqrt((circle1["position"][0] - circle2["position"][0])**2 +
-                            (circle1["position"][1] - circle2["position"][1])**2)
+        distance = math.sqrt((circle1["position"][0] - circle2["position"][0])**2 + (circle1["position"][1] - circle2["position"][1])**2) # Distance between 2 points formula to find distance between 2 cicles centers
         
 
-        if distance < 2 * self.circle_radius:
-            overlap = 2 * self.circle_radius - distance
-            collision_direction = [circle2["position"][0] - circle1["position"][0],
-                                circle2["position"][1] - circle1["position"][1]]
+        if distance < 2 * self.circle_radius: # Overlap
+            overlap = 2 * self.circle_radius - distance # Actual overlap of the circles
             
-            collision_length = math.sqrt(collision_direction[0]**2 + collision_direction[1]**2)
+            collision_direction = [circle2["position"][0] - circle1["position"][0], circle2["position"][1] - circle1["position"][1]] # Direction vector
+            
+            collision_length = math.sqrt(collision_direction[0]**2 + collision_direction[1]**2) # pythagoras for length of collision
 
-            if collision_length > 0:
-                collision_direction = [collision_direction[0] / collision_length,
-                                    collision_direction[1] / collision_length]
+            if collision_length > 0: # Avoids division of 0
+                collision_direction = [collision_direction[0] / collision_length, collision_direction[1] / collision_length] # Normalise it 
+                # Adds the distance to the circles to resolve collision
                 move_distance = overlap / 2
 
                 circle1["position"][0] -= move_distance * collision_direction[0]
@@ -462,15 +463,12 @@ class VersusArena:
                     if leave.isOver(pos):
                         self.gameStateRun = False
                         self.gameState.setCurrentState('1v1Menu')
-                        # pygame.quit()
-                        # exit(0)
-
-
+                    
             if self.rushing and self.player_circle is not None: 
                 current_time = pygame.time.get_ticks()
-                if current_time - self.rush_start_time < self.rush_duration * 1000:
+                if current_time - self.rush_start_time < self.rush_duration * 1000: # Current_time - rushTimer = the time wer are rushing.
                     self.rush_to_cursor()
-                else:
+                else: # Rushing is done, thus set the state to false
                     self.rushing = False
                     self.player_circle["velocity"] = [0, 0]
 
@@ -483,7 +481,7 @@ class VersusArena:
             pygame.draw.circle(self.screen, self.player.getColor(), (self.player_circle['position'][0],self.player_circle['position'][1]),40)
 
 
-
+            # opponent
             pygame.draw.circle(self.screen, self.peerColor, (self.enemy_circle['position'][0],self.enemy_circle['position'][1]),40)
 
 
