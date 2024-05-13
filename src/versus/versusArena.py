@@ -243,7 +243,7 @@ class VersusArena:
     def displayCountdown(self): # Shows a counter before starting the game, preps player to be ready
         countdown_font = pygame.font.SysFont('Comic Sans MS', 150)
         
-        tip_font = pygame.font.SysFont('Comic Sans MS', 50)
+        tip_font = pygame.font.SysFont('Comic Sans MS', 45)
 
         gameStartIn_font = pygame.font.SysFont('Comic Sans MS', 140)
 

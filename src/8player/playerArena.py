@@ -35,7 +35,7 @@ class PlayerArena:
         pygame.init() # Init pygame
         pygame.font.init() # Init font
 
-        self.gameFont = pygame.font.SysFont('Comic Sans MS', 40)
+        self.gameFont = pygame.font.SysFont('Comic Sans MS', 30)
         self.clock = pygame.time.Clock()
 
         # Set arguments to class
@@ -189,7 +189,7 @@ class PlayerArena:
     def displayCountdown(self): # Shows a counter before starting the game, preps player to be ready
         countdown_font = pygame.font.SysFont('Comic Sans MS', 150)
         
-        tip_font = pygame.font.SysFont('Comic Sans MS', 50)
+        tip_font = pygame.font.SysFont('Comic Sans MS', 30)
 
         gameStartIn_font = pygame.font.SysFont('Comic Sans MS', 140)
 
@@ -354,6 +354,7 @@ class PlayerArena:
     def roundSwitchCountdown(self):  # Countdown that is shown when switching rounds.
         countdown_font = pygame.font.SysFont('Comic Sans MS', 150)
         gameStartIn_font = pygame.font.SysFont('Comic Sans MS', 140)
+        suddenDeathFont = pygame.font.SysFont('Comic Sans MS', 80)
 
         bg = None
         sun_image = None
@@ -381,7 +382,7 @@ class PlayerArena:
             self.screen.blit(bg, (0, 0))
             
             if self.suddenDeath:
-                gameScreen_surface = gameStartIn_font.render('sudden death round!  ', True, (0, 0, 0))
+                gameScreen_surface = suddenDeathFont.render('sudden death round!  ', True, (0, 0, 0))
                 gameScreen_rect = gameScreen_surface.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3))
                 self.screen.blit(gameScreen_surface, gameScreen_rect)
 
