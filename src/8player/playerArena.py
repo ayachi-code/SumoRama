@@ -452,6 +452,8 @@ class PlayerArena:
 
         self.displayCountdown() # Displays a countdown with some very usefull tips!
 
+        pygame.event.clear() # Removes cache events 
+
         start_time = time.time() # Starts timer
 
         bg = pygame.image.load("../assets/sumoBc/sumoFloor4.jpg").convert() # Cool sand background :3
