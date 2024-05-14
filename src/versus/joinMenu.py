@@ -6,6 +6,8 @@ import versusLobby
 import socket
 import threading
 import time
+import ipaddress
+
 
 SCREEN_WIDTH = 1300
 SCREEN_HIGHT = 800
@@ -37,14 +39,14 @@ class JoinMenu:
         self.lobbyVersus = lobbyVersus
         self.error = error
 
-        self.ip_input = '127.0.0.1' # input.InputBox(SCREEN_WIDTH/7.5,SCREEN_HIGHT/2.335, 700, 32)
+        self.ip_input = input.InputBox(SCREEN_WIDTH/7.5,SCREEN_HIGHT/2.335, 700, 32,32)
         self.ip_port = input.InputBox(SCREEN_WIDTH/1.45,SCREEN_HIGHT/2.335, 140, 32,32)
-        self.input_boxes = [self.ip_port] # [self.ip_input, self.ip_port]
+        self.input_boxes = [self.ip_port, self.ip_input] # [self.ip_input, self.ip_port]
 
         self.hostAck = None
         self.socketCon = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    def sendHostRequest(self):
+    def sendHostRequest(self, address):
         handshakeMessage = "HELLO Host"
         maxRequestSend = 3
         try:
@@ -55,7 +57,7 @@ class JoinMenu:
                 if maxRequestSend <= 0:
                     self.hostAck = False
                     break
-                self.socketCon.sendto(handshakeMessage.encode(), ('127.0.0.1', int(self.ip_port.getText())))
+                self.socketCon.sendto(handshakeMessage.encode(), (address, int(self.ip_port.getText())))
                 time.sleep(0.1)
                 maxRequestSend -= 1
         except Exception as e:
@@ -121,8 +123,15 @@ class JoinMenu:
                     if Join.isOver(pos): # Connect to client (Join event listener)
                         print("Joining game")
                         try:
+                            ip = ipaddress.ip_address(self.ip_input.getText())
+                            port = int(self.ip_port.getText())
+                            if 1<= port <= 65535:
+                                print("correct port")
+                            else:
+                                raise Exception
+
                             # Check does Host exist
-                            send_thread = threading.Thread(target=self.sendHostRequest, daemon=True)
+                            send_thread = threading.Thread(target=self.sendHostRequest, args=(str(self.ip_input.getText()),), daemon=True)
                             send_thread.start()
                             recv_thread = threading.Thread(target=self.listenToHost, daemon=True)
                             recv_thread.start()
@@ -133,12 +142,13 @@ class JoinMenu:
                                 elif self.hostAck == False:
                                     raise Exception
                   
-                            self.lobbyVersus.setPeerIP('127.0.0.1')
+                            self.lobbyVersus.setPeerIP(str(self.ip_input.getText()))
                             self.lobbyVersus.setPeerPort(int(self.ip_port.getText()))
 
                             self.gameState.setCurrentState('lobby1v1')
                             self.gameStateRun = False
                         except Exception as e: # Show error screen
+                            print("error")
                             print(e)
                             self.gameStateRun = False
                             self.error.setErrorMessage('could not join peer')

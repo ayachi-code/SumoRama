@@ -23,7 +23,7 @@ FPS = 60
 SCREEN_WIDTH = 1300
 SCREEN_HEIGHT = 800
 
-MAX_READY_UP = 1 # Number of players that haev to readt up to start a game
+MAX_READY_UP = 4 # Number of players that haev to readt up to start a game
 
 
 class PlayerBox: # The box in the lobby
