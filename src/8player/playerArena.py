@@ -408,9 +408,9 @@ class PlayerArena:
 
     def inSumoRing(self, circle_x, circle_y, rad, x, y): # Method for checking if a point is in a circle, used to check if sumo is in ring.
         if ((x - circle_x) * (x - circle_x) + (y - circle_y) * (y - circle_y) <= rad * rad):
-            return True;
+            return True
         else:
-            return False;
+            return False
     
     def cheatDetection(self):
         
@@ -478,6 +478,7 @@ class PlayerArena:
                 self.gameStateRun = False
                 self.gameState.setCurrentState('gameOver')
                 self.gameOver.setWinner(self.player.getName())
+                self.player.addWin() # After concideration I still give the win even though player(s) have left
                 continue
 
             if len(self.losers) == len(self.suddenDeathCandidates)-1 and self.suddenDeath == True: # Game over the last player is left.                
@@ -662,11 +663,11 @@ class PlayerArena:
                 self.player_circle["position"][0] += self.player_circle["velocity"][0] * self.clock.get_time() / 1000
                 self.player_circle["position"][1] += self.player_circle["velocity"][1] * self.clock.get_time() / 1000
 
-            self.realtiveSumoSize = self.circle_radius - len(self.peer.getConnections()) * 2.5 # Calculates sumo size relative to number oi players
+            self.realtiveSumoSize = 40 #self.circle_radius - len(self.peer.getConnections()) * 2.5 # Calculates sumo size relative to number oi players
 
             if self.player_circle['visible'] == True:
                 if self.player_circle['score'] == self.getMaxScore() and self.getMaxScore() != 0:
-                    pygame.draw.circle(self.screen, (255,215,0), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize+5)
+                    pygame.draw.circle(self.screen, ((181,148,16)), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize+5)
                 elif self.player.getColor() == "BLACK": # Show white ring instead of black for black sumo character
                     pygame.draw.circle(self.screen, (255,255,255), (self.player_circle['position'][0],self.player_circle['position'][1]),self.realtiveSumoSize+5)
                 else:
