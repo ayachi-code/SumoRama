@@ -7,7 +7,7 @@ movement cheat
 
 
 demo 1v1 Movement HACK
-echo 'UPDATE {"position": [400,400], "velocity": [10, 10], "radius": 40, "name": "Player224", "score": 0, "color": "RED"}' | nc -u -w1 127.0.0.1 7937
+echo 'UPDATE {"position": [400,400], "velocity": [10, 10], "radius": 40, "name": "Player224", "score": 0, "color": "RED"}' | nc -u -w1 127.0.0.1 7962
 
 demo1 1v1 position hack
 echo 'UPDATE {"position": [12,21], "velocity": [10, 10], "radius": 40, "name": "Player224", "score": 0, "color": "RED"}' | nc -u -w1 127.0.0.1 7937
@@ -16,11 +16,8 @@ echo 'UPDATE {"position": [12,21], "velocity": [10, 10], "radius": 40, "name": "
 
 demo 8players
 
-{"position": [0,0], "velocity": [0,0], "radius": 40, "name": "Player224", "score": 0, "id": None, "visible": True, "color": "RED"},
-
-
-Position cheat
-echo 'UPDATE {"position": [10,10], "velocity": [10, 10], "radius": 40, "name": "Player224", "score": 100, "visible": true, "id": 7657}' | nc -u -w1 127.0.0.1 7460
+position cheat
+echo 'UPDATE {"position": [10,10], "velocity": [10, 10], "radius": 40, "name": "Player224", "score": 0, "visible": true, "id": 7324, "color": "RED"}' | nc -u -w1 127.0.0.1 6860
 
 
 Score cheat
